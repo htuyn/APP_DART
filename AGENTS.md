@@ -2,7 +2,7 @@
 
 ## 1. READ BEFORE CODE
 - Tự động đọc `AGENTS.md` trước khi thực hiện công việc.
-- Luôn đọc `.memory-bank/` để hiểu dự án, kiến trúc, tiến độ và các quyết định trước đó.
+- Luôn đọc `memory-bank/` để hiểu dự án, kiến trúc, tiến độ và các quyết định trước đó.
 - Đọc các file code và tài liệu liên quan trực tiếp đến yêu cầu.
 - Không code khi chưa hiểu cách hệ thống hiện tại hoạt động.
 - Không tự suy đoán khi chưa kiểm chứng được thông tin.
@@ -32,7 +32,7 @@
 - Không tự ý ghi đè hoặc xóa thay đổi có sẵn của người dùng.
 
 ## 5. MEMORY BANK — MANDATORY
-- Trước khi làm: tự động đọc các tài liệu liên quan trong `.memory-bank/`.
+- Trước khi làm: tự động đọc các tài liệu liên quan trong `memory-bank/`.
 - Trong khi làm: tuân thủ các quyết định và kiến trúc đã được ghi nhận.
 - Sau khi làm: tự động cập nhật Memory Bank theo kết quả thực tế.
 - Cập nhật `progress.md` khi có thay đổi tiến độ.
