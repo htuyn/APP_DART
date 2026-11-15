@@ -1,0 +1,366 @@
+[
+  {
+    "id": "K01-001",
+    "block_id": 1,
+    "block_name": {
+      "vi": "Khối 1. Ngôn ngữ Dart",
+      "en": "Block 1. Dart Language"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Trong Dart, từ khoá nào yêu cầu giá trị của biến phải là hằng số thời gian biên dịch (compile-time constant)?",
+      "en": "In Dart, which keyword requires the value of a variable to be a compile-time constant?"
+    },
+    "options": {
+      "vi": ["final", "var", "const", "late"],
+      "en": ["final", "var", "const", "late"]
+    },
+    "correct_index": 2,
+    "explanation": {
+      "vi": "'const' tạo hằng số lúc biên dịch, trong khi 'final' là biến khởi tạo một lần lúc chạy.",
+      "en": "'const' creates compile-time constants, whereas 'final' is initialized once at runtime."
+    }
+  },
+  {
+    "id": "K01-002",
+    "block_id": 1,
+    "block_name": {
+      "vi": "Khối 1. Ngôn ngữ Dart",
+      "en": "Block 1. Dart Language"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Trong khai báo void greet(String name, [String? title]), tham số title thuộc loại nào?",
+      "en": "In the declaration void greet(String name, [String? title]), what kind of parameter is title?"
+    },
+    "options": {
+      "vi": [
+        "Tham số đặt tên tuỳ chọn (optional named parameter)",
+        "Tham số đặt tên bắt buộc (required named parameter)",
+        "Tham số vị trí bắt buộc (required positional parameter)",
+        "Tham số vị trí tuỳ chọn (optional positional parameter)"
+      ],
+      "en": [
+        "Optional named parameter",
+        "Required named parameter",
+        "Required positional parameter",
+        "Optional positional parameter"
+      ]
+    },
+    "correct_index": 3,
+    "explanation": {
+      "vi": "Cặp ngoặc vuông [ ] trong danh sách tham số của hàm biểu thị các tham số vị trí tuỳ chọn.",
+      "en": "Square brackets [ ] in function parameter lists denote optional positional parameters."
+    }
+  },
+  {
+    "id": "K01-003",
+    "block_id": 1,
+    "block_name": {
+      "vi": "Khối 1. Ngôn ngữ Dart",
+      "en": "Block 1. Dart Language"
+    },
+    "level": "Hiểu",
+    "question": {
+      "vi": "Lớp Duck đã kế thừa lớp Bird và muốn dùng lại mã của mixin Swimmer. Cách khai báo nào đúng?",
+      "en": "Class Duck extends Bird and wants to reuse code from mixin Swimmer. Which declaration is correct?"
+    },
+    "options": {
+      "vi": [
+        "class Duck extends Bird, Swimmer {}",
+        "class Duck extends Bird with Swimmer {}",
+        "class Duck with Swimmer extends Bird {}",
+        "class Duck extends Bird uses Swimmer {}"
+      ],
+      "en": [
+        "class Duck extends Bird, Swimmer {}",
+        "class Duck extends Bird with Swimmer {}",
+        "class Duck with Swimmer extends Bird {}",
+        "class Duck extends Bird uses Swimmer {}"
+      ]
+    },
+    "correct_index": 1,
+    "explanation": {
+      "vi": "Trong Dart, từ khóa 'with' được sử dụng để áp dụng mixin vào một lớp sau 'extends'.",
+      "en": "In Dart, the 'with' keyword is used to apply mixins to a class after 'extends'."
+    }
+  },
+  {
+    "id": "K01-004",
+    "block_id": 1,
+    "block_name": {
+      "vi": "Khối 1. Ngôn ngữ Dart",
+      "en": "Block 1. Dart Language"
+    },
+    "level": "Hiểu",
+    "question": {
+      "vi": "Cho final a = [1, 2]; và const b = [1, 2];. Phát biểu nào đúng?",
+      "en": "Given final a = [1, 2]; and const b = [1, 2];. Which statement is correct?"
+    },
+    "options": {
+      "vi": [
+        "a.add(3) chạy được nhưng không gán lại được a; b.add(3) ném lỗi lúc chạy",
+        "a.add(3) báo lỗi biên dịch vì a là final; b.add(3) chạy được",
+        "Cả a và b đều gán lại được, nhưng không thêm phần tử được",
+        "a và b giống hệt nhau vì cùng được khởi tạo bằng một literal"
+      ],
+      "en": [
+        "a.add(3) succeeds but a cannot be reassigned; b.add(3) throws a runtime error",
+        "a.add(3) causes a compile error because a is final; b.add(3) succeeds",
+        "Both a and b can be reassigned, but cannot add elements",
+        "a and b are identical because they are initialized with the same literal"
+      ]
+    },
+    "correct_index": 0,
+    "explanation": {
+      "vi": "Biến final chỉ cấm gán lại tham chiếu nhưng đối tượng bên trong vẫn có thể thay đổi; const tạo danh sách bất biến (immutable) nên sửa đổi lúc chạy sẽ gây ngoại lệ UnsupportedError.",
+      "en": "A final reference cannot be reassigned but its object is mutable; const creates an immutable list which throws UnsupportedError at runtime when modified."
+    }
+  },
+  {
+    "id": "K01-006",
+    "block_id": 1,
+    "block_name": {
+      "vi": "Khối 1. Ngôn ngữ Dart",
+      "en": "Block 1. Dart Language"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Toán tử nào trả về toán hạng bên trái nếu nó khác null, ngược lại trả về toán hạng bên phải?",
+      "en": "Which operator returns the left expression if not null, otherwise evaluates and returns the right expression?"
+    },
+    "options": {
+      "vi": ["?.", "!", "??=", "??"],
+      "en": ["?.", "!", "??=", "??"]
+    },
+    "correct_index": 3,
+    "explanation": {
+      "vi": "Toán tử if-null '??' trả về toán hạng bên trái nếu khác null, ngược lại trả về bên phải.",
+      "en": "The null-coalescing operator '??' evaluates to the left operand if non-null, else the right operand."
+    }
+  },
+  {
+    "id": "K02-001",
+    "block_id": 2,
+    "block_name": {
+      "vi": "Khối 2. Môi trường và công cụ",
+      "en": "Block 2. Environment and Tools"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Lệnh flutter doctor dùng để làm gì?",
+      "en": "What is the command flutter doctor used for?"
+    },
+    "options": {
+      "vi": [
+        "Tự động sửa các lỗi trong mã nguồn Dart của dự án hiện tại",
+        "Nâng cấp Flutter SDK lên phiên bản mới nhất của kênh hiện tại",
+        "Kiểm tra môi trường phát triển và báo các thành phần còn thiếu",
+        "Tạo một dự án Flutter mẫu để kiểm tra việc cài đặt"
+      ],
+      "en": [
+        "Automatically fix Dart source code errors in the current project",
+        "Upgrade Flutter SDK to the latest version of the current channel",
+        "Inspect the local environment and report missing dependencies/tools",
+        "Create a sample Flutter project to verify installation"
+      ]
+    },
+    "correct_index": 2,
+    "explanation": {
+      "vi": "'flutter doctor' kiểm tra môi trường máy phát triển và báo cáo trạng thái Android SDK, IDE, thiết bị...",
+      "en": "'flutter doctor' checks your environment and displays a report of the status of your Flutter installation."
+    }
+  },
+  {
+    "id": "K03-001",
+    "block_id": 3,
+    "block_name": {
+      "vi": "Khối 3. Cách Flutter hoạt động",
+      "en": "Block 3. How Flutter Works"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Tài liệu Flutter tóm tắt cách xây dựng giao diện khai báo (declarative UI) bằng công thức nào?",
+      "en": "How does the Flutter documentation summarize the declarative UI concept as a formula?"
+    },
+    "options": {
+      "vi": [
+        "state = f(UI)",
+        "UI = f(state)",
+        "UI = f(events)",
+        "UI = state + f(layout)"
+      ],
+      "en": [
+        "state = f(UI)",
+        "UI = f(state)",
+        "UI = f(events)",
+        "UI = state + f(layout)"
+      ]
+    },
+    "correct_index": 1,
+    "explanation": {
+      "vi": "Flutter sử dụng mô hình giao diện khai báo phản ứng: UI là hàm của trạng thái: UI = f(state).",
+      "en": "Flutter follows a reactive declarative UI paradigm: UI is a function of state: UI = f(state)."
+    }
+  },
+  {
+    "id": "K03-011",
+    "block_id": 3,
+    "block_name": {
+      "vi": "Khối 3. Cách Flutter hoạt động",
+      "en": "Block 3. How Flutter Works"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Quy tắc bố cục cốt lõi của Flutter trong trang “Understanding constraints” là gì?",
+      "en": "What is Flutter's golden rule of layout in 'Understanding constraints'?"
+    },
+    "options": {
+      "vi": [
+        "Kích thước đi xuống. Ràng buộc đi lên. Con tự đặt vị trí.",
+        "Ràng buộc đi lên. Kích thước đi xuống. Cha đặt vị trí.",
+        "Ràng buộc đi xuống. Vị trí đi lên. Con đặt kích thước.",
+        "Ràng buộc đi xuống. Kích thước đi lên. Cha đặt vị trí."
+      ],
+      "en": [
+        "Sizes go down. Constraints go up. Child sets position.",
+        "Constraints go up. Sizes go down. Parent sets position.",
+        "Constraints go down. Position goes up. Child sets size.",
+        "Constraints go down. Sizes go up. Parent sets position."
+      ]
+    },
+    "correct_index": 3,
+    "explanation": {
+      "vi": "'Constraints go down. Sizes go up. Parent sets position' là quy tắc bố cục nền tảng trong Flutter.",
+      "en": "'Constraints go down. Sizes go up. Parent sets position' is Flutter's fundamental layout rule."
+    }
+  },
+  {
+    "id": "K05-006",
+    "block_id": 5,
+    "block_name": {
+      "vi": "Khối 5. Thiết kế và giao diện chung",
+      "en": "Block 5. Design and UI"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Hàm tạo nào sinh ra toàn bộ bảng màu Material 3 hài hoà chỉ từ một màu gốc?",
+      "en": "Which constructor generates an entire harmonious Material 3 color scheme from a single seed color?"
+    },
+    "options": {
+      "vi": [
+        "ColorScheme.light(primary: …)",
+        "ThemeData(primarySwatch: …)",
+        "ColorScheme.fromSeed(seedColor: …)",
+        "Colors.fromSeed(…)"
+      ],
+      "en": [
+        "ColorScheme.light(primary: …)",
+        "ThemeData(primarySwatch: …)",
+        "ColorScheme.fromSeed(seedColor: …)",
+        "Colors.fromSeed(…)"
+      ]
+    },
+    "correct_index": 2,
+    "explanation": {
+      "vi": "ColorScheme.fromSeed(seedColor: ...) tự động tính toán các màu tonal palette theo chuẩn Material 3.",
+      "en": "ColorScheme.fromSeed(seedColor: ...) computes the full tonal palette for Material 3 from a single color."
+    }
+  },
+  {
+    "id": "K11-004",
+    "block_id": 11,
+    "block_name": {
+      "vi": "Khối 11. Trợ năng và đa ngôn ngữ",
+      "en": "Block 11. Accessibility and Localization"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Trong widget test, hằng hướng dẫn (guideline) nào dùng với meetsGuideline để kiểm tra các phần tử có thể nhấn có kích thước tối thiểu 48×48 theo chuẩn Android?",
+      "en": "In widget tests, which guideline constant is used with meetsGuideline to assert tap targets are at least 48x48 on Android?"
+    },
+    "options": {
+      "vi": [
+        "iOSTapTargetGuideline",
+        "labeledTapTargetGuideline",
+        "androidTapTargetGuideline",
+        "textContrastGuideline"
+      ],
+      "en": [
+        "iOSTapTargetGuideline",
+        "labeledTapTargetGuideline",
+        "androidTapTargetGuideline",
+        "textContrastGuideline"
+      ]
+    },
+    "correct_index": 2,
+    "explanation": {
+      "vi": "androidTapTargetGuideline xác minh vùng chạm tối thiểu 48x48 logical pixels theo quy chuẩn Android Accessibility.",
+      "en": "androidTapTargetGuideline enforces the minimum 48x48 logical pixels tap target size for Android accessibility."
+    }
+  },
+  {
+    "id": "K12-001",
+    "block_id": 12,
+    "block_name": {
+      "vi": "Khối 12. Quản lý trạng thái",
+      "en": "Block 12. State Management"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Tài liệu Flutter tóm tắt tư duy khai báo (declarative) bằng công thức nào, trong đó f là các phương thức build?",
+      "en": "How does the Flutter documentation summarize declarative thinking where f represents build methods?"
+    },
+    "options": {
+      "vi": [
+        "state = f(UI)",
+        "UI = state + f(events)",
+        "f(UI) = state",
+        "UI = f(state)"
+      ],
+      "en": [
+        "state = f(UI)",
+        "UI = state + f(events)",
+        "f(UI) = state",
+        "UI = f(state)"
+      ]
+    },
+    "correct_index": 3,
+    "explanation": {
+      "vi": "Trong Flutter, giao diện UI là kết quả được sinh ra từ trạng thái hiện tại: UI = f(state).",
+      "en": "In Flutter, the user interface is a reflection of the current application state: UI = f(state)."
+    }
+  },
+  {
+    "id": "K14-001",
+    "block_id": 14,
+    "block_name": {
+      "vi": "Khối 14. Kiến trúc ứng dụng",
+      "en": "Block 14. Application Architecture"
+    },
+    "level": "Nhớ",
+    "question": {
+      "vi": "Theo hướng dẫn kiến trúc ứng dụng của Flutter, hai tầng chính mà mọi ứng dụng nên tách bạch là gì?",
+      "en": "According to Flutter app architecture guidance, which two main layers should every app separate?"
+    },
+    "options": {
+      "vi": [
+        "Tầng widget (widget layer) và tầng kết xuất (render layer)",
+        "Tầng máy khách (client layer) và tầng máy chủ (server layer)",
+        "Tầng giao diện (UI layer) và tầng dữ liệu (data layer)",
+        "Tầng điều khiển (controller layer) và tầng định tuyến (routing layer)"
+      ],
+      "en": [
+        "Widget layer and render layer",
+        "Client layer and server layer",
+        "UI layer and data layer",
+        "Controller layer and routing layer"
+      ]
+    },
+    "correct_index": 2,
+    "explanation": {
+      "vi": "Kiến trúc khuyến nghị của Flutter chia tách cốt lõi thành Tầng Giao diện (UI layer) và Tầng Dữ liệu (Data layer).",
+      "en": "Flutter recommended architecture clearly separates the UI layer from the Data layer."
+    }
+  }
+]
