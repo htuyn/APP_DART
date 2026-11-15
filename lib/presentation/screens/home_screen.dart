@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_colors.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/state_views.dart';
@@ -23,18 +24,23 @@ class HomeScreen extends StatelessWidget {
             vi: 'Ôn Tập Flutter Song Ngữ',
             en: 'Flutter Bilingual Quiz',
           ),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
-          TextButton.icon(
-            onPressed: () => lang.toggleLanguage(),
-            icon: const Icon(Icons.language, size: 20),
-            label: Text(
-              lang.isVietnamese ? 'EN' : 'VI',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            child: ActionChip(
+              avatar: const Icon(Icons.language, size: 16),
+              label: Text(
+                lang.isVietnamese ? 'EN' : 'VI',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              onPressed: () => lang.toggleLanguage(),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: _buildBody(context, quiz, lang),
@@ -67,96 +73,149 @@ class HomeScreen extends StatelessWidget {
 
     final total = quiz.allQuestions.length;
     final wrongCount = quiz.wrongQuestions.length;
+    final correctRate = total > 0
+        ? (((total - wrongCount) / total) * 100).toStringAsFixed(0)
+        : '0';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Banner Status Card
-          Card(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.flutter_dash,
-                    size: 48,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    lang.translate(
-                      vi: 'Ngân Hàng 300 Câu Trắc Nghiệm',
-                      en: 'Flutter 300 Question Bank',
+          // Modern Gradient Hero Card
+          Container(
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.flutter_dash,
+                        color: Colors.white,
+                        size: 30,
+                      ),
                     ),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    lang.translate(
-                      vi: '20 Khối Kiến Thức • Song Ngữ Anh - Việt',
-                      en: '20 Knowledge Blocks • Bilingual VI - EN',
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            lang.translate(
+                              vi: 'Ngân Hàng 300 Câu Hỏi',
+                              en: '300 Questions Bank',
+                            ),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            lang.translate(
+                              vi: '20 Khối Kiến Thức • Song Ngữ VI / EN',
+                              en: '20 Blocks • Bilingual VI / EN',
+                            ),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withValues(alpha: 0.85),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimaryContainer
-                              .withValues(alpha: 0.8),
-                        ),
-                    textAlign: TextAlign.center,
+                  ],
+                ),
+                const SizedBox(height: 18),
+                // Glassmorphism stats row
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                    ),
                   ),
-                  const Divider(height: 24),
-                  Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _StatItem(
+                        icon: Icons.quiz_outlined,
                         label: lang.translate(vi: 'Tổng câu', en: 'Total'),
                         value: '$total',
                       ),
-                      _StatItem(
-                        label: lang.translate(vi: 'Cần ôn lại', en: 'Need Review'),
-                        value: '$wrongCount',
-                        valueColor: wrongCount > 0 ? Colors.red.shade700 : null,
+                      Container(
+                        width: 1,
+                        height: 28,
+                        color: Colors.white.withValues(alpha: 0.2),
                       ),
                       _StatItem(
-                        label: lang.translate(vi: 'Khối kiến thức', en: 'Blocks'),
-                        value: '20',
+                        icon: Icons.bookmark_remove_outlined,
+                        label: lang.translate(vi: 'Cần ôn lại', en: 'Review'),
+                        value: '$wrongCount',
+                        valueColor: wrongCount > 0 ? const Color(0xFFFCA5A5) : null,
+                      ),
+                      Container(
+                        width: 1,
+                        height: 28,
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                      _StatItem(
+                        icon: Icons.trending_up_rounded,
+                        label: lang.translate(vi: 'Chính xác', en: 'Accuracy'),
+                        value: '$correctRate%',
+                        valueColor: const Color(0xFF86EFAC),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Menu Title
+          // Section Header
           Text(
             lang.translate(vi: 'Chế độ học tập', en: 'Learning Modes'),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.2,
+            ),
           ),
           const SizedBox(height: 12),
 
           // Mode 1: Luyện tập theo khối
-          _MenuCard(
+          _ModernMenuCard(
             icon: Icons.menu_book_rounded,
-            iconColor: Colors.blue.shade700,
+            gradientColors: const [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
             title: lang.translate(
               vi: 'Chế độ Luyện Tập',
               en: 'Practice Mode',
             ),
             subtitle: lang.translate(
-              vi: 'Ôn tập tự do theo từng khối kiến thức, có giải thích ngay',
-              en: 'Practice by block at your own pace with instant explanations',
+              vi: 'Ôn tập tự do theo từng khối kiến thức, có giải thích & AI',
+              en: 'Practice by block with explanations and AI tutor',
             ),
             onTap: () {
               Navigator.push(
@@ -168,18 +227,18 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Mode 2: Thi thử (Có đếm ngược)
-          _MenuCard(
+          _ModernMenuCard(
             icon: Icons.timer_outlined,
-            iconColor: Colors.orange.shade800,
+            gradientColors: const [Color(0xFFF59E0B), Color(0xFFEA580C)],
             title: lang.translate(
               vi: 'Chế độ Thi Thử (Mock Exam)',
               en: 'Mock Exam (Timed)',
             ),
             subtitle: lang.translate(
-              vi: '20 câu ngẫu nhiên, đồng hồ đếm ngược 15 phút, chấm điểm',
-              en: '20 random questions, 15-minute countdown, score report',
+              vi: '20 câu ngẫu nhiên • Đồng hồ đếm ngược 15 phút',
+              en: '20 random questions • 15-minute countdown',
             ),
-            badge: lang.translate(vi: 'Có bấm giờ', en: 'Timed'),
+            badge: lang.translate(vi: 'Bấm giờ', en: 'Timed'),
             onTap: () {
               Navigator.push(
                 context,
@@ -190,9 +249,9 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Mode 3: Sổ tay câu sai
-          _MenuCard(
-            icon: Icons.bookmark_remove_rounded,
-            iconColor: Colors.red.shade700,
+          _ModernMenuCard(
+            icon: Icons.replay_circle_filled_rounded,
+            gradientColors: const [Color(0xFFEF4444), Color(0xFFDC2626)],
             title: lang.translate(
               vi: 'Làm Lại Câu Sai',
               en: 'Review Incorrect Questions',
@@ -202,7 +261,7 @@ class HomeScreen extends StatelessWidget {
               en: 'Retake questions you answered incorrectly',
             ),
             badge: wrongCount > 0 ? '$wrongCount' : null,
-            badgeColor: Colors.red,
+            badgeColor: const Color(0xFFEF4444),
             onTap: () {
               Navigator.push(
                 context,
@@ -214,9 +273,9 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Mode 4: Thống kê theo 20 khối
-          _MenuCard(
+          _ModernMenuCard(
             icon: Icons.bar_chart_rounded,
-            iconColor: Colors.green.shade700,
+            gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
             title: lang.translate(
               vi: 'Thống Kê Theo Khối Kiến Thức',
               en: 'Knowledge Block Statistics',
@@ -239,11 +298,13 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _StatItem extends StatelessWidget {
+  final IconData icon;
   final String label;
   final String value;
   final Color? valueColor;
 
   const _StatItem({
+    required this.icon,
     required this.label,
     required this.value,
     this.valueColor,
@@ -253,42 +314,40 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Icon(icon, size: 18, color: Colors.white.withValues(alpha: 0.75)),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: valueColor ??
-                Theme.of(context).colorScheme.onPrimaryContainer,
+            color: valueColor ?? Colors.white,
           ),
         ),
-        const SizedBox(height: 4),
         Text(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onPrimaryContainer
-                    .withValues(alpha: 0.8),
-              ),
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.white.withValues(alpha: 0.75),
+          ),
         ),
       ],
     );
   }
 }
 
-class _MenuCard extends StatelessWidget {
+class _ModernMenuCard extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
+  final List<Color> gradientColors;
   final String title;
   final String subtitle;
   final String? badge;
   final Color badgeColor;
   final VoidCallback onTap;
 
-  const _MenuCard({
+  const _ModernMenuCard({
     required this.icon,
-    required this.iconColor,
+    required this.gradientColors,
     required this.title,
     required this.subtitle,
     this.badge,
@@ -300,22 +359,33 @@ class _MenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(15.0),
           child: Row(
             children: [
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: gradientColors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gradientColors.last.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-                child: Icon(icon, color: iconColor, size: 26),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +396,7 @@ class _MenuCard extends StatelessWidget {
                           child: Text(
                             title,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 15.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -356,14 +426,15 @@ class _MenuCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12.5,
                         color: Colors.grey.shade600,
+                        height: 1.3,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+              const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 20),
             ],
           ),
         ),

@@ -1,31 +1,22 @@
 # Active Context
 
 ## 1. Trạng thái hiện tại
-Dự án `flutter_quiz_bilingual` đã hoàn thiện phần khung kiến trúc dữ liệu (`core`, `domain`, `data`) và `LanguageProvider`, nhưng chưa kết nối vào UI thực tế.
+Dự án `flutter_quiz_bilingual` đã hoàn thành toàn bộ khung kiến trúc Clean Architecture, UI cơ bản với 4 chế độ (Luyện tập, Thi thử, Câu sai, Thống kê), hỗ trợ song ngữ VI/EN, CI GitHub Actions và 17 automated tests vượt qua 100%.
+Hiện đang thực hiện nâng cấp:
+1. **Giao diện người dùng (UI/UX)**: Đẹp mắt, hiện đại với bảng màu công nghệ, gradient, hiệu ứng sinh động, bố cục thẻ trực quan.
+2. **Trợ lý AI Tutor**: Tích hợp hỗ trợ giải thích câu hỏi thông minh, chế độ Demo offline và sẵn sàng kết nối API giữ khóa ở backend (theo đúng Rubric điểm cộng +3).
 
-## 2. Những gì đã có
-- `lib/core/constants/app_colors.dart`: Bảng màu đầy đủ cho Light/Dark và trạng thái quiz.
-- `lib/core/theme/app_theme.dart`: Cấu hình `lightTheme` và `darkTheme`.
-- `lib/domain/repositories/quiz_repository.dart`: Interface `IQuizRepository`.
-- `lib/data/models/question_model.dart`: `LocalizedText` và `QuestionModel` parse JSON linh hoạt (hỗ trợ cả `Map` song ngữ và `String`/`List` đơn ngữ).
-- `lib/data/models/quiz_result_model.dart`: Model lưu kết quả và tính phần trăm điểm.
-- `lib/data/datasources/quiz_local_datasource.dart`: Đọc `assets/data/questions.json`.
-- `lib/data/datasources/quiz_storage_datasource.dart`: Lưu/xóa câu sai và lịch sử quiz bằng `SharedPreferences`.
-- `lib/data/repositories/quiz_repository_impl.dart`: Triển khai `IQuizRepository`.
-- `lib/presentation/providers/language_provider.dart`: Quản lý ngôn ngữ VI/EN.
+## 2. Những gì đã hoàn thành
+- Clean Architecture (Data, Domain, Presentation).
+- State Management: `Provider` (`LanguageProvider`, `QuizProvider`, `ExamProvider`, `StatsProvider`).
+- 17 Automated Tests (Unit + Widget + Accessibility `meetsGuideline` 48dp).
+- `flutter analyze`: 0 issues found.
+- `README.md` và `.github/workflows/ci.yml`.
 
-## 3. Những việc cần làm tiếp theo (Next Steps)
-1. **Tạo dữ liệu mẫu**: Tạo thư mục `assets/data/` và file `assets/data/questions.json` đúng schema của `QuestionModel`.
-2. **Xây dựng `QuizProvider` (và `ThemeProvider` nếu cần)**: Quản lý danh sách câu hỏi, lọc theo `blockId` / câu sai, đếm thời gian, chấm điểm và lưu kết quả qua `IQuizRepository`.
-3. **Xây dựng giao diện (`lib/presentation/screens/` & `widgets/`)**:
-   - Màn hình chính (Home): Chọn khối kiến thức, chế độ làm bài (tất cả / ôn câu sai), chuyển ngôn ngữ, xem lịch sử.
-   - Màn hình làm bài (Quiz): Hiển thị câu hỏi, đáp án, giải thích, tiến trình.
-   - Màn hình kết quả (Result): Điểm số, thời gian, danh sách câu sai.
-   - Màn hình lịch sử (History) & Ôn tập câu sai (Wrong Questions).
-4. **Cập nhật `lib/main.dart`**: Khởi tạo `MultiProvider`, inject `QuizRepositoryImpl`, áp dụng `AppTheme.lightTheme` / `AppTheme.darkTheme` và trỏ `home` vào màn hình chính.
-5. **Cập nhật Tests (`test/`)**: Viết unit test cho models/repository/providers và thay thế `test/widget_test.dart` mặc định.
-
-## 4. Lưu ý kỹ thuật
-- `lib/main.dart` hiện vẫn là ứng dụng counter mặc định của Flutter.
-- Thư mục `assets/data/` chưa tồn tại trên đĩa dù đã khai báo trong `pubspec.yaml`.
-- Trong `lib/core/theme/app_theme.dart`, `CardTheme` được dùng cho `cardTheme` — cần kiểm tra tương thích với phiên bản Flutter SDK hiện tại khi chạy `flutter analyze` (một số bản Flutter mới dùng `CardThemeData`).
+## 3. Kế hoạch đang thực hiện
+1. Tạo `AiTutorService` / `AiProvider`:
+   - Phân tích câu hỏi và giải thích vì sao đáp án đúng là đúng, vì sao người dùng chọn sai.
+   - Chế độ Demo Mode tích hợp sẵn (Offline 100% không cần key).
+2. Nâng cấp giao diện `OptionTile`, `HomeScreen`, `PracticeScreen`, `ExamScreen`.
+3. Tích hợp `AiTutorSheet` (Modal BottomSheet hiển thị gia sư AI với hiệu ứng gõ chữ, gợi ý code).
+4. Viết Unit Test cho AI Service & chạy lại toàn bộ test suite.

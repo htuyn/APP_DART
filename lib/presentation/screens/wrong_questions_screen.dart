@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/models/question_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
+import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/state_views.dart';
 
@@ -157,6 +158,31 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                         ? Colors.green.shade900
                         : Colors.orange.shade900,
                   ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () {
+                  AiTutorSheet.show(
+                    context,
+                    question: q,
+                    userChoiceIndex: userChoice,
+                  );
+                },
+                icon: const Icon(Icons.auto_awesome, size: 16),
+                label: Text(
+                  lang.translate(
+                    vi: 'Hỏi Gia Sư AI vì sao câu này dễ nhầm',
+                    en: 'Ask AI Tutor why this question is tricky',
+                  ),
+                  style: const TextStyle(fontSize: 13),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: const Color(0xFF7C3AED).withValues(alpha: 0.35),
+                  ),
+                  foregroundColor: const Color(0xFF7C3AED),
+                  minimumSize: const Size(double.infinity, 44),
                 ),
               ),
             ],

@@ -18,67 +18,93 @@ class OptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color borderColor = Colors.grey.shade300;
-    Color bgColor = Colors.transparent;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Color borderColor;
+    Color bgColor;
     Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87;
+    Color labelBg;
+    Color labelText;
     IconData? trailingIcon;
     Color iconColor = Colors.transparent;
+    double borderWidth = 1.2;
 
     switch (state) {
+      case OptionState.idle:
+        borderColor = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.grey.shade300;
+        bgColor = isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white;
+        labelBg = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100;
+        labelText = isDark ? Colors.white70 : Colors.black87;
+        break;
       case OptionState.selected:
         borderColor = Theme.of(context).colorScheme.primary;
         bgColor = Theme.of(context).colorScheme.primary.withValues(alpha: 0.08);
+        labelBg = Theme.of(context).colorScheme.primary;
+        labelText = Colors.white;
+        borderWidth = 2;
         break;
       case OptionState.correct:
-        borderColor = Colors.green.shade700;
-        bgColor = Colors.green.shade50;
-        textColor = Colors.green.shade900;
+        borderColor = const Color(0xFF10B981);
+        bgColor = const Color(0xFFECFDF5);
+        textColor = const Color(0xFF065F46);
+        labelBg = const Color(0xFF10B981);
+        labelText = Colors.white;
         trailingIcon = Icons.check_circle_rounded;
-        iconColor = Colors.green.shade700;
+        iconColor = const Color(0xFF10B981);
+        borderWidth = 2;
         break;
       case OptionState.wrong:
-        borderColor = Colors.red.shade700;
-        bgColor = Colors.red.shade50;
-        textColor = Colors.red.shade900;
+        borderColor = const Color(0xFFEF4444);
+        bgColor = const Color(0xFFFEF2F2);
+        textColor = const Color(0xFF991B1B);
+        labelBg = const Color(0xFFEF4444);
+        labelText = Colors.white;
         trailingIcon = Icons.cancel_rounded;
-        iconColor = Colors.red.shade700;
-        break;
-      case OptionState.idle:
+        iconColor = const Color(0xFFEF4444);
+        borderWidth = 2;
         break;
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 48), // Tap target 48dp minimum
-        child: Material(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        constraints: const BoxConstraints(minHeight: 52), // Meets tap target 48dp+
+        decoration: BoxDecoration(
           color: bgColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: borderColor, width: state == OptionState.idle ? 1 : 1.8),
-          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: borderColor, width: borderWidth),
+          boxShadow: state == OptionState.correct
+              ? [BoxShadow(color: const Color(0xFF10B981).withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 3))]
+              : state == OptionState.wrong
+                  ? [BoxShadow(color: const Color(0xFFEF4444).withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 3))]
+                  : [],
+        ),
+        child: Material(
+          color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             onTap: onTap,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 13.0),
               child: Row(
                 children: [
-                  Container(
-                    width: 32,
-                    height: 32,
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 34,
+                    height: 34,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: state == OptionState.selected
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.grey.shade200,
+                      color: labelBg,
                     ),
                     child: Text(
                       label,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: state == OptionState.selected ? Colors.white : Colors.black87,
+                        fontSize: 14,
+                        color: labelText,
                       ),
                     ),
                   ),
@@ -88,8 +114,9 @@ class OptionTile extends StatelessWidget {
                       text,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: state != OptionState.idle ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: state != OptionState.idle ? FontWeight.w600 : FontWeight.w400,
                         color: textColor,
+                        height: 1.35,
                       ),
                     ),
                   ),

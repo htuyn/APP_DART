@@ -13,32 +13,40 @@ class CountdownTimerWidget extends StatelessWidget {
   String _formatDuration(int seconds) {
     final minutes = seconds ~/ 60;
     final remainingSecs = seconds % 60;
-    final minStr = minutes.toString().padLeft(2, '0');
-    final secStr = remainingSecs.toString().padLeft(2, '0');
-    return '$minStr:$secStr';
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSecs.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
     final isUrgent = remainingSeconds <= 60 && remainingSeconds > 0;
-    final color = isUrgent ? Colors.red.shade700 : Theme.of(context).colorScheme.primary;
+    final progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0.0;
+    final color = isUrgent ? const Color(0xFFEF4444) : Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color, width: 1.2),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.2),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.timer_outlined, size: 18, color: color),
-          const SizedBox(width: 6),
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 2.2,
+              color: color,
+              backgroundColor: color.withValues(alpha: 0.15),
+            ),
+          ),
+          const SizedBox(width: 7),
           Text(
             _formatDuration(remainingSeconds),
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: color,
               fontFeatures: const [FontFeature.tabularFigures()],

@@ -1,16 +1,23 @@
-# Progress Tracker
+# Tiến độ Dự án (Progress)
 
-| Hạng mục | Trạng thái | Ghi chú |
-| :--- | :--- | :--- |
-| Khởi tạo dự án Flutter & `pubspec.yaml` | Hoàn thành | Đã thêm `provider`, `shared_preferences`, khai báo `assets/data/` |
-| Core (`AppColors`, `AppTheme`) | Hoàn thành | Có Light/Dark theme, Material 3 |
-| Domain (`IQuizRepository`) | Hoàn thành | Định nghĩa đủ 6 phương thức |
-| Data Models (`QuestionModel`, `QuizResultModel`) | Hoàn thành | Hỗ trợ song ngữ `LocalizedText` |
-| Data Sources (`Local` & `Storage`) | Hoàn thành | Đọc asset JSON & lưu `SharedPreferences` |
-| Repository Implementation (`QuizRepositoryImpl`) | Hoàn thành | Kết nối Local & Storage DataSources |
-| `LanguageProvider` | Hoàn thành | Hỗ trợ VI/EN, lưu vào `SharedPreferences` |
-| Dữ liệu `assets/data/questions.json` | Chưa làm | Chưa có thư mục `assets/data/` |
-| `QuizProvider` / State làm bài | Chưa làm | Cần tạo trong `lib/presentation/providers/` |
-| Giao diện (Home, Quiz, Result, History) | Chưa làm | Chưa có thư mục `screens/` và `widgets/` |
-| Tích hợp `lib/main.dart` | Chưa làm | Hiện vẫn là template counter mặc định |
-| Unit & Widget Tests | Chưa làm | `test/widget_test.dart` vẫn là test mặc định |
+## Đã hoàn thành (Done)
+- [x] Khởi tạo dự án Flutter với Clean Architecture.
+- [x] Khai báo cấu hình `pubspec.yaml` (`provider`, `shared_preferences`, assets data).
+- [x] Tạo `QuestionModel` và `QuizResultModel` song ngữ VI/EN.
+- [x] Tạo `QuizRepository` và triển khai Datasource (JSON Local + SharedPreferences Storage).
+- [x] Triển khai các Providers: `LanguageProvider`, `QuizProvider`, `ExamProvider`, `StatsProvider`, `AiTutorProvider`.
+- [x] Nâng cấp giao diện (UI/UX) hiện đại, bắt mắt:
+  - Hero Header với dải màu Gradient công nghệ và chỉ số độ chính xác (Accuracy rate).
+  - Thẻ chế độ học tập (ModernMenuCard) với icon gradient đổ bóng 3D.
+  - OptionTile tương tác sinh động (hiệu ứng bóng mờ khi đúng/sai, vùng chạm $\ge 52\text{dp}$).
+  - Đồng hồ đếm ngược với vòng tròn tiến trình trực quan.
+- [x] Tích hợp **Trợ lý AI Flutter Tutor** (Modal BottomSheet, phân tích chi tiết, giải thích vì sao chọn sai, code mẫu, mẹo ghi nhớ, chế độ Demo offline chuẩn Rubric +3 điểm).
+- [x] Nâng cấp màn hình Luyện tập (`PracticeScreen`) và Sổ tay câu sai (`WrongQuestionsScreen`) với nút bấm mở AI Tutor.
+- [x] Viết thêm unit tests cho `AiTutorProvider`, nâng tổng số test lên **21 tests tự động**.
+- [x] Toàn bộ test đạt 100% (`flutter test`: 21 passed).
+- [x] Phân tích tĩnh sạch hoàn toàn (`flutter analyze`: No issues found).
+
+## Kế hoạch tiếp theo (Upcoming)
+- [ ] Chế độ Flashcard 3D lật mặt nếu người dùng yêu cầu.
+- [ ] Trích xuất toàn bộ 300 câu hỏi vào `assets/data/questions.json`.
+- [ ] Build file APK Release có ký khóa (+2 điểm).

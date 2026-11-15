@@ -5,6 +5,7 @@ import 'data/datasources/quiz_local_datasource.dart';
 import 'data/datasources/quiz_storage_datasource.dart';
 import 'data/repositories/quiz_repository_impl.dart';
 import 'domain/repositories/quiz_repository.dart';
+import 'presentation/providers/ai_tutor_provider.dart';
 import 'presentation/providers/exam_provider.dart';
 import 'presentation/providers/language_provider.dart';
 import 'presentation/providers/quiz_provider.dart';
@@ -34,6 +35,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => StatsProvider(repository: quizRepository),
         ),
+        ChangeNotifierProvider(create: (_) => AiTutorProvider()),
       ],
       child: const QuizApp(),
     ),

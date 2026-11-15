@@ -96,10 +96,10 @@ void main() {
 
     await tester.pump();
 
-    // Tap language button 'EN'
-    final langButton = find.text('EN');
-    expect(langButton, findsOneWidget);
-    await tester.tap(langButton);
+    // Tap language chip
+    final langChip = find.byType(ActionChip);
+    expect(langChip, findsOneWidget);
+    await tester.tap(langChip);
     await tester.pump();
 
     // Verify UI translated to English

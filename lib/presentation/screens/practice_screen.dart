@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/models/question_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
+import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/state_views.dart';
 
@@ -335,6 +336,36 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  AiTutorSheet.show(
+                    context,
+                    question: q,
+                    userChoiceIndex: selectedOption,
+                  );
+                },
+                icon: const Icon(Icons.auto_awesome, size: 18),
+                label: Text(
+                  lang.translate(
+                    vi: '🤖 Hỏi Gia Sư AI Giải Thích Thêm',
+                    en: '🤖 Ask AI Tutor for In-Depth Help',
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: const Color(0xFF7C3AED).withValues(alpha: 0.4),
+                    width: 1.2,
+                  ),
+                  foregroundColor: const Color(0xFF7C3AED),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
