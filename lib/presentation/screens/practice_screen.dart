@@ -111,50 +111,75 @@ class _PracticeScreenState extends State<PracticeScreen> {
             : Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: (_currentIndex + 1) / questions.length,
-                        minHeight: 6,
-                        backgroundColor: scheme.surfaceContainerHighest,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                    child: Row(
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                    child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: scheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${lang.t('question')} ${_currentIndex + 1}/${questions.length}',
-                            style: TextStyle(
-                              color: scheme.primary,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
+                        // Animated progress bar
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOut,
+                            tween: Tween(
+                              begin: 0,
+                              end: (_currentIndex + 1) / questions.length,
+                            ),
+                            builder: (context, value, _) =>
+                                LinearProgressIndicator(
+                              value: value,
+                              minHeight: 6,
+                              backgroundColor:
+                                  scheme.surfaceContainerHighest,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  scheme.primary),
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: scheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            questions[_currentIndex].level,
-                            style: TextStyle(
-                              color: scheme.onSurface,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 12,
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color:
+                                    scheme.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${lang.t('question')} ${_currentIndex + 1}/${questions.length}',
+                                style: TextStyle(
+                                  color: scheme.primary,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ),
-                          ),
+                            const Spacer(),
+                            // Difficulty level chip
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color:
+                                    scheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: scheme.outlineVariant
+                                      .withValues(alpha: 0.6),
+                                ),
+                              ),
+                              child: Text(
+                                questions[_currentIndex].level,
+                                style: TextStyle(
+                                  color: scheme.onSurface
+                                      .withValues(alpha: 0.75),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -191,41 +216,72 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       },
                     ),
                   ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _currentIndex > 0
-                                  ? () {
-                                      _pageController.previousPage(
-                                        duration: const Duration(milliseconds: 250),
-                                        curve: Curves.easeOutCubic,
-                                      );
-                                    }
-                                  : null,
-                              icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                              label: Text(lang.t('previous')),
+                  // ── Bottom nav with separator border ─────────────────────
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: scheme.surface,
+                      border: Border(
+                        top: BorderSide(
+                          color: scheme.outlineVariant.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _currentIndex > 0
+                                    ? () {
+                                        _pageController.previousPage(
+                                          duration:
+                                              const Duration(milliseconds: 280),
+                                          curve: Curves.easeOutCubic,
+                                        );
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_back_rounded,
+                                    size: 18),
+                                label: Text(lang.t('previous')),
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize:
+                                      const Size(double.infinity, 46),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: _currentIndex < questions.length - 1
-                                  ? () {
-                                      _pageController.nextPage(
-                                        duration: const Duration(milliseconds: 250),
-                                        curve: Curves.easeOutCubic,
-                                      );
-                                    }
-                                  : null,
-                              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                              label: Text(lang.t('next')),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: FilledButton.icon(
+                                onPressed: _currentIndex < questions.length - 1
+                                    ? () {
+                                        _pageController.nextPage(
+                                          duration:
+                                              const Duration(milliseconds: 280),
+                                          curve: Curves.easeOutCubic,
+                                        );
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_forward_rounded,
+                                    size: 18),
+                                label: Text(lang.t('next')),
+                                style: FilledButton.styleFrom(
+                                  minimumSize:
+                                      const Size(double.infinity, 46),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

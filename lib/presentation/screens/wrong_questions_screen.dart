@@ -64,7 +64,15 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 14.0),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppMetrics.radiusCard),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -77,32 +85,41 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                     '${q.id} • ${q.blockName.getText(currentLang)}',
                     style: TextStyle(
                       fontSize: 12.5,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: theme.colorScheme.primary,
+                      letterSpacing: 0.1,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.translate_rounded, size: 20),
-                  tooltip: lang.translate(
-                    vi: 'Đổi ngôn ngữ câu này',
-                    en: 'Toggle language',
+                Material(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      setState(() {
+                        _langOverrides[q.id] = currentLang == 'vi' ? 'en' : 'vi';
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.translate_rounded,
+                        size: 18,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _langOverrides[q.id] = currentLang == 'vi' ? 'en' : 'vi';
-                    });
-                  },
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             Text(
               q.question.getText(currentLang),
               style: theme.textTheme.titleMedium?.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                height: 1.4,
+                height: 1.46,
               ),
             ),
             const SizedBox(height: 14),
@@ -154,13 +171,16 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                     userChoiceIndex: userChoice,
                   );
                 },
-                icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                icon: const Icon(Icons.auto_awesome_rounded, size: 17),
                 label: Text(lang.t('ask_ai_tricky')),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                    color: AppColors.accentPurple.withValues(alpha: 0.4),
-                  ),
                   foregroundColor: AppColors.accentPurple,
+                  side: BorderSide(
+                      color: AppColors.accentPurple.withValues(alpha: 0.45)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  minimumSize: const Size(double.infinity, 44),
                 ),
               ),
             ],
