@@ -39,6 +39,12 @@ class QuizProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reloadProgress() async {
+    final wrongList = await repository.getWrongQuestionIds();
+    _wrongQuestionIds = wrongList.toSet();
+    notifyListeners();
+  }
+
   List<QuestionModel> getQuestionsByBlock(int blockId) {
     if (blockId == 0) return _allQuestions;
     return _allQuestions.where((q) => q.blockId == blockId).toList();

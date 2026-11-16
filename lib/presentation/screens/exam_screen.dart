@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../core/constants/app_colors.dart';
+import '../../core/navigation/app_page_route.dart';
+import '../../data/models/quiz_result_model.dart';
 import '../providers/exam_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/countdown_timer_widget.dart';
 import '../widgets/option_tile.dart';
+import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
 import 'exam_result_screen.dart';
 
 class ExamScreen extends StatefulWidget {
-  const ExamScreen({super.key});
+  final int? paperIndex;
+
+  const ExamScreen({super.key, this.paperIndex});
 
   @override
   State<ExamScreen> createState() => _ExamScreenState();
@@ -17,76 +24,123 @@ class ExamScreen extends StatefulWidget {
 
 class _ExamScreenState extends State<ExamScreen> {
   late final PageController _pageController;
+  late final ExamProvider _exam;
   int _currentIndex = 0;
+  bool _started = false;
+  bool _openedResult = false;
+  bool _showQuestionGrid = true;
+
+  ThemeData get theme => Theme.of(context);
+
+  String optionLabel(int index) {
+    const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+    if (index >= 0 && index < labels.length) {
+      return labels[index];
+    }
+    return '${index + 1}';
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _exam = context.read<ExamProvider>();
+    _exam.addListener(_onExam);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _begin());
+  }
 
-    // Start exam on load
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final quiz = context.read<QuizProvider>();
-      final exam = context.read<ExamProvider>();
-      exam.startExam(
-        allQuestions: quiz.allQuestions,
-        numberOfQuestions: 20,
-        durationMinutes: 15,
-      );
-    });
+  void _begin() {
+    if (!mounted || _started) return;
+    final quiz = context.read<QuizProvider>();
+    if (quiz.allQuestions.isEmpty) return;
+    _started = true;
+    _exam.startExam(
+      allQuestions: quiz.allQuestions,
+      numberOfQuestions: ExamProvider.paperSize,
+      durationMinutes: ExamProvider.paperMinutes,
+      paperIndex: widget.paperIndex,
+    );
+  }
+
+  void _onExam() {
+    final result = _exam.lastResult;
+    if (!_exam.isSubmitted || result == null) return;
+    _openResult(result);
+  }
+
+  void _openResult(QuizResultModel result) {
+    if (_openedResult || !mounted) return;
+    _openedResult = true;
+    Navigator.of(context).pushReplacement(
+      openAppPage(ExamResultScreen(result: result)),
+    );
   }
 
   @override
   void dispose() {
+    _exam.removeListener(_onExam);
     _pageController.dispose();
     super.dispose();
   }
 
   Future<void> _handleConfirmSubmit() async {
     final lang = context.read<LanguageProvider>();
-    final exam = context.read<ExamProvider>();
-
-    final unansweredCount =
-        exam.examQuestions.length - exam.userAnswers.length;
-
+    final unanswered = _exam.examQuestions.length - _exam.userAnswers.length;
     final shouldSubmit = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(lang.translate(vi: 'Nộp bài thi?', en: 'Submit Exam?')),
+        title: Text(lang.t('submit_title')),
         content: Text(
-          unansweredCount > 0
+          unanswered > 0
               ? lang.translate(
-                  vi: 'Bạn còn $unansweredCount câu chưa trả lời. Bạn có chắc muốn nộp không?',
-                  en: 'You have $unansweredCount unanswered questions. Are you sure you want to submit?',
-                )
+            vi: 'Bạn còn $unanswered câu chưa trả lời. Bạn có chắc muốn nộp bài không?',
+            en: 'You have $unanswered unanswered questions. Are you sure you want to submit?',
+          )
               : lang.translate(
-                  vi: 'Bạn đã hoàn thành tất cả câu hỏi. Nộp bài để xem điểm số nhé!',
-                  en: 'You have answered all questions. Submit to view your score!',
-                ),
+            vi: 'Bạn đã hoàn thành tất cả câu hỏi. Nộp bài ngay để xem kết quả?',
+            en: 'You have completed all questions. Submit now to view results?',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(lang.translate(vi: 'Làm tiếp', en: 'Continue')),
+            child: Text(lang.t('continue_exam')),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(lang.translate(vi: 'Nộp bài', en: 'Submit')),
+            child: Text(lang.t('submit')),
           ),
         ],
       ),
     );
-
     if (shouldSubmit == true && mounted) {
-      final result = await exam.submitExam();
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ExamResultScreen(result: result),
+      await _exam.submitExam();
+    }
+  }
+
+  Future<void> _confirmLeave() async {
+    final lang = context.read<LanguageProvider>();
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(lang.t('leave_title')),
+        content: Text(lang.t('leave_body')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(lang.t('stay')),
           ),
-        );
-      }
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(lang.t('leave')),
+          ),
+        ],
+      ),
+    );
+    if (shouldExit == true && mounted) {
+      _exam.abandonExam();
+      Navigator.pop(context);
     }
   }
 
@@ -94,248 +148,357 @@ class _ExamScreenState extends State<ExamScreen> {
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
     final exam = context.watch<ExamProvider>();
+    final quiz = context.watch<QuizProvider>();
     final questions = exam.examQuestions;
-
-    // Listen for automatic timer submission
-    if (exam.isSubmitted && exam.lastResult != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ExamResultScreen(result: exam.lastResult!),
-            ),
-          );
-        }
-      });
-    }
+    final scheme = Theme.of(context).colorScheme;
+    final title = widget.paperIndex == null
+        ? lang.t('random_exam')
+        : '${lang.t('paper')} ${widget.paperIndex!.toString().padLeft(2, '0')}';
 
     if (questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(lang.translate(vi: 'Thi Thử', en: 'Mock Exam'))),
-        body: const LoadingView(),
+        appBar: AppBar(title: Text(lang.t('mock_exam'))),
+        body: quiz.state == QuizLoadingState.error
+            ? ErrorView(
+          message: quiz.errorMessage ?? lang.t('load_error'),
+          retryText: lang.t('retry'),
+          onRetry: quiz.initialize,
+        )
+            : LoadingView(message: lang.t('loading_questions')),
       );
     }
 
-    final labels = ['A', 'B', 'C', 'D'];
-
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) async {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        final shouldExit = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(lang.translate(vi: 'Rời phòng thi?', en: 'Leave Exam?')),
-            content: Text(lang.translate(
-              vi: 'Bài thi đang tính giờ. Nếu rời khỏi, kết quả của bạn sẽ không được ghi nhận.',
-              en: 'Exam is in progress. If you leave, your progress will be lost.',
-            )),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(lang.translate(vi: 'Ở lại', en: 'Stay')),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(
-                  lang.translate(vi: 'Rời đi', en: 'Leave'),
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
-        if (shouldExit == true && context.mounted) {
-          Navigator.pop(context);
-        }
+        _confirmLeave();
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(lang.translate(vi: 'Thi Thử', en: 'Mock Exam')),
+          title: Text(title),
+          leading: IconButton(
+            icon: const Icon(Icons.close_rounded),
+            onPressed: _confirmLeave,
+          ),
           actions: [
-            Center(
-              child: CountdownTimerWidget(
-                remainingSeconds: exam.remainingSeconds,
-                totalSeconds: exam.totalDurationSeconds,
+            IconButton(
+              tooltip: lang.t('question_status'),
+              icon: Icon(_showQuestionGrid ? Icons.grid_on_rounded : Icons.grid_off_rounded),
+              onPressed: () => setState(() => _showQuestionGrid = !_showQuestionGrid),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilledButton(
+                onPressed: _handleConfirmSubmit,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, 38),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                ),
+                child: Text(lang.t('submit')),
               ),
             ),
-            const SizedBox(width: 8),
-            TextButton(
-              onPressed: _handleConfirmSubmit,
-              child: Text(
-                lang.translate(vi: 'NỘP BÀI', en: 'SUBMIT'),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(width: 4),
           ],
         ),
-        body: Column(
-          children: [
-            // Top question counter and navigation bubbles
-            Container(
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: questions.length,
-                itemBuilder: (context, idx) {
-                  final isAnswered = exam.userAnswers.containsKey(idx);
-                  final isCurrent = idx == _currentIndex;
-
-                  return GestureDetector(
-                    onTap: () {
-                      _pageController.jumpToPage(idx);
-                    },
-                    child: Container(
-                      width: 34,
-                      height: 34,
-                      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isCurrent
-                            ? Theme.of(context).colorScheme.primary
-                            : isAnswered
-                                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
-                                : Colors.transparent,
-                        border: Border.all(
-                          color: isCurrent
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey.shade400,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Text(
-                        '${idx + 1}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isCurrent
-                              ? Colors.white
-                              : Theme.of(context).textTheme.bodyMedium?.color,
-                        ),
-                      ),
+        body: ResponsiveBody(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                decoration: BoxDecoration(
+                  color: scheme.surface,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: scheme.outlineVariant.withValues(alpha: 0.5),
                     ),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: questions.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                itemBuilder: (context, index) {
-                  final q = questions[index];
-                  final ans = exam.userAnswers[index];
-                  final qOptions = q.getOptions(lang.code);
-
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '${lang.translate(vi: "Câu", en: "Question")} ${index + 1}/${questions.length}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              q.blockName.getText(lang.code),
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          q.question.getText(lang.code),
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        ...List.generate(qOptions.length, (optIdx) {
-                          return OptionTile(
-                            label: labels[optIdx],
-                            text: qOptions[optIdx],
-                            state: ans == optIdx ? OptionState.selected : OptionState.idle,
-                            onTap: () {
-                              exam.selectAnswer(index, optIdx);
-                            },
-                          );
-                        }),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                  ),
+                ),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _currentIndex > 0
-                            ? () {
-                                _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 250),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : null,
-                        child: Text(lang.translate(vi: 'Câu trước', en: 'Previous')),
-                      ),
+                    CountdownTimerWidget(
+                      remainingSeconds: exam.remainingSeconds,
+                      totalSeconds: exam.totalDurationSeconds,
+                      prominent: true,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _currentIndex < questions.length - 1
-                            ? () {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 250),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : _handleConfirmSubmit,
-                        child: Text(
-                          _currentIndex < questions.length - 1
-                              ? lang.translate(vi: 'Câu tiếp', en: 'Next')
-                              : lang.translate(vi: 'Nộp bài', en: 'Submit'),
-                        ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline_rounded,
+                            size: 16,
+                            color: scheme.onPrimaryContainer,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${exam.answeredCount}/${questions.length}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                              color: scheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              if (_showQuestionGrid) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _LegendDot(color: scheme.primary, label: lang.t('answered')),
+                      const SizedBox(width: 16),
+                      _LegendDot(
+                        color: scheme.outlineVariant,
+                        label: lang.t('unanswered'),
+                      ),
+                      const SizedBox(width: 16),
+                      _LegendDot(color: AppColors.warning, label: lang.t('flagged')),
+                    ],
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: questions.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.sizeOf(context).width >= 840 ? 15 : 10,
+                      mainAxisSpacing: 6,
+                      crossAxisSpacing: 6,
+                    ),
+                    itemBuilder: (context, index) {
+                      final current = index == _currentIndex;
+                      final answered = exam.userAnswers.containsKey(index);
+                      final flagged = exam.flagged.contains(index);
+
+                      Color background;
+                      Color foreground;
+                      if (current) {
+                        background = scheme.primary;
+                        foreground = scheme.onPrimary;
+                      } else if (answered) {
+                        background = scheme.primary.withValues(alpha: 0.18);
+                        foreground = scheme.primary;
+                      } else {
+                        background = scheme.surfaceContainerHighest.withValues(alpha: 0.5);
+                        foreground = scheme.onSurface;
+                      }
+
+                      return Material(
+                        color: background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: flagged
+                                ? AppColors.warning
+                                : current
+                                ? scheme.primary
+                                : scheme.outlineVariant,
+                            width: flagged || current ? 2.0 : 1.0,
+                          ),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () {
+                            _pageController.jumpToPage(index);
+                          },
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: foreground,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: questions.length,
+                  onPageChanged: (index) => setState(() => _currentIndex = index),
+                  itemBuilder: (context, index) {
+                    final question = questions[index];
+                    final selected = exam.userAnswers[index];
+                    final options = question.getOptions(lang.code);
+                    final flagged = exam.flagged.contains(index);
+
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: scheme.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${lang.t('question')} ${index + 1}/${questions.length}',
+                                style: TextStyle(
+                                  color: scheme.primary,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            ActionChip(
+                              avatar: Icon(
+                                flagged
+                                    ? Icons.bookmark_rounded
+                                    : Icons.bookmark_border_rounded,
+                                size: 18,
+                                color: flagged ? AppColors.warning : scheme.outline,
+                              ),
+                              label: Text(
+                                flagged ? lang.t('flagged') : lang.t('flag'),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  color: flagged ? AppColors.warning : scheme.onSurface,
+                                ),
+                              ),
+                              onPressed: () => exam.toggleFlag(index),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  question.blockName.getText(lang.code),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: scheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  question.question.getText(lang.code),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontSize: 16.5,
+                                    height: 1.45,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        for (var opt = 0; opt < options.length; opt++)
+                          OptionTile(
+                            label: optionLabel(opt),
+                            text: options[opt],
+                            state: selected == opt
+                                ? OptionState.selected
+                                : OptionState.idle,
+                            onTap: () => exam.selectAnswer(index, opt),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _currentIndex > 0
+                              ? () {
+                            _pageController.previousPage(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                            );
+                          }
+                              : null,
+                          icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                          label: Text(lang.t('previous')),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _currentIndex < questions.length - 1
+                              ? () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                            );
+                          }
+                              : _handleConfirmSubmit,
+                          icon: Icon(
+                            _currentIndex < questions.length - 1
+                                ? Icons.arrow_forward_rounded
+                                : Icons.check_circle_outline_rounded,
+                            size: 18,
+                          ),
+                          label: Text(
+                            _currentIndex < questions.length - 1
+                                ? lang.t('next')
+                                : lang.t('submit'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendDot({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+      ],
     );
   }
 }

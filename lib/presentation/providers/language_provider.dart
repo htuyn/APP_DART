@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/l10n/app_strings.dart';
+
 enum AppLanguage {
   vi('Tiếng Việt', 'vi'),
   en('English', 'en');
@@ -47,4 +49,6 @@ class LanguageProvider with ChangeNotifier {
   String translate({required String vi, required String en}) {
     return isVietnamese ? vi : en;
   }
+
+  String t(String key) => AppStrings.text(code, key);
 }

@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary & Modern Tech Gradients
-  static const Color primary = Color(0xFF1E3A8A); // Deep Indigo
-  static const Color primaryLight = Color(0xFF3B82F6); // Electric Blue
-  static const Color accentPurple = Color(0xFF7C3AED); // Modern Violet
-  static const Color accentCyan = Color(0xFF06B6D4); // Cyan Accent
-  static const Color secondary = Color(0xFF0D9488); // Modern Teal
+  static const Color primary = Color(0xFF2563EB);
+  static const Color primaryLight = Color(0xFF60A5FA);
+  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color secondary = Color(0xFF0EA5E9);
+  static const Color accentPurple = Color(0xFF8B5CF6);
+  static const Color accentCyan = Color(0xFF06B6D4);
+  static const Color accentIndigo = Color(0xFF6366F1);
 
-  // State Colors
-  static const Color success = Color(0xFF10B981); // Emerald Green
+  static const Color success = Color(0xFF10B981);
   static const Color successLight = Color(0xFFECFDF5);
-  static const Color error = Color(0xFFEF4444); // Crimson Red
+  static const Color error = Color(0xFFEF4444);
   static const Color errorLight = Color(0xFFFEF2F2);
-  static const Color warning = Color(0xFFF59E0B); // Amber
+  static const Color warning = Color(0xFFF59E0B);
   static const Color warningLight = Color(0xFFFFFBEB);
 
-  // Neutral Backgrounds
-  static const Color backgroundLight = Color(0xFFF1F5F9); // Slate 100
-  static const Color backgroundDark = Color(0xFF0F172A); // Slate 900
-  static const Color cardLight = Colors.white;
-  static const Color cardDark = Color(0xFF1E293B); // Slate 800
+  static const Color backgroundLight = Color(0xFFF8FAFC);
+  static const Color backgroundDark = Color(0xFF0F172A);
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color cardDark = Color(0xFF1E293B);
+  static const Color cardDarkElevated = Color(0xFF334155);
 
-  // Text
   static const Color textPrimaryLight = Color(0xFF0F172A);
   static const Color textSecondaryLight = Color(0xFF64748B);
+  static const Color textPrimaryDark = Color(0xFFF8FAFC);
+  static const Color textSecondaryDark = Color(0xFF94A3B8);
 
-  // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF1E3A8A), Color(0xFF4F46E5), Color(0xFF7C3AED)],
+    colors: [Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF3B82F6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -44,4 +44,23 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static const LinearGradient warningGradient = LinearGradient(
+    colors: [Color(0xFFD97706), Color(0xFFF59E0B)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient errorGradient = LinearGradient(
+    colors: [Color(0xFFDC2626), Color(0xFFEF4444)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
+
+class AppMetrics {
+  static const double radiusCard = 20.0;
+  static const double radiusControl = 14.0;
+  static const double page = 16.0;
+  static const double gap = 12.0;
 }

@@ -65,51 +65,48 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
 
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.78,
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       margin: EdgeInsets.only(bottom: bottomPadding),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle bar
           Container(
             margin: const EdgeInsets.only(top: 10),
-            width: 40,
+            width: 44,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-
-          // Gradient Header
           Container(
-            margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: AppColors.aiGradient,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
                     Icons.auto_awesome,
                     color: Colors.white,
-                    size: 24,
+                    size: 26,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,8 +117,8 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                           en: 'AI Flutter Tutor',
                         ),
                         style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
                           color: Colors.white,
                         ),
                       ),
@@ -132,25 +129,24 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                           en: 'In-depth analysis & memory tips',
                         ),
                         style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.85),
+                          fontSize: 12.5,
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    'Demo',
+                    'AI Tutor',
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white.withValues(alpha: 0.95),
                     ),
                   ),
@@ -158,8 +154,6 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
               ],
             ),
           ),
-
-          // Action Chips
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: SingleChildScrollView(
@@ -168,7 +162,9 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                 children: [
                   _AiChip(
                     label: lang.translate(
-                        vi: '🎓 Phân tích chi tiết', en: '🎓 Full Analysis'),
+                      vi: '🎓 Phân tích chi tiết',
+                      en: '🎓 Full Analysis',
+                    ),
                     isSelected: _selectedAction == 'explain',
                     onTap: () => _switchAction('explain'),
                   ),
@@ -177,7 +173,9 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                       widget.userChoiceIndex != widget.question.correctIndex) ...[
                     _AiChip(
                       label: lang.translate(
-                          vi: '💡 Vì sao tôi chọn sai?', en: '💡 Why was I wrong?'),
+                        vi: '💡 Vì sao tôi chọn sai?',
+                        en: '💡 Why was I wrong?',
+                      ),
                       isSelected: _selectedAction == 'why_wrong',
                       onTap: () => _switchAction('why_wrong'),
                     ),
@@ -185,14 +183,18 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                   ],
                   _AiChip(
                     label: lang.translate(
-                        vi: '💻 Ví dụ code', en: '💻 Code snippet'),
+                      vi: '💻 Ví dụ code',
+                      en: '💻 Code snippet',
+                    ),
                     isSelected: _selectedAction == 'code_example',
                     onTap: () => _switchAction('code_example'),
                   ),
                   const SizedBox(width: 8),
                   _AiChip(
                     label: lang.translate(
-                        vi: '⚡ Mẹo thi nhớ nhanh', en: '⚡ Exam tip'),
+                      vi: '⚡ Mẹo thi nhớ nhanh',
+                      en: '⚡ Exam tip',
+                    ),
                     isSelected: _selectedAction == 'memory_tip',
                     onTap: () => _switchAction('memory_tip'),
                   ),
@@ -200,10 +202,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
               ),
             ),
           ),
-
           const Divider(height: 16),
-
-          // Response Content
           Flexible(
             child: _buildResponseContent(ai, lang),
           ),
@@ -239,7 +238,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                 en: 'AI is analyzing the question...',
               ),
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -275,14 +274,15 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
       return SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         child: Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white.withValues(alpha: 0.04)
-                : Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(14),
+                : const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.grey.withValues(alpha: 0.15),
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
           child: SelectableText(
@@ -325,18 +325,20 @@ class _AiChip extends StatelessWidget {
               ? null
               : Theme.of(context).brightness == Brightness.dark
                   ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.grey.shade100,
+                  : const Color(0xFFF1F5F9),
           borderRadius: BorderRadius.circular(20),
           border: isSelected
               ? null
-              : Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+              : Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : Colors.grey.shade700,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected
+                ? Colors.white
+                : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),

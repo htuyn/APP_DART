@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'data/datasources/quiz_local_datasource.dart';
@@ -10,7 +11,8 @@ import 'presentation/providers/exam_provider.dart';
 import 'presentation/providers/language_provider.dart';
 import 'presentation/providers/quiz_provider.dart';
 import 'presentation/providers/stats_provider.dart';
-import 'presentation/screens/home_screen.dart';
+import 'presentation/providers/theme_provider.dart';
+import 'screens/trang_chu_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
           create: (_) => QuizProvider(repository: quizRepository)..initialize(),
         ),
@@ -48,6 +51,7 @@ class QuizApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
+    final theme = context.watch<ThemeProvider>();
 
     return MaterialApp(
       title: lang.translate(
@@ -55,10 +59,20 @@ class QuizApp extends StatelessWidget {
         en: 'Flutter Bilingual Quiz',
       ),
       debugShowCheckedModeBanner: false,
+      locale: Locale(lang.code),
+      supportedLocales: const [
+        Locale('vi'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: const HomeScreen(),
+      themeMode: theme.mode,
+      home: const TrangChuScreen(),
     );
   }
 }

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CountdownTimerWidget extends StatelessWidget {
   final int remainingSeconds;
   final int totalSeconds;
+  final bool prominent;
 
   const CountdownTimerWidget({
     super.key,
     required this.remainingSeconds,
     required this.totalSeconds,
+    this.prominent = false,
   });
 
   String _formatDuration(int seconds) {
@@ -18,36 +20,39 @@ class CountdownTimerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isUrgent = remainingSeconds <= 60 && remainingSeconds > 0;
+    final isUrgent = remainingSeconds <= 300 && remainingSeconds > 0;
     final progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0.0;
     final color = isUrgent ? const Color(0xFFEF4444) : Theme.of(context).colorScheme.primary;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(
+        horizontal: prominent ? 14 : 10,
+        vertical: prominent ? 8 : 6,
+      ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.2),
+        color: color.withValues(alpha: prominent ? 0.12 : 0.08),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 16,
-            height: 16,
+            width: prominent ? 22 : 16,
+            height: prominent ? 22 : 16,
             child: CircularProgressIndicator(
-              value: progress,
-              strokeWidth: 2.2,
+              value: progress.clamp(0.0, 1.0),
+              strokeWidth: prominent ? 2.8 : 2.2,
               color: color,
-              backgroundColor: color.withValues(alpha: 0.15),
+              backgroundColor: color.withValues(alpha: 0.16),
             ),
           ),
-          const SizedBox(width: 7),
+          const SizedBox(width: 8),
           Text(
             _formatDuration(remainingSeconds),
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontSize: prominent ? 18 : 14,
+              fontWeight: FontWeight.w800,
               color: color,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
