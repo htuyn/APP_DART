@@ -23,15 +23,36 @@ class ExamResultScreen extends StatefulWidget {
   State<ExamResultScreen> createState() => _ExamResultScreenState();
 }
 
-class _ExamResultScreenState extends State<ExamResultScreen> {
+class _ExamResultScreenState extends State<ExamResultScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _heroController;
+  late Animation<double> _heroScale;
+  late Animation<double> _heroFade;
+
   @override
   void initState() {
     super.initState();
+    _heroController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _heroScale = Tween<double>(begin: 0.88, end: 1.0).animate(
+      CurvedAnimation(parent: _heroController, curve: Curves.easeOutBack),
+    );
+    _heroFade = CurvedAnimation(parent: _heroController, curve: Curves.easeOut);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      _heroController.forward();
       context.read<QuizProvider>().reloadProgress();
       context.read<StatsProvider>().loadHistory();
     });
+  }
+
+  @override
+  void dispose() {
+    _heroController.dispose();
+    super.dispose();
   }
 
   String _formatTime(int seconds) {
@@ -63,146 +84,178 @@ class _ExamResultScreenState extends State<ExamResultScreen> {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
           children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: passed ? AppColors.successGradient : AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(AppMetrics.radiusCard),
-                boxShadow: [
-                  BoxShadow(
-                    color: (passed ? AppColors.success : AppColors.primary)
-                        .withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+            // ── Hero Score Card (animated) ──────────────────────────────────
+            FadeTransition(
+              opacity: _heroFade,
+              child: ScaleTransition(
+                scale: _heroScale,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient:
+                        passed ? AppColors.successGradient : AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(AppMetrics.radiusCard),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (passed ? AppColors.success : AppColors.primary)
+                            .withValues(alpha: 0.35),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      passed ? Icons.emoji_events_rounded : Icons.school_rounded,
-                      color: Colors.white,
-                      size: 44,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    passed ? lang.t('passed') : lang.t('keep_trying'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${tenPoint.toStringAsFixed(1)} / 10',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 38,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  Text(
-                    '${result.score}/${result.totalQuestions} ${lang.t('questions')} · ${percentage.toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        _Stat(
-                          label: lang.t('correct'),
-                          value: '${result.score}',
-                          icon: Icons.check_circle_outline_rounded,
+                  padding: const EdgeInsets.fromLTRB(22, 28, 22, 24),
+                  child: Column(
+                    children: [
+                      // Trophy / School icon
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.22),
+                          shape: BoxShape.circle,
                         ),
-                        Container(
-                          width: 1,
-                          height: 28,
-                          color: Colors.white.withValues(alpha: 0.25),
+                        child: Icon(
+                          passed ? Icons.emoji_events_rounded : Icons.school_rounded,
+                          color: Colors.white,
+                          size: 46,
                         ),
-                        _Stat(
-                          label: lang.t('incorrect'),
-                          value: '${result.totalQuestions - result.score}',
-                          icon: Icons.cancel_outlined,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        passed ? lang.t('passed') : lang.t('keep_trying'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
                         ),
-                        Container(
-                          width: 1,
-                          height: 28,
-                          color: Colors.white.withValues(alpha: 0.25),
+                      ),
+                      const SizedBox(height: 10),
+                      // Big score
+                      Text(
+                        '${tenPoint.toStringAsFixed(1)} / 10',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 42,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                          height: 1.0,
                         ),
-                        _Stat(
-                          label: lang.t('time_spent'),
-                          value: _formatTime(result.timeSpentSeconds),
-                          icon: Icons.timer_outlined,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${result.score}/${result.totalQuestions} ${lang.t('questions')} · ${percentage.toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.88),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Stats row
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            _Stat(
+                              label: lang.t('correct'),
+                              value: '${result.score}',
+                              icon: Icons.check_circle_outline_rounded,
+                            ),
+                            Container(
+                              width: 1,
+                              height: 30,
+                              color: Colors.white.withValues(alpha: 0.25),
+                            ),
+                            _Stat(
+                              label: lang.t('incorrect'),
+                              value:
+                                  '${result.totalQuestions - result.score}',
+                              icon: Icons.cancel_outlined,
+                            ),
+                            Container(
+                              width: 1,
+                              height: 30,
+                              color: Colors.white.withValues(alpha: 0.25),
+                            ),
+                            _Stat(
+                              label: lang.t('time_spent'),
+                              value: _formatTime(result.timeSpentSeconds),
+                              icon: Icons.timer_outlined,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 24),
+
+            // ── Action Buttons ──────────────────────────────────────────────
             if (result.wrongQuestionIds.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      openAppPage(const WrongQuestionsScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.bookmark_remove_rounded),
+                  onPressed: () => Navigator.pushReplacement(
+                    context,
+                    openAppPage(const WrongQuestionsScreen()),
+                  ),
+                  icon: const Icon(Icons.bookmark_remove_rounded, size: 18),
                   label: Text(lang.t('review_wrong')),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
                 ),
               ),
             OutlinedButton.icon(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  openAppPage(ExamScreen(paperIndex: exam.paperIndex)),
-                );
-              },
-              icon: const Icon(Icons.refresh_rounded),
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                openAppPage(ExamScreen(paperIndex: exam.paperIndex)),
+              ),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text(lang.t('retake')),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             TextButton.icon(
-              onPressed: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
-              },
-              icon: const Icon(Icons.home_rounded),
+              onPressed: () =>
+                  Navigator.popUntil(context, (route) => route.isFirst),
+              icon: const Icon(Icons.home_rounded, size: 18),
               label: Text(lang.t('go_home')),
             ),
+
+            // ── Answer Review Section ───────────────────────────────────────
             if (questions.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              Text(
-                lang.t('see_answers'),
-                style: Theme.of(context).textTheme.titleLarge,
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  lang.t('see_answers'),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
               ),
-              const SizedBox(height: 12),
               for (var i = 0; i < questions.length; i++)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: _ReviewTile(
                     index: i,
                     selected: exam.userAnswers[i],
@@ -213,7 +266,8 @@ class _ExamResultScreenState extends State<ExamResultScreen> {
                     question: questions[i].question.getText(lang.code),
                     options: questions[i].getOptions(lang.code),
                     correctIndex: questions[i].correctIndex,
-                    explanation: questions[i].explanation.getText(lang.code),
+                    explanation:
+                        questions[i].explanation.getText(lang.code),
                   ),
                 ),
             ],
