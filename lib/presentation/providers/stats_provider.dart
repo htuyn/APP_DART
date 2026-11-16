@@ -1,25 +1,13 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
 import '../../data/models/quiz_result_model.dart';
+import '../../data/models/thong_ke.dart';
 import '../../domain/repositories/quiz_repository.dart';
 
-class BlockStat {
-  final int blockId;
-  final String blockTitle;
-  final int totalQuestions;
-  final int wrongQuestions;
+// Preserve the existing test/UI import path after moving the model.
+export '../../data/models/thong_ke.dart' show BlockStat;
 
-  BlockStat({
-    required this.blockId,
-    required this.blockTitle,
-    required this.totalQuestions,
-    required this.wrongQuestions,
-  });
-
-  int get correctCount => (totalQuestions - wrongQuestions).clamp(0, totalQuestions);
-  double get accuracyRate =>
-      totalQuestions == 0 ? 0.0 : (correctCount / totalQuestions) * 100.0;
-}
+// BlockStat được định nghĩa trong data/models/thong_ke.dart để tái sử dụng.
 
 class StatsProvider with ChangeNotifier {
   final IQuizRepository repository;
@@ -49,15 +37,13 @@ class StatsProvider with ChangeNotifier {
 
     for (final bId in sortedBlockIds) {
       final questions = blockMap[bId]!;
-      final title = questions.first.blockName.getText(langCode);
-      final wrongCount = questions.where((q) => wrongIds.contains(q.id)).length;
-
+      // Dùng factory chung của model; cách đếm câu sai theo wrongIds được giữ nguyên.
       stats.add(
-        BlockStat(
+        BlockStat.fromQuestions(
           blockId: bId,
-          blockTitle: title,
-          totalQuestions: questions.length,
-          wrongQuestions: wrongCount,
+          questions: questions,
+          wrongIds: wrongIds,
+          langCode: langCode,
         ),
       );
     }

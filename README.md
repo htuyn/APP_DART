@@ -109,3 +109,29 @@ Bộ kiểm thử gồm **17 test** đạt chuẩn Rubric xuất sắc:
   * Hỗ trợ sinh bộ khung kiểm thử Unit Test & Accessibility Test đạt chuẩn Rubric.
   * Tối ưu hóa giao diện Material 3 đáp ứng tiêu chuẩn Accessibility 48dp.
 * Toàn bộ mã nguồn đã được nhóm rà soát, kiểm thử thủ công và tự động trên máy thật.
+
+---
+
+## 🧩 Phần Bổ Sung: State Management & Kiểm Thử
+
+### Model và Kho Dữ Liệu
+
+* Đồng bộ `KhoDuLieu` và `KhoBoNho` với các model hiện có: `QuestionModel`, `QuizResultModel` và `BlockStat`.
+* Kho trong bộ nhớ hỗ trợ danh sách câu hỏi, sổ câu sai, lịch sử thi, điểm cao nhất, thống kê theo khối và ngôn ngữ.
+
+### ViewModels Riverpod
+
+* `BaiThiVm`: quản lý luyện tập, thi thử và làm lại câu sai; lọc/trộn câu hỏi, ghi đáp án, chấm điểm, cập nhật sổ câu sai và lưu kết quả thi thử.
+* `DongHoVm`: quản lý đồng hồ thi thử, tạm dừng/tiếp tục và phát trạng thái hết giờ để tự nộp bài.
+* `NgonNguVm`: tải, đổi và lưu lựa chọn tiếng Việt/tiếng Anh bằng SharedPreferences.
+* `providers.dart`: cung cấp repository, ngân hàng câu hỏi, sổ câu sai, lịch sử, thống kê và mã ngôn ngữ.
+* `logic_thi.dart` và `bai_thi_state.dart`: chứa các hàm nghiệp vụ thuần và trạng thái phiên làm bài.
+
+### Test cho ViewModels
+
+* Bổ sung test lọc/trộn/chấm câu, các chế độ làm bài, đồng hồ và lưu lựa chọn ngôn ngữ trong `test/viewmodels/`.
+* Kết quả kiểm tra hiện tại: `flutter analyze` — `No issues found`; `flutter test` — **34 test passed**.
+
+### Ghi Chú Tích Hợp
+
+Các ViewModels Riverpod đã có thể được kiểm thử độc lập. `main.dart` hiện vẫn khởi tạo giao diện bằng package `provider`; để giao diện sử dụng các provider Riverpod mới, ứng dụng cần được tích hợp `ProviderScope` và chuyển phần giao diện tương ứng sang đọc Riverpod.
