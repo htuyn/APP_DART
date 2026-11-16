@@ -66,7 +66,7 @@ void main() {
     await tester.pump();
 
     // Verify main title is displayed
-    expect(find.text('Ôn Tập Flutter Song Ngữ'), findsOneWidget);
+    expect(find.text('Flutter Song Ngữ'), findsOneWidget);
 
     // Verify Learning Modes exist
     expect(find.text('Chế độ Luyện Tập'), findsOneWidget);

@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           lang.translate(
-            vi: 'Ôn Tập Flutter Song Ngữ',
+            vi: 'Flutter Song Ngữ',
             en: 'Flutter Bilingual Quiz',
           ),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

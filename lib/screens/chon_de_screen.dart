@@ -81,8 +81,8 @@ class ChonDeScreen extends StatelessWidget {
                 child: Text(
                   lang.t('exam_sets_hint'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -181,8 +181,6 @@ class _PaperCardState extends State<_PaperCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
     return AnimatedScale(
       scale: _pressed ? 0.98 : 1.0,

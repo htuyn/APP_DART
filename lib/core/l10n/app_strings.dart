@@ -1,6 +1,6 @@
 class AppStrings {
   static const Map<String, ({String vi, String en})> _items = {
-    'app_title': (vi: 'Ôn Tập Flutter Song Ngữ', en: 'Flutter Bilingual Quiz'),
+    'app_title': (vi: 'Flutter Song Ngữ', en: 'Flutter Bilingual Quiz'),
     'hero_title': (vi: 'Xin chào!', en: 'Welcome back!'),
     'hero_subtitle': (
       vi: 'Chơi & học Flutter với 300 câu hỏi, làm thi thử và theo dõi tiến độ.',
