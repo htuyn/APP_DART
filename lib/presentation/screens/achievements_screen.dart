@@ -35,7 +35,48 @@ class AchievementsScreen extends StatelessWidget {
                 StreakCard(
                   progress: progress,
                   currentStreak: gamification.currentStreak,
+                  levelProgress: gamification.levelProgress,
                   languageCode: code,
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    AppStrings.text(code, 'daily_goal_title'),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    for (final goal in const [5, 10, 20]) ...[
+                      if (goal != 5) const SizedBox(width: 8),
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: progress.dailyGoal == goal
+                              ? FilledButton(
+                                  key: ValueKey('daily-goal-$goal'),
+                                  onPressed: () async =>
+                                      gamification.updateDailyGoal(goal),
+                                  child: Text(
+                                    '$goal ${AppStrings.text(code, 'daily_goal_questions')}',
+                                  ),
+                                )
+                              : OutlinedButton(
+                                  key: ValueKey('daily-goal-$goal'),
+                                  onPressed: () async =>
+                                      gamification.updateDailyGoal(goal),
+                                  child: Text(
+                                    '$goal ${AppStrings.text(code, 'daily_goal_questions')}',
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 12),
                 _ProgressGrid(
@@ -93,6 +134,7 @@ class AchievementsScreen extends StatelessWidget {
                         final badge = gamification.badges[index];
                         return BadgeTile(
                           badge: badge,
+                          progress: progress,
                           languageCode: code,
                           unlockedDate: progress.unlockedBadges[badge.id],
                         );

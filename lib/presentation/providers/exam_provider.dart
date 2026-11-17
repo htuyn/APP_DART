@@ -99,7 +99,7 @@ class ExamProvider with ChangeNotifier {
   void selectAnswer(int questionIndex, int optionIndex) {
     if (_isSubmitted) return;
     _userAnswers[questionIndex] = optionIndex;
-    // Exam selections count as study actions; the provider serializes persistence.
+    // Record the study interaction now; answer XP is awarded with final scores.
     final gamification = gamificationProvider;
     if (gamification != null) unawaited(gamification.ghiNhanTraLoi());
     notifyListeners();
@@ -164,7 +164,11 @@ class ExamProvider with ChangeNotifier {
     // Record the completed attempt and perfect-score badge eligibility.
     final gamification = gamificationProvider;
     if (gamification != null) {
-      await gamification.ghiNhanBaiThi(correctCount, _examQuestions.length);
+      await gamification.ghiNhanBaiThi(
+        correctCount,
+        _examQuestions.length,
+        answeredCount: _userAnswers.length,
+      );
     }
     notifyListeners();
     return result;
