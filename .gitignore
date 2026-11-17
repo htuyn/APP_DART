@@ -1,3 +1,8 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
 # Miscellaneous
 *.class
 *.log
@@ -46,3 +51,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Hardhat & Build artifacts
+contracts/node_modules/
+contracts/artifacts/
+contracts/cache/
+android/build/

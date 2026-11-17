@@ -1,4 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
+abstract final class AppPageRoutes {
+  static const certificates = '/certificates';
+  static const courseProgress = '/course-progress';
+}
 
 Route<T> openAppPage<T>(Widget page) {
   return PageRouteBuilder<T>(

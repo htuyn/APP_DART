@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/state_views.dart';
+import '../widgets/streak_card.dart';
+import 'achievements_screen.dart';
 import 'exam_screen.dart';
 import 'practice_screen.dart';
 import 'stats_screen.dart';
@@ -16,6 +19,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
     final quiz = context.watch<QuizProvider>();
+    // Nullable lookup keeps existing HomeScreen tests/hosts without the feature provider working.
+    final gamification = Provider.of<GamificationProvider?>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,12 +48,16 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _buildBody(context, quiz, lang),
+      body: _buildBody(context, quiz, lang, gamification),
     );
   }
 
   Widget _buildBody(
-      BuildContext context, QuizProvider quiz, LanguageProvider lang) {
+    BuildContext context,
+    QuizProvider quiz,
+    LanguageProvider lang,
+    GamificationProvider? gamification,
+  ) {
     if (quiz.state == QuizLoadingState.loading ||
         quiz.state == QuizLoadingState.initial) {
       return LoadingView(
@@ -193,6 +202,21 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          if (gamification != null) ...[
+            StreakCard(
+              progress: gamification.progress,
+              currentStreak: gamification.currentStreak,
+              levelProgress: gamification.levelProgress,
+              languageCode: lang.code,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AchievementsScreen(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
 
           // Section Header
           Text(

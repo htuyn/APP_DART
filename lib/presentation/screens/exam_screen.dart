@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -15,8 +15,13 @@ import 'exam_result_screen.dart';
 
 class ExamScreen extends StatefulWidget {
   final int? paperIndex;
+  final bool isCapstoneExam;
 
-  const ExamScreen({super.key, this.paperIndex});
+  const ExamScreen({
+    super.key,
+    this.paperIndex,
+    this.isCapstoneExam = false,
+  });
 
   @override
   State<ExamScreen> createState() => _ExamScreenState();
@@ -59,6 +64,7 @@ class _ExamScreenState extends State<ExamScreen> {
       numberOfQuestions: ExamProvider.paperSize,
       durationMinutes: ExamProvider.paperMinutes,
       paperIndex: widget.paperIndex,
+      isCapstoneExam: widget.isCapstoneExam,
     );
   }
 

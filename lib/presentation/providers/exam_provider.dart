@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
 import '../../data/models/quiz_result_model.dart';
 import '../../domain/repositories/quiz_repository.dart';
+import 'course_progress_provider.dart';
+import 'gamification_provider.dart';
 
 class ExamProvider with ChangeNotifier {
   static const int paperCount = 10;
@@ -13,6 +15,8 @@ class ExamProvider with ChangeNotifier {
   static const int paperMinutes = 40;
 
   final IQuizRepository repository;
+  final GamificationProvider? gamificationProvider;
+  final CourseProgressProvider? courseProgressProvider;
 
   List<QuestionModel> _examQuestions = [];
   final Map<int, int> _userAnswers = {};
@@ -21,6 +25,7 @@ class ExamProvider with ChangeNotifier {
   int _remainingSeconds = 0;
   int _totalDurationSeconds = 0;
   bool _isSubmitted = false;
+  bool _isCapstoneExam = false;
   int? _paperIndex;
   QuizResultModel? _lastResult;
 
@@ -30,12 +35,17 @@ class ExamProvider with ChangeNotifier {
   int get remainingSeconds => _remainingSeconds;
   int get totalDurationSeconds => _totalDurationSeconds;
   bool get isSubmitted => _isSubmitted;
+  bool get isCapstoneExam => _isCapstoneExam;
   int? get paperIndex => _paperIndex;
   QuizResultModel? get lastResult => _lastResult;
   int get answeredCount => _userAnswers.length;
   int get timeSpentSeconds => _totalDurationSeconds - _remainingSeconds;
 
-  ExamProvider({required this.repository});
+  ExamProvider({
+    required this.repository,
+    this.gamificationProvider,
+    this.courseProgressProvider,
+  });
 
   static List<QuestionModel> questionsForPaper(
     List<QuestionModel> allQuestions,
@@ -60,11 +70,13 @@ class ExamProvider with ChangeNotifier {
     int numberOfQuestions = 20,
     int durationMinutes = 15,
     int? paperIndex,
+    bool isCapstoneExam = false,
   }) {
     _timer?.cancel();
     _userAnswers.clear();
     _flagged.clear();
     _isSubmitted = false;
+    _isCapstoneExam = isCapstoneExam;
     _lastResult = null;
     _paperIndex = paperIndex;
 
@@ -97,6 +109,9 @@ class ExamProvider with ChangeNotifier {
   void selectAnswer(int questionIndex, int optionIndex) {
     if (_isSubmitted) return;
     _userAnswers[questionIndex] = optionIndex;
+    // Record the study interaction now; answer XP is awarded with final scores.
+    final gamification = gamificationProvider;
+    if (gamification != null) unawaited(gamification.ghiNhanTraLoi());
     notifyListeners();
   }
 
@@ -117,6 +132,7 @@ class ExamProvider with ChangeNotifier {
     _flagged.clear();
     _examQuestions = [];
     _isSubmitted = false;
+    _isCapstoneExam = isCapstoneExam;
     _lastResult = null;
     _paperIndex = null;
     _remainingSeconds = 0;
@@ -152,10 +168,21 @@ class ExamProvider with ChangeNotifier {
       totalQuestions: _examQuestions.length,
       timeSpentSeconds: timeSpentSeconds,
       wrongQuestionIds: wrongIds,
+      isCapstoneExam: _isCapstoneExam,
     );
 
     _lastResult = result;
     await repository.saveQuizResult(result);
+    await courseProgressProvider?.refresh();
+    // Record the completed attempt and perfect-score badge eligibility.
+    final gamification = gamificationProvider;
+    if (gamification != null) {
+      await gamification.ghiNhanBaiThi(
+        correctCount,
+        _examQuestions.length,
+        answeredCount: _userAnswers.length,
+      );
+    }
     notifyListeners();
     return result;
   }
