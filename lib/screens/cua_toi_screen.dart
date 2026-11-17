@@ -93,6 +93,32 @@ class _CuaToiScreenState extends State<CuaToiScreen> {
           blocks: blocks.length,
           blockLabel: lang.t('block'),
         ),
+        const SizedBox(height: 16),
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.workspace_premium_outlined),
+                title: Text(lang.t('certificates_title')),
+                subtitle: Text(lang.t('certificates_subtitle')),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).pushNamed(
+                  AppPageRoutes.certificates,
+                ),
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                leading: const Icon(Icons.track_changes_outlined),
+                title: Text(lang.t('course_progress_title')),
+                subtitle: Text(lang.t('course_requirements')),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).pushNamed(
+                  AppPageRoutes.courseProgress,
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 20),
         Text(
           lang.t('history'),

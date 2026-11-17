@@ -5,6 +5,7 @@ class QuizResultModel {
   final int totalQuestions;
   final int timeSpentSeconds;
   final List<String> wrongQuestionIds;
+  final bool isCapstoneExam;
 
   const QuizResultModel({
     required this.id,
@@ -13,6 +14,7 @@ class QuizResultModel {
     required this.totalQuestions,
     required this.timeSpentSeconds,
     required this.wrongQuestionIds,
+    this.isCapstoneExam = false,
   });
 
   double get percentage =>
@@ -26,6 +28,7 @@ class QuizResultModel {
       totalQuestions: json['total_questions'] as int,
       timeSpentSeconds: json['time_spent_seconds'] as int,
       wrongQuestionIds: List<String>.from(json['wrong_question_ids'] ?? []),
+      isCapstoneExam: json['is_capstone_exam'] as bool? ?? false,
     );
   }
 
@@ -37,6 +40,7 @@ class QuizResultModel {
       'total_questions': totalQuestions,
       'time_spent_seconds': timeSpentSeconds,
       'wrong_question_ids': wrongQuestionIds,
+      'is_capstone_exam': isCapstoneExam,
     };
   }
 }
