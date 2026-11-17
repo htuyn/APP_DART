@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
 import '../../data/models/quiz_result_model.dart';
 import '../../domain/repositories/quiz_repository.dart';
+import 'gamification_provider.dart';
 
 class ExamProvider with ChangeNotifier {
   static const int paperCount = 10;
@@ -13,6 +14,7 @@ class ExamProvider with ChangeNotifier {
   static const int paperMinutes = 40;
 
   final IQuizRepository repository;
+  final GamificationProvider? gamificationProvider;
 
   List<QuestionModel> _examQuestions = [];
   final Map<int, int> _userAnswers = {};
@@ -35,7 +37,7 @@ class ExamProvider with ChangeNotifier {
   int get answeredCount => _userAnswers.length;
   int get timeSpentSeconds => _totalDurationSeconds - _remainingSeconds;
 
-  ExamProvider({required this.repository});
+  ExamProvider({required this.repository, this.gamificationProvider});
 
   static List<QuestionModel> questionsForPaper(
     List<QuestionModel> allQuestions,
@@ -97,6 +99,9 @@ class ExamProvider with ChangeNotifier {
   void selectAnswer(int questionIndex, int optionIndex) {
     if (_isSubmitted) return;
     _userAnswers[questionIndex] = optionIndex;
+    // Exam selections count as study actions; the provider serializes persistence.
+    final gamification = gamificationProvider;
+    if (gamification != null) unawaited(gamification.ghiNhanTraLoi());
     notifyListeners();
   }
 
@@ -156,6 +161,11 @@ class ExamProvider with ChangeNotifier {
 
     _lastResult = result;
     await repository.saveQuizResult(result);
+    // Record the completed attempt and perfect-score badge eligibility.
+    final gamification = gamificationProvider;
+    if (gamification != null) {
+      await gamification.ghiNhanBaiThi(correctCount, _examQuestions.length);
+    }
     notifyListeners();
     return result;
   }

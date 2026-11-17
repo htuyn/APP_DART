@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../data/models/quiz_result_model.dart';
 import '../providers/exam_provider.dart';
+import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../providers/stats_provider.dart';
+import '../widgets/badge_unlocked_dialog.dart';
 import '../widgets/explanation_card.dart';
 import '../widgets/language_button.dart';
 import '../widgets/responsive_body.dart';
@@ -46,6 +48,23 @@ class _ExamResultScreenState extends State<ExamResultScreen>
       _heroController.forward();
       context.read<QuizProvider>().reloadProgress();
       context.read<StatsProvider>().loadHistory();
+
+      // Show only the badges unlocked by the just-completed exam action.
+      final gamification =
+          Provider.of<GamificationProvider?>(context, listen: false);
+      if (gamification != null) {
+        final newBadges = gamification.takeNewlyUnlockedBadges();
+        if (newBadges.isNotEmpty) {
+          final languageCode = context.read<LanguageProvider>().code;
+          showDialog<void>(
+            context: context,
+            builder: (_) => BadgeUnlockedDialog(
+              badges: newBadges,
+              languageCode: languageCode,
+            ),
+          );
+        }
+      }
     });
   }
 

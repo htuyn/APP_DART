@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
 import '../../domain/repositories/quiz_repository.dart';
+import 'gamification_provider.dart';
 
 enum QuizLoadingState { initial, loading, loaded, error }
 
 class QuizProvider with ChangeNotifier {
   final IQuizRepository repository;
+  final GamificationProvider? gamificationProvider;
 
   QuizLoadingState _state = QuizLoadingState.initial;
   String? _errorMessage;
@@ -20,7 +22,7 @@ class QuizProvider with ChangeNotifier {
   List<QuestionModel> get wrongQuestions =>
       _allQuestions.where((q) => _wrongQuestionIds.contains(q.id)).toList();
 
-  QuizProvider({required this.repository});
+  QuizProvider({required this.repository, this.gamificationProvider});
 
   Future<void> initialize() async {
     _state = QuizLoadingState.loading;
@@ -71,6 +73,9 @@ class QuizProvider with ChangeNotifier {
         await repository.removeWrongQuestion(question.id);
       }
     }
+    // Record each practice answer without changing the existing wrong-book flow.
+    final gamification = gamificationProvider;
+    if (gamification != null) await gamification.ghiNhanTraLoi();
     notifyListeners();
   }
 }
