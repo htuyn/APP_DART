@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
 import '../../domain/repositories/quiz_repository.dart';
+import 'course_progress_provider.dart';
 import 'gamification_provider.dart';
 
 enum QuizLoadingState { initial, loading, loaded, error }
@@ -8,6 +9,7 @@ enum QuizLoadingState { initial, loading, loaded, error }
 class QuizProvider with ChangeNotifier {
   final IQuizRepository repository;
   final GamificationProvider? gamificationProvider;
+  final CourseProgressProvider? courseProgressProvider;
 
   QuizLoadingState _state = QuizLoadingState.initial;
   String? _errorMessage;
@@ -22,7 +24,11 @@ class QuizProvider with ChangeNotifier {
   List<QuestionModel> get wrongQuestions =>
       _allQuestions.where((q) => _wrongQuestionIds.contains(q.id)).toList();
 
-  QuizProvider({required this.repository, this.gamificationProvider});
+  QuizProvider({
+    required this.repository,
+    this.gamificationProvider,
+    this.courseProgressProvider,
+  });
 
   Future<void> initialize() async {
     _state = QuizLoadingState.loading;
@@ -78,6 +84,10 @@ class QuizProvider with ChangeNotifier {
     if (gamification != null) {
       await gamification.ghiNhanTraLoi(isCorrect: isCorrect);
     }
+    await courseProgressProvider?.recordPracticeAnswer(
+      questionId: question.id,
+      isCorrect: isCorrect,
+    );
     notifyListeners();
   }
 }

@@ -236,6 +236,44 @@ class TrangChuScreen extends StatelessWidget {
             Navigator.of(context).push(openAppPage(const AchievementsScreen()));
           },
         ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.school_outlined,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF06B6D4), Color(0xFF0891B2)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          title: lang.translate(vi: 'Tiến độ khóa học', en: 'Course progress'),
+          subtitle: lang.translate(
+            vi: 'Theo dõi điều kiện hoàn thành khóa học',
+            en: 'Track course completion requirements',
+          ),
+          badgeColor: const Color(0xFFCFFAFE),
+          badgeTextColor: const Color(0xFF155E75),
+          onTap: () => Navigator.of(context).pushNamed(
+            AppPageRoutes.courseProgress,
+          ),
+        ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.workspace_premium_outlined,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF14B8A6), Color(0xFF0F766E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          title: lang.translate(vi: 'Chứng chỉ', en: 'Certificates'),
+          subtitle: lang.translate(
+            vi: 'Yêu cầu và xác minh chứng chỉ Sepolia',
+            en: 'Request and verify Sepolia certificates',
+          ),
+          badgeColor: const Color(0xFFCCFBF1),
+          badgeTextColor: const Color(0xFF115E59),
+          onTap: () => Navigator.of(context).pushNamed(
+            AppPageRoutes.certificates,
+          ),
+        ),
       ],
     );
   }
