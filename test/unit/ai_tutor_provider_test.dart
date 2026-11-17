@@ -10,17 +10,17 @@ void main() {
     const sampleQuestion = QuestionModel(
       id: 'K01-001',
       blockId: 1,
-      blockName: LocalizedText(vi: 'Ngôn ngữ Dart', en: 'Dart Language'),
-      level: 'Nhớ',
+      blockName: LocalizedText(vi: 'NgÃ´n ngá»¯ Dart', en: 'Dart Language'),
+      level: 'Nhá»›',
       question: LocalizedText(
-        vi: 'Từ khoá nào yêu cầu hằng số biên dịch?',
+        vi: 'Tá»« khoÃ¡ nÃ o yÃªu cáº§u háº±ng sá»‘ biÃªn dá»‹ch?',
         en: 'Which keyword requires compile-time constant?',
       ),
       optionsVi: ['final', 'var', 'const', 'late'],
       optionsEn: ['final', 'var', 'const', 'late'],
       correctIndex: 2,
       explanation: LocalizedText(
-        vi: 'const tạo hằng số lúc biên dịch.',
+        vi: 'const táº¡o háº±ng sá»‘ lÃºc biÃªn dá»‹ch.',
         en: 'const creates compile-time constants.',
       ),
     );
@@ -48,7 +48,7 @@ void main() {
       expect(aiProvider.state, AiTutorState.done);
       expect(aiProvider.response.isNotEmpty, true);
       expect(aiProvider.response.contains('const'), true);
-      expect(aiProvider.response.contains('Ngôn ngữ Dart'), true);
+      expect(aiProvider.response.contains('NgÃ´n ngá»¯ Dart'), true);
     });
 
     test('askTutor analyzes why wrong choice was made', () async {

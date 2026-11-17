@@ -20,7 +20,7 @@ class QuizLocalDataSource {
         throw const FormatException('Invalid JSON format: expected list');
       }
     } catch (e) {
-      throw Exception('Không thể tải ngân hàng câu hỏi: $e');
+      throw Exception('KhÃ´ng thá»ƒ táº£i ngÃ¢n hÃ ng cÃ¢u há»i: $e');
     }
   }
 }

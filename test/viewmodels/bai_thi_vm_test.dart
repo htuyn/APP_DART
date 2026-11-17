@@ -44,13 +44,13 @@ QuestionModel _question(String id, int blockId, int correctIndex) {
   return QuestionModel(
     id: id,
     blockId: blockId,
-    blockName: LocalizedText(vi: 'Khối $blockId', en: 'Block $blockId'),
-    level: 'Nhớ',
-    question: LocalizedText(vi: 'Câu $id', en: 'Question $id'),
+    blockName: LocalizedText(vi: 'Khá»‘i $blockId', en: 'Block $blockId'),
+    level: 'Nhá»›',
+    question: LocalizedText(vi: 'CÃ¢u $id', en: 'Question $id'),
     optionsVi: const ['A', 'B', 'C', 'D'],
     optionsEn: const ['A', 'B', 'C', 'D'],
     correctIndex: correctIndex,
-    explanation: const LocalizedText(vi: 'Giải thích', en: 'Explanation'),
+    explanation: const LocalizedText(vi: 'Giáº£i thÃ­ch', en: 'Explanation'),
   );
 }
 
@@ -77,7 +77,7 @@ void main() {
     container.dispose();
   });
 
-  test('luyện tập lọc theo khối và lưu đáp án sai vào sổ câu sai', () async {
+  test('luyá»‡n táº­p lá»c theo khá»‘i vÃ  lÆ°u Ä‘Ã¡p Ã¡n sai vÃ o sá»• cÃ¢u sai', () async {
     final vm = container.read(baiThiProvider.notifier);
 
     await vm.batDau(cheDo: CheDoBaiThi.luyenTap, blockId: 1);
@@ -91,7 +91,7 @@ void main() {
     expect(repository.wrongIds, isNot(contains('Q1')));
   });
 
-  test('làm lại câu sai chỉ nạp ID có trong sổ sai', () async {
+  test('lÃ m láº¡i cÃ¢u sai chá»‰ náº¡p ID cÃ³ trong sá»• sai', () async {
     repository.wrongIds.add('Q2');
     final vm = container.read(baiThiProvider.notifier);
 
@@ -100,7 +100,7 @@ void main() {
     expect(container.read(baiThiProvider).cauHoi.map((q) => q.id), ['Q2']);
   });
 
-  test('thi thử lấy tối đa số câu, chấm điểm và lưu lịch sử', () async {
+  test('thi thá»­ láº¥y tá»‘i Ä‘a sá»‘ cÃ¢u, cháº¥m Ä‘iá»ƒm vÃ  lÆ°u lá»‹ch sá»­', () async {
     final vm = container.read(baiThiProvider.notifier);
 
     await vm.batDau(
@@ -127,7 +127,7 @@ void main() {
     expect(repository.wrongIds, isEmpty);
   });
 
-  test('không lưu luyện tập vào lịch sử thi thử', () async {
+  test('khÃ´ng lÆ°u luyá»‡n táº­p vÃ o lá»‹ch sá»­ thi thá»­', () async {
     final vm = container.read(baiThiProvider.notifier);
     await vm.batDau(cheDo: CheDoBaiThi.luyenTap);
     await vm.nopBai();

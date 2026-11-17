@@ -1,4 +1,4 @@
-/// Ngôn ngữ giao diện được ViewModel quản lý.
+/// NgÃ´n ngá»¯ giao diá»‡n Ä‘Æ°á»£c ViewModel quáº£n lÃ½.
 enum NgonNgu {
   vi,
   en;

@@ -14,30 +14,30 @@ export 'ngon_ngu.dart';
 export 'ngon_ngu_vm.dart';
 export 'thong_ke_vm.dart';
 
-/// Danh sách câu hỏi từ assets.
+/// Danh sÃ¡ch cÃ¢u há»i tá»« assets.
 final questionBankProvider = FutureProvider<List<QuestionModel>>((ref) {
   return ref.watch(quizRepositoryProvider).loadQuestions();
 });
 
-/// ID các câu đang có trong sổ câu sai.
+/// ID cÃ¡c cÃ¢u Ä‘ang cÃ³ trong sá»• cÃ¢u sai.
 final wrongQuestionIdsProvider = FutureProvider<Set<String>>((ref) async {
   final ids = await ref.watch(quizRepositoryProvider).getWrongQuestionIds();
   return ids.toSet();
 });
 
-/// Lịch sử thi đã lưu.
+/// Lá»‹ch sá»­ thi Ä‘Ã£ lÆ°u.
 final quizHistoryProvider = FutureProvider<List<QuizResultModel>>((ref) {
   return ref.watch(quizRepositoryProvider).getQuizHistory();
 });
 
-/// Thống kê theo khối và lịch sử; theo dõi đổi ngôn ngữ để cập nhật tiêu đề khối.
+/// Thá»‘ng kÃª theo khá»‘i vÃ  lá»‹ch sá»­; theo dÃµi Ä‘á»•i ngÃ´n ngá»¯ Ä‘á»ƒ cáº­p nháº­t tiÃªu Ä‘á» khá»‘i.
 final thongKeProvider = FutureProvider.autoDispose<ThongKeTong>((ref) {
   final repository = ref.watch(quizRepositoryProvider);
   final language = ref.watch(ngonNguProvider).ma;
   return tinhThongKe(repository, langCode: language);
 });
 
-/// Mã ngôn ngữ hiện tại cho MaterialApp.locale hoặc hàm dịch.
+/// MÃ£ ngÃ´n ngá»¯ hiá»‡n táº¡i cho MaterialApp.locale hoáº·c hÃ m dá»‹ch.
 final localeCodeProvider = Provider<String>(
   (ref) => ref.watch(ngonNguProvider).ma,
 );

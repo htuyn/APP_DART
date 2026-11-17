@@ -7,7 +7,7 @@ import '../../domain/repositories/quiz_repository.dart';
 // Preserve the existing test/UI import path after moving the model.
 export '../../data/models/thong_ke.dart' show BlockStat;
 
-// BlockStat được định nghĩa trong data/models/thong_ke.dart để tái sử dụng.
+// BlockStat Ä‘Æ°á»£c Ä‘á»‹nh nghÄ©a trong data/models/thong_ke.dart Ä‘á»ƒ tÃ¡i sá»­ dá»¥ng.
 
 class StatsProvider with ChangeNotifier {
   final IQuizRepository repository;
@@ -37,7 +37,7 @@ class StatsProvider with ChangeNotifier {
 
     for (final bId in sortedBlockIds) {
       final questions = blockMap[bId]!;
-      // Dùng factory chung của model; cách đếm câu sai theo wrongIds được giữ nguyên.
+      // DÃ¹ng factory chung cá»§a model; cÃ¡ch Ä‘áº¿m cÃ¢u sai theo wrongIds Ä‘Æ°á»£c giá»¯ nguyÃªn.
       stats.add(
         BlockStat.fromQuestions(
           blockId: bId,

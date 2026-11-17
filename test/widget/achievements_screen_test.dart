@@ -68,12 +68,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Thành tích'), findsOneWidget);
-    expect(find.text('3 ngày liên tiếp'), findsOneWidget);
-    expect(find.text('3/10 câu hôm nay'), findsOneWidget);
-    expect(find.text('1 lượt bảo vệ chuỗi'), findsOneWidget);
+    expect(find.text('ThÃ nh tÃ­ch'), findsOneWidget);
+    expect(find.text('3 ngÃ y liÃªn tiáº¿p'), findsOneWidget);
+    expect(find.text('3/10 cÃ¢u hÃ´m nay'), findsOneWidget);
+    expect(find.text('1 lÆ°á»£t báº£o vá»‡ chuá»—i'), findsOneWidget);
     expect(find.text('3/10'), findsOneWidget);
-    expect(find.text('Cấp 2 · Người chăm học'), findsOneWidget);
+    expect(find.text('Cáº¥p 2 Â· NgÆ°á»i chÄƒm há»c'), findsOneWidget);
     expect(find.text('135 XP'), findsOneWidget);
     expect(find.text('35/100 XP'), findsOneWidget);
     expect(
@@ -105,9 +105,9 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
-    expect(find.text('Bước đầu tiên'), findsOneWidget);
-    expect(find.text('Đã mở khóa · 2026-11-01'), findsOneWidget);
-    expect(find.text('Điểm tuyệt đối'), findsOneWidget);
+    expect(find.text('BÆ°á»›c Ä‘áº§u tiÃªn'), findsOneWidget);
+    expect(find.text('ÄÃ£ má»Ÿ khÃ³a Â· 2026-11-01'), findsOneWidget);
+    expect(find.text('Äiá»ƒm tuyá»‡t Ä‘á»‘i'), findsOneWidget);
     expect(find.text('12/50'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsNWidgets(8));
 

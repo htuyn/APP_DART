@@ -157,13 +157,13 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
   }
 
   String _certificateName(String code, String language) => switch (code) {
-        'perfectScore' => language == 'vi' ? 'Điểm tuyệt đối' : 'Perfect score',
-        'sevenDayStreak' => language == 'vi' ? 'Chuỗi 7 ngày' : '7-day streak',
+        'perfectScore' => language == 'vi' ? 'Ã„ÂiÃ¡Â»Æ’m tuyÃ¡Â»â€¡t Ã„â€˜Ã¡Â»â€˜i' : 'Perfect score',
+        'sevenDayStreak' => language == 'vi' ? 'ChuÃ¡Â»â€”i 7 ngÃƒÂ y' : '7-day streak',
         'flutterMaster' => 'Flutter Master',
         'knowledgeExplorer' =>
-          language == 'vi' ? 'Khám phá kiến thức' : 'Knowledge Explorer',
+          language == 'vi' ? 'KhÃƒÂ¡m phÃƒÂ¡ kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c' : 'Knowledge Explorer',
         'course_completion' =>
-          language == 'vi' ? 'Hoàn thành khóa học' : 'Course completion',
+          language == 'vi' ? 'HoÃƒÂ n thÃƒÂ nh khÃƒÂ³a hÃ¡Â»Âc' : 'Course completion',
         _ => code,
       };
 }

@@ -257,9 +257,9 @@ void main() {
           (index) => QuestionModel(
             id: 'q$index',
             blockId: 1,
-            blockName: const LocalizedText(vi: 'Khối', en: 'Block'),
-            level: 'Nhớ',
-            question: const LocalizedText(vi: 'Câu?', en: 'Question?'),
+            blockName: const LocalizedText(vi: 'Khá»‘i', en: 'Block'),
+            level: 'Nhá»›',
+            question: const LocalizedText(vi: 'CÃ¢u?', en: 'Question?'),
             optionsVi: const ['A'],
             optionsEn: const ['A'],
             correctIndex: 0,

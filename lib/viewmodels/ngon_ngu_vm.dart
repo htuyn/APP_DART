@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ngon_ngu.dart';
 
-/// Lưu và cung cấp ngôn ngữ dùng chung; dùng cùng khóa với LanguageProvider cũ.
+/// LÆ°u vÃ  cung cáº¥p ngÃ´n ngá»¯ dÃ¹ng chung; dÃ¹ng cÃ¹ng khÃ³a vá»›i LanguageProvider cÅ©.
 class NgonNguVm extends Notifier<NgonNgu> {
   static const String _khoaNgonNgu = 'selected_language';
 
@@ -26,7 +26,7 @@ class NgonNguVm extends Notifier<NgonNgu> {
       if (_daHuy || _nguoiDungDaDoi || ma == null) return;
       state = NgonNgu.tuMa(ma);
     } catch (_) {
-      // Nếu không đọc được cài đặt, giữ mặc định tiếng Việt.
+      // Náº¿u khÃ´ng Ä‘á»c Ä‘Æ°á»£c cÃ i Ä‘áº·t, giá»¯ máº·c Ä‘á»‹nh tiáº¿ng Viá»‡t.
     }
   }
 

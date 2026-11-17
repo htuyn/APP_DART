@@ -70,7 +70,7 @@ class BadgeTile extends StatelessWidget {
                 Text(
                   unlockedDate == null
                       ? status
-                      : '$status · $unlockedDate',
+                      : '$status Â· $unlockedDate',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: isUnlocked

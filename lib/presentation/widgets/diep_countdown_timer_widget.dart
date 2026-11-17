@@ -72,7 +72,7 @@ class _CountdownTimerWidgetState extends State<CountdownTimerWidget>
         ? widget.remainingSeconds / widget.totalSeconds
         : 0.0;
 
-    // Color transitions: primary → amber → red
+    // Color transitions: primary â†’ amber â†’ red
     final Color color;
     if (_isCritical) {
       color = const Color(0xFFEF4444);

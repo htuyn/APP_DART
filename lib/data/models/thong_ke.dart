@@ -1,7 +1,7 @@
 import 'question_model.dart';
 import 'quiz_result_model.dart';
 
-/// Thống kê số câu đúng/sai theo khối, dùng dữ liệu câu hỏi và sổ câu sai.
+/// Thá»‘ng kÃª sá»‘ cÃ¢u Ä‘Ãºng/sai theo khá»‘i, dÃ¹ng dá»¯ liá»‡u cÃ¢u há»i vÃ  sá»• cÃ¢u sai.
 class BlockStat {
   final int blockId;
   final String blockTitle;
@@ -15,14 +15,14 @@ class BlockStat {
     required this.wrongQuestions,
   });
 
-  /// Giữ cách tính hiện tại: câu trong ngân hàng không nằm trong sổ sai được tính đúng.
+  /// Giá»¯ cÃ¡ch tÃ­nh hiá»‡n táº¡i: cÃ¢u trong ngÃ¢n hÃ ng khÃ´ng náº±m trong sá»• sai Ä‘Æ°á»£c tÃ­nh Ä‘Ãºng.
   int get correctCount =>
       (totalQuestions - wrongQuestions).clamp(0, totalQuestions).toInt();
 
   double get accuracyRate =>
       totalQuestions <= 0 ? 0.0 : (correctCount / totalQuestions) * 100.0;
 
-  /// Tạo thống kê cho một khối; các câu hỏi rỗng vẫn trả về một thống kê hợp lệ.
+  /// Táº¡o thá»‘ng kÃª cho má»™t khá»‘i; cÃ¡c cÃ¢u há»i rá»—ng váº«n tráº£ vá» má»™t thá»‘ng kÃª há»£p lá»‡.
   factory BlockStat.fromQuestions({
     required int blockId,
     required List<QuestionModel> questions,
@@ -44,7 +44,7 @@ class BlockStat {
   }
 }
 
-/// Tổng hợp lịch sử thi; không thay đổi cấu trúc lưu của từng kết quả.
+/// Tá»•ng há»£p lá»‹ch sá»­ thi; khÃ´ng thay Ä‘á»•i cáº¥u trÃºc lÆ°u cá»§a tá»«ng káº¿t quáº£.
 class QuizHistorySummary {
   final int attemptCount;
   final int totalQuestions;

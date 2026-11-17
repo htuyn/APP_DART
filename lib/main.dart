@@ -104,7 +104,7 @@ class QuizApp extends StatelessWidget {
 
     return MaterialApp(
       title: lang.translate(
-        vi: 'Flutter Song Ngữ',
+        vi: 'Flutter Song NgÆ°Ìƒ',
         en: 'Flutter Bilingual Quiz',
       ),
       debugShowCheckedModeBanner: false,

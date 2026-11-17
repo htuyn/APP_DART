@@ -30,9 +30,9 @@ class _FakeQuizRepository implements IQuizRepository {
 QuestionModel _question(String id, int block) => QuestionModel(
       id: id,
       blockId: block,
-      blockName: LocalizedText(vi: 'Khối $block', en: 'Block $block'),
-      level: 'Nhớ',
-      question: LocalizedText(vi: 'Câu $id', en: 'Question $id'),
+      blockName: LocalizedText(vi: 'Khá»‘i $block', en: 'Block $block'),
+      level: 'Nhá»›',
+      question: LocalizedText(vi: 'CÃ¢u $id', en: 'Question $id'),
       optionsVi: const ['A', 'B'],
       optionsEn: const ['A', 'B'],
       correctIndex: 0,

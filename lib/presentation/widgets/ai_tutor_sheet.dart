@@ -113,7 +113,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                     children: [
                       Text(
                         lang.translate(
-                          vi: 'Gia Sư AI Flutter',
+                          vi: 'Gia SÆ° AI Flutter',
                           en: 'AI Flutter Tutor',
                         ),
                         style: const TextStyle(
@@ -125,7 +125,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                       const SizedBox(height: 2),
                       Text(
                         lang.translate(
-                          vi: 'Phân tích chuyên sâu & mẹo ghi nhớ',
+                          vi: 'PhÃ¢n tÃ­ch chuyÃªn sÃ¢u & máº¹o ghi nhá»›',
                           en: 'In-depth analysis & memory tips',
                         ),
                         style: TextStyle(
@@ -162,8 +162,8 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                 children: [
                   _AiChip(
                     label: lang.translate(
-                      vi: '🎓 Phân tích chi tiết',
-                      en: '🎓 Full Analysis',
+                      vi: 'ðŸŽ“ PhÃ¢n tÃ­ch chi tiáº¿t',
+                      en: 'ðŸŽ“ Full Analysis',
                     ),
                     isSelected: _selectedAction == 'explain',
                     onTap: () => _switchAction('explain'),
@@ -173,8 +173,8 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                       widget.userChoiceIndex != widget.question.correctIndex) ...[
                     _AiChip(
                       label: lang.translate(
-                        vi: '💡 Vì sao tôi chọn sai?',
-                        en: '💡 Why was I wrong?',
+                        vi: 'ðŸ’¡ VÃ¬ sao tÃ´i chá»n sai?',
+                        en: 'ðŸ’¡ Why was I wrong?',
                       ),
                       isSelected: _selectedAction == 'why_wrong',
                       onTap: () => _switchAction('why_wrong'),
@@ -183,8 +183,8 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                   ],
                   _AiChip(
                     label: lang.translate(
-                      vi: '💻 Ví dụ code',
-                      en: '💻 Code snippet',
+                      vi: 'ðŸ’» VÃ­ dá»¥ code',
+                      en: 'ðŸ’» Code snippet',
                     ),
                     isSelected: _selectedAction == 'code_example',
                     onTap: () => _switchAction('code_example'),
@@ -192,8 +192,8 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
                   const SizedBox(width: 8),
                   _AiChip(
                     label: lang.translate(
-                      vi: '⚡ Mẹo thi nhớ nhanh',
-                      en: '⚡ Exam tip',
+                      vi: 'âš¡ Máº¹o thi nhá»› nhanh',
+                      en: 'âš¡ Exam tip',
                     ),
                     isSelected: _selectedAction == 'memory_tip',
                     onTap: () => _switchAction('memory_tip'),
@@ -234,7 +234,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
             const SizedBox(height: 16),
             Text(
               lang.translate(
-                vi: 'AI đang phân tích câu hỏi...',
+                vi: 'AI Ä‘ang phÃ¢n tÃ­ch cÃ¢u há»i...',
                 en: 'AI is analyzing the question...',
               ),
               style: TextStyle(
@@ -263,7 +263,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _requestExplanation,
-              child: Text(lang.translate(vi: 'Thử lại', en: 'Retry')),
+              child: Text(lang.translate(vi: 'Thá»­ láº¡i', en: 'Retry')),
             ),
           ],
         ),

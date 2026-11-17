@@ -116,14 +116,14 @@ void main() {
 
     expect(find.text(_certificate.achievementHash), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text('Xác minh On-chain'),
+      find.text('XÃ¡c minh On-chain'),
       250,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Xác minh On-chain'), findsOneWidget);
-    await tester.tap(find.text('Xác minh On-chain'));
+    expect(find.text('XÃ¡c minh On-chain'), findsOneWidget);
+    await tester.tap(find.text('XÃ¡c minh On-chain'));
     await tester.pumpAndSettle();
-    expect(find.text('Chứng chỉ hợp lệ trên blockchain.'), findsOneWidget);
+    expect(find.text('Chá»©ng chá»‰ há»£p lá»‡ trÃªn blockchain.'), findsOneWidget);
     expect(find.text(_txHash), findsOneWidget);
     expect(find.text('7654321'), findsOneWidget);
     final explorerButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));

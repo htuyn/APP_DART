@@ -7,11 +7,11 @@ import '../../data/models/quiz_result_model.dart';
 import '../providers/exam_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
-import '../widgets/countdown_timer_widget.dart';
-import '../widgets/option_tile.dart';
+import '../widgets/diep_countdown_timer_widget.dart';
+import '../widgets/diep_option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
-import 'exam_result_screen.dart';
+import 'diep_exam_result_screen.dart';
 
 class ExamScreen extends StatefulWidget {
   final int? paperIndex;
@@ -99,11 +99,11 @@ class _ExamScreenState extends State<ExamScreen> {
         content: Text(
           unanswered > 0
               ? lang.translate(
-            vi: 'Bạn còn $unanswered câu chưa trả lời. Bạn có chắc muốn nộp bài không?',
+            vi: 'BÃ¡ÂºÂ¡n cÃƒÂ²n $unanswered cÃƒÂ¢u chÃ†Â°a trÃ¡ÂºÂ£ lÃ¡Â»Âi. BÃ¡ÂºÂ¡n cÃƒÂ³ chÃ¡ÂºÂ¯c muÃ¡Â»â€˜n nÃ¡Â»â„¢p bÃƒÂ i khÃƒÂ´ng?',
             en: 'You have $unanswered unanswered questions. Are you sure you want to submit?',
           )
               : lang.translate(
-            vi: 'Bạn đã hoàn thành tất cả câu hỏi. Nộp bài ngay để xem kết quả?',
+            vi: 'BÃ¡ÂºÂ¡n Ã„â€˜ÃƒÂ£ hoÃƒÂ n thÃƒÂ nh tÃ¡ÂºÂ¥t cÃ¡ÂºÂ£ cÃƒÂ¢u hÃ¡Â»Âi. NÃ¡Â»â„¢p bÃƒÂ i ngay Ã„â€˜Ã¡Â»Æ’ xem kÃ¡ÂºÂ¿t quÃ¡ÂºÂ£?',
             en: 'You have completed all questions. Submit now to view results?',
           ),
         ),
@@ -224,7 +224,7 @@ class _ExamScreenState extends State<ExamScreen> {
         body: ResponsiveBody(
           child: Column(
             children: [
-              // ── Status bar: timer + progress chip ─────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Status bar: timer + progress chip Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               DecoratedBox(
                 decoration: BoxDecoration(
                   color: scheme.surface,
@@ -287,7 +287,7 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ),
 
-              // ── Question grid panel ───────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Question grid panel Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               AnimatedSize(
                 duration: const Duration(milliseconds: 280),
                 curve: Curves.easeOutCubic,
@@ -393,7 +393,7 @@ class _ExamScreenState extends State<ExamScreen> {
                     : const SizedBox.shrink(),
               ),
 
-              // ── Question PageView ─────────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Question PageView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
@@ -477,7 +477,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Question card — elevated with subtle shadow
+                        // Question card Ã¢â‚¬â€ elevated with subtle shadow
                         Card(
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -549,7 +549,7 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ),
 
-              // ── Bottom Navigation Bar ─────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Bottom Navigation Bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               DecoratedBox(
                 decoration: BoxDecoration(
                   color: scheme.surface,

@@ -35,7 +35,7 @@ class ErrorView extends StatelessWidget {
     super.key,
     required this.message,
     required this.onRetry,
-    this.retryText = 'Thử lại',
+    this.retryText = 'Thá»­ láº¡i',
   });
 
   @override

@@ -8,9 +8,9 @@ import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../providers/diep_spaced_repetition_provider.dart';
 import '../widgets/ai_tutor_sheet.dart';
-import '../widgets/explanation_card.dart';
+import '../widgets/diep_explanation_card.dart';
 import '../widgets/language_button.dart';
-import '../widgets/option_tile.dart';
+import '../widgets/diep_option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
 
@@ -258,7 +258,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       },
                     ),
                   ),
-                  // ── Bottom nav with separator border ─────────────────────
+                  // Ã¢â€â‚¬Ã¢â€â‚¬ Bottom nav with separator border Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
                   DecoratedBox(
                     decoration: BoxDecoration(
                       color: scheme.surface,
@@ -420,7 +420,7 @@ class _QuestionPage extends StatelessWidget {
                       builder: (context, sr, _) {
                         final isBookmarked = sr.isBookmarked(question.id);
                         return IconButton(
-                          tooltip: isBookmarked ? 'Bỏ lưu ôn tập' : 'Lưu ôn tập AI',
+                          tooltip: isBookmarked ? 'BÃ¡Â»Â lÃ†Â°u ÃƒÂ´n tÃ¡ÂºÂ­p' : 'LÃ†Â°u ÃƒÂ´n tÃ¡ÂºÂ­p AI',
                           icon: Icon(
                             isBookmarked
                                 ? Icons.bookmark_rounded
@@ -435,7 +435,7 @@ class _QuestionPage extends StatelessWidget {
                               sr.removeBookmark(question.id);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Đã bỏ lưu khỏi danh sách ôn tập AI'),
+                                  content: Text('Ã„ÂÃƒÂ£ bÃ¡Â»Â lÃ†Â°u khÃ¡Â»Âi danh sÃƒÂ¡ch ÃƒÂ´n tÃ¡ÂºÂ­p AI'),
                                   duration: Duration(seconds: 1),
                                 ),
                               );
@@ -443,7 +443,7 @@ class _QuestionPage extends StatelessWidget {
                               sr.bookmarkQuestion(question.id);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Đã lưu vào danh sách ôn tập AI Spaced Repetition!'),
+                                  content: Text('Ã„ÂÃƒÂ£ lÃ†Â°u vÃƒÂ o danh sÃƒÂ¡ch ÃƒÂ´n tÃ¡ÂºÂ­p AI Spaced Repetition!'),
                                   duration: Duration(seconds: 1),
                                 ),
                               );

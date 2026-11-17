@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_quiz_bilingual/presentation/widgets/option_tile.dart';
+import 'package:flutter_quiz_bilingual/presentation/widgets/diep_option_tile.dart';
 
 void main() {
   testWidgets('OptionTile meets Android minimum 48x48 tap target guideline',
@@ -13,7 +13,7 @@ void main() {
           body: Center(
             child: OptionTile(
               label: 'A',
-              text: 'Khai báo hằng số const trong Dart',
+              text: 'Khai bÃ¡o háº±ng sá»‘ const trong Dart',
               onTap: () {},
             ),
           ),

@@ -43,8 +43,8 @@ void main() {
         const QuestionModel(
           id: 'Q1',
           blockId: 1,
-          blockName: LocalizedText(vi: 'Khối 1', en: 'Block 1'),
-          level: 'Nhớ',
+          blockName: LocalizedText(vi: 'Khá»‘i 1', en: 'Block 1'),
+          level: 'Nhá»›',
           question: LocalizedText(vi: 'C1', en: 'Q1'),
           optionsVi: ['A', 'B'],
           optionsEn: ['A', 'B'],
@@ -54,8 +54,8 @@ void main() {
         const QuestionModel(
           id: 'Q2',
           blockId: 1,
-          blockName: LocalizedText(vi: 'Khối 1', en: 'Block 1'),
-          level: 'Nhớ',
+          blockName: LocalizedText(vi: 'Khá»‘i 1', en: 'Block 1'),
+          level: 'Nhá»›',
           question: LocalizedText(vi: 'C2', en: 'Q2'),
           optionsVi: ['A', 'B'],
           optionsEn: ['A', 'B'],
@@ -82,7 +82,7 @@ void main() {
     test('BlockStat properties return accurate values for 100% correct', () {
       final stat = BlockStat(
         blockId: 2,
-        blockTitle: 'Công cụ',
+        blockTitle: 'CÃ´ng cá»¥',
         totalQuestions: 5,
         wrongQuestions: 0,
       );

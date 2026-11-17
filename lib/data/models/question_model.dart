@@ -61,7 +61,7 @@ class QuestionModel {
       id: json['id'] as String? ?? '',
       blockId: json['block_id'] as int? ?? 1,
       blockName: LocalizedText.fromJson(json['block_name']),
-      level: json['level'] as String? ?? 'Nhớ',
+      level: json['level'] as String? ?? 'Nhá»›',
       question: LocalizedText.fromJson(json['question']),
       optionsVi: viOpts,
       optionsEn: enOpts,

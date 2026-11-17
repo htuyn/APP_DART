@@ -6,7 +6,7 @@ import '../core/navigation/app_page_route.dart';
 import '../presentation/providers/exam_provider.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
-import '../presentation/screens/exam_screen.dart';
+import '../presentation/screens/diep_exam_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';
@@ -52,7 +52,7 @@ class ChonDeScreen extends StatelessWidget {
     final perPaper = quiz.allQuestions.length >= ExamProvider.paperSize
         ? ExamProvider.paperSize
         : quiz.allQuestions.length;
-    final meta = '$perPaper ${lang.t('questions')} · ${ExamProvider.paperMinutes} ${lang.t('minutes')}';
+    final meta = '$perPaper ${lang.t('questions')} Â· ${ExamProvider.paperMinutes} ${lang.t('minutes')}';
 
     return ListView(
       physics: const BouncingScrollPhysics(

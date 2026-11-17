@@ -66,7 +66,7 @@ class _BadgeUnlockedDialogState extends State<BadgeUnlockedDialog>
         curve: Curves.easeOutBack,
       ),
       child: AlertDialog(
-        icon: const Text('🎉', style: TextStyle(fontSize: 38)),
+        icon: const Text('ðŸŽ‰', style: TextStyle(fontSize: 38)),
         title: Text(
           AppStrings.text(widget.languageCode, 'badge_unlocked_dialog_title'),
           textAlign: TextAlign.center,

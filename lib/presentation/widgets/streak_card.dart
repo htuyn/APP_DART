@@ -52,7 +52,7 @@ class StreakCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                const Text('🔥', style: TextStyle(fontSize: 34)),
+                const Text('ðŸ”¥', style: TextStyle(fontSize: 34)),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -122,7 +122,7 @@ class StreakCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '$levelLabel ${levelProgress.level} · '
+                        '$levelLabel ${levelProgress.level} Â· '
                         '${AppStrings.text(languageCode, levelProgress.titleKey)}',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w800,

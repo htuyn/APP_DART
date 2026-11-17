@@ -30,7 +30,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
     return const BaiThiState();
   }
 
-  /// Bắt đầu phiên mới. Thi thử trộn câu; chế độ làm lại chỉ lấy sổ câu sai.
+  /// Báº¯t Ä‘áº§u phiÃªn má»›i. Thi thá»­ trá»™n cÃ¢u; cháº¿ Ä‘á»™ lÃ m láº¡i chá»‰ láº¥y sá»• cÃ¢u sai.
   Future<void> batDau({
     required CheDoBaiThi cheDo,
     int? blockId,
@@ -86,7 +86,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
     }
   }
 
-  /// Ghi đáp án theo ID câu; cập nhật sổ sai ngay để phiên luyện tập cũng lưu tiến độ.
+  /// Ghi Ä‘Ã¡p Ã¡n theo ID cÃ¢u; cáº­p nháº­t sá»• sai ngay Ä‘á»ƒ phiÃªn luyá»‡n táº­p cÅ©ng lÆ°u tiáº¿n Ä‘á»™.
   Future<void> chonDapAn(int viTriDapAn) async {
     final question = state.cauHienTai;
     if (question == null || state.daNop) return;
@@ -122,7 +122,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
     state = state.copyWith(viTri: index);
   }
 
-  /// Chấm điểm, cập nhật sổ sai và lưu kết quả một lần.
+  /// Cháº¥m Ä‘iá»ƒm, cáº­p nháº­t sá»• sai vÃ  lÆ°u káº¿t quáº£ má»™t láº§n.
   Future<QuizResultModel?> nopBai() async {
     if (state.daNop) return state.ketQua;
     if (state.cauHoi.isEmpty) return null;
@@ -149,7 +149,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
       wrongQuestionIds: grading.idCauSai,
     );
 
-    // Đánh dấu đã nộp đồng bộ để tránh lưu trùng khi đồng hồ và nút cùng kích hoạt.
+    // ÄÃ¡nh dáº¥u Ä‘Ã£ ná»™p Ä‘á»“ng bá»™ Ä‘á»ƒ trÃ¡nh lÆ°u trÃ¹ng khi Ä‘á»“ng há»“ vÃ  nÃºt cÃ¹ng kÃ­ch hoáº¡t.
     state = snapshot.copyWith(daNop: true, ketQua: result);
     final repository = ref.read(quizRepositoryProvider);
 
@@ -160,7 +160,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
         await repository.removeWrongQuestion(question.id);
       }
     }
-    // Lịch sử thi trong app hiện tại chỉ ghi nhận các phiên thi thử.
+    // Lá»‹ch sá»­ thi trong app hiá»‡n táº¡i chá»‰ ghi nháº­n cÃ¡c phiÃªn thi thá»­.
     if (snapshot.cheDo == CheDoBaiThi.thiThu) {
       await repository.saveQuizResult(result);
     }
@@ -175,7 +175,7 @@ class BaiThiVm extends Notifier<BaiThiState> {
   }
 }
 
-/// Repository dùng chung cho ViewModels Riverpod, nối với datasource hiện có.
+/// Repository dÃ¹ng chung cho ViewModels Riverpod, ná»‘i vá»›i datasource hiá»‡n cÃ³.
 final quizRepositoryProvider = Provider<IQuizRepository>((ref) {
   return QuizRepositoryImpl(
     localDataSource: QuizLocalDataSource(),

@@ -127,31 +127,31 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Đổi ví MetaMask'));
+    await tester.tap(find.text('Äá»•i vÃ­ MetaMask'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), 'bad-wallet');
-    await tester.tap(find.text('Lưu địa chỉ ví'));
+    await tester.tap(find.text('LÆ°u Ä‘á»‹a chá»‰ vÃ­'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Địa chỉ ví không hợp lệ'), findsOneWidget);
+    expect(find.textContaining('Äá»‹a chá»‰ vÃ­ khÃ´ng há»£p lá»‡'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField), _wallet);
-    await tester.tap(find.text('Lưu địa chỉ ví'));
+    await tester.tap(find.text('LÆ°u Ä‘á»‹a chá»‰ vÃ­'));
     await tester.pumpAndSettle();
-    expect(find.text('Địa chỉ ví không hợp lệ. Địa chỉ cần bắt đầu bằng 0x và có 40 ký tự hex.'), findsNothing);
+    expect(find.text('Äá»‹a chá»‰ vÃ­ khÃ´ng há»£p lá»‡. Äá»‹a chá»‰ cáº§n báº¯t Ä‘áº§u báº±ng 0x vÃ  cÃ³ 40 kÃ½ tá»± hex.'), findsNothing);
 
     await tester.scrollUntilVisible(
-      find.text('Chứng chỉ của bạn'),
+      find.text('Chá»©ng chá»‰ cá»§a báº¡n'),
       250,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
-    expect(find.text('Chứng chỉ thành tích'), findsWidgets);
-    expect(find.text('Chứng chỉ hoàn thành khóa học'), findsWidgets);
-    expect(find.text('Đủ điều kiện'), findsWidgets);
-    expect(find.text('Đang chờ'), findsWidgets);
-    expect(find.text('Đã xác nhận'), findsWidgets);
-    expect(find.text('Đã thu hồi'), findsWidgets);
-    expect(find.text('Thất bại'), findsWidgets);
+    expect(find.text('Chá»©ng chá»‰ thÃ nh tÃ­ch'), findsWidgets);
+    expect(find.text('Chá»©ng chá»‰ hoÃ n thÃ nh khÃ³a há»c'), findsWidgets);
+    expect(find.text('Äá»§ Ä‘iá»u kiá»‡n'), findsWidgets);
+    expect(find.text('Äang chá»'), findsWidgets);
+    expect(find.text('ÄÃ£ xÃ¡c nháº­n'), findsWidgets);
+    expect(find.text('ÄÃ£ thu há»“i'), findsWidgets);
+    expect(find.text('Tháº¥t báº¡i'), findsWidgets);
 
     blockchain.dispose();
     course.dispose();

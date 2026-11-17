@@ -7,10 +7,10 @@ import '../providers/quiz_provider.dart';
 import '../widgets/state_views.dart';
 import '../widgets/streak_card.dart';
 import 'achievements_screen.dart';
-import 'exam_screen.dart';
-import 'practice_screen.dart';
+import 'diep_exam_screen.dart';
+import 'diep_practice_screen.dart';
 import 'stats_screen.dart';
-import 'wrong_questions_screen.dart';
+import 'diep_wrong_questions_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           lang.translate(
-            vi: 'Flutter Song Ngữ',
+            vi: 'Flutter Song NgÃ†Â°ÃŒÆ’',
             en: 'Flutter Bilingual Quiz',
           ),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
         quiz.state == QuizLoadingState.initial) {
       return LoadingView(
         message: lang.translate(
-          vi: 'Đang nạp 300 câu hỏi trắc nghiệm...',
+          vi: 'Ã„Âang nÃ¡ÂºÂ¡p 300 cÃƒÂ¢u hÃ¡Â»Âi trÃ¡ÂºÂ¯c nghiÃ¡Â»â€¡m...',
           en: 'Loading 300 quiz questions...',
         ),
       );
@@ -72,10 +72,10 @@ class HomeScreen extends StatelessWidget {
       return ErrorView(
         message: quiz.errorMessage ??
             lang.translate(
-              vi: 'Có lỗi xảy ra khi nạp dữ liệu câu hỏi',
+              vi: 'CÃƒÂ³ lÃ¡Â»â€”i xÃ¡ÂºÂ£y ra khi nÃ¡ÂºÂ¡p dÃ¡Â»Â¯ liÃ¡Â»â€¡u cÃƒÂ¢u hÃ¡Â»Âi',
               en: 'An error occurred while loading question data',
             ),
-        retryText: lang.translate(vi: 'Thử lại', en: 'Retry'),
+        retryText: lang.translate(vi: 'ThÃ¡Â»Â­ lÃ¡ÂºÂ¡i', en: 'Retry'),
         onRetry: () => quiz.initialize(),
       );
     }
@@ -129,7 +129,7 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             lang.translate(
-                              vi: 'Ngân Hàng 300 Câu Hỏi',
+                              vi: 'NgÃƒÂ¢n HÃƒÂ ng 300 CÃƒÂ¢u HÃ¡Â»Âi',
                               en: '300 Questions Bank',
                             ),
                             style: const TextStyle(
@@ -141,8 +141,8 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             lang.translate(
-                              vi: '20 Khối Kiến Thức • Song Ngữ VI / EN',
-                              en: '20 Blocks • Bilingual VI / EN',
+                              vi: '20 KhÃ¡Â»â€˜i KiÃ¡ÂºÂ¿n ThÃ¡Â»Â©c Ã¢â‚¬Â¢ Song NgÃ¡Â»Â¯ VI / EN',
+                              en: '20 Blocks Ã¢â‚¬Â¢ Bilingual VI / EN',
                             ),
                             style: TextStyle(
                               fontSize: 12,
@@ -170,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       _StatItem(
                         icon: Icons.quiz_outlined,
-                        label: lang.translate(vi: 'Tổng câu', en: 'Total'),
+                        label: lang.translate(vi: 'TÃ¡Â»â€¢ng cÃƒÂ¢u', en: 'Total'),
                         value: '$total',
                       ),
                       Container(
@@ -180,7 +180,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       _StatItem(
                         icon: Icons.bookmark_remove_outlined,
-                        label: lang.translate(vi: 'Cần ôn lại', en: 'Review'),
+                        label: lang.translate(vi: 'CÃ¡ÂºÂ§n ÃƒÂ´n lÃ¡ÂºÂ¡i', en: 'Review'),
                         value: '$wrongCount',
                         valueColor: wrongCount > 0 ? const Color(0xFFFCA5A5) : null,
                       ),
@@ -191,7 +191,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       _StatItem(
                         icon: Icons.trending_up_rounded,
-                        label: lang.translate(vi: 'Chính xác', en: 'Accuracy'),
+                        label: lang.translate(vi: 'ChÃƒÂ­nh xÃƒÂ¡c', en: 'Accuracy'),
                         value: '$correctRate%',
                         valueColor: const Color(0xFF86EFAC),
                       ),
@@ -220,7 +220,7 @@ class HomeScreen extends StatelessWidget {
 
           // Section Header
           Text(
-            lang.translate(vi: 'Chế độ học tập', en: 'Learning Modes'),
+            lang.translate(vi: 'ChÃ¡ÂºÂ¿ Ã„â€˜Ã¡Â»â„¢ hÃ¡Â»Âc tÃ¡ÂºÂ­p', en: 'Learning Modes'),
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
@@ -229,16 +229,16 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Mode 1: Luyện tập theo khối
+          // Mode 1: LuyÃ¡Â»â€¡n tÃ¡ÂºÂ­p theo khÃ¡Â»â€˜i
           _ModernMenuCard(
             icon: Icons.menu_book_rounded,
             gradientColors: const [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
             title: lang.translate(
-              vi: 'Chế độ Luyện Tập',
+              vi: 'ChÃ¡ÂºÂ¿ Ã„â€˜Ã¡Â»â„¢ LuyÃ¡Â»â€¡n TÃ¡ÂºÂ­p',
               en: 'Practice Mode',
             ),
             subtitle: lang.translate(
-              vi: 'Ôn tập tự do theo từng khối kiến thức, có giải thích & AI',
+              vi: 'Ãƒâ€n tÃ¡ÂºÂ­p tÃ¡Â»Â± do theo tÃ¡Â»Â«ng khÃ¡Â»â€˜i kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c, cÃƒÂ³ giÃ¡ÂºÂ£i thÃƒÂ­ch & AI',
               en: 'Practice by block with explanations and AI tutor',
             ),
             onTap: () {
@@ -250,19 +250,19 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Mode 2: Thi thử (Có đếm ngược)
+          // Mode 2: Thi thÃ¡Â»Â­ (CÃƒÂ³ Ã„â€˜Ã¡ÂºÂ¿m ngÃ†Â°Ã¡Â»Â£c)
           _ModernMenuCard(
             icon: Icons.timer_outlined,
             gradientColors: const [Color(0xFFF59E0B), Color(0xFFEA580C)],
             title: lang.translate(
-              vi: 'Chế độ Thi Thử (Mock Exam)',
+              vi: 'ChÃ¡ÂºÂ¿ Ã„â€˜Ã¡Â»â„¢ Thi ThÃ¡Â»Â­ (Mock Exam)',
               en: 'Mock Exam (Timed)',
             ),
             subtitle: lang.translate(
-              vi: '20 câu ngẫu nhiên • Đồng hồ đếm ngược 15 phút',
-              en: '20 random questions • 15-minute countdown',
+              vi: '20 cÃƒÂ¢u ngÃ¡ÂºÂ«u nhiÃƒÂªn Ã¢â‚¬Â¢ Ã„ÂÃ¡Â»â€œng hÃ¡Â»â€œ Ã„â€˜Ã¡ÂºÂ¿m ngÃ†Â°Ã¡Â»Â£c 15 phÃƒÂºt',
+              en: '20 random questions Ã¢â‚¬Â¢ 15-minute countdown',
             ),
-            badge: lang.translate(vi: 'Bấm giờ', en: 'Timed'),
+            badge: lang.translate(vi: 'BÃ¡ÂºÂ¥m giÃ¡Â»Â', en: 'Timed'),
             onTap: () {
               Navigator.push(
                 context,
@@ -272,16 +272,16 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Mode 3: Sổ tay câu sai
+          // Mode 3: SÃ¡Â»â€¢ tay cÃƒÂ¢u sai
           _ModernMenuCard(
             icon: Icons.replay_circle_filled_rounded,
             gradientColors: const [Color(0xFFEF4444), Color(0xFFDC2626)],
             title: lang.translate(
-              vi: 'Làm Lại Câu Sai',
+              vi: 'LÃƒÂ m LÃ¡ÂºÂ¡i CÃƒÂ¢u Sai',
               en: 'Review Incorrect Questions',
             ),
             subtitle: lang.translate(
-              vi: 'Luyện lại các câu đã làm sai để củng cố kiến thức',
+              vi: 'LuyÃ¡Â»â€¡n lÃ¡ÂºÂ¡i cÃƒÂ¡c cÃƒÂ¢u Ã„â€˜ÃƒÂ£ lÃƒÂ m sai Ã„â€˜Ã¡Â»Æ’ cÃ¡Â»Â§ng cÃ¡Â»â€˜ kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c',
               en: 'Retake questions you answered incorrectly',
             ),
             badge: wrongCount > 0 ? '$wrongCount' : null,
@@ -296,16 +296,16 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Mode 4: Thống kê theo 20 khối
+          // Mode 4: ThÃ¡Â»â€˜ng kÃƒÂª theo 20 khÃ¡Â»â€˜i
           _ModernMenuCard(
             icon: Icons.bar_chart_rounded,
             gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
             title: lang.translate(
-              vi: 'Thống Kê Theo Khối Kiến Thức',
+              vi: 'ThÃ¡Â»â€˜ng KÃƒÂª Theo KhÃ¡Â»â€˜i KiÃ¡ÂºÂ¿n ThÃ¡Â»Â©c',
               en: 'Knowledge Block Statistics',
             ),
             subtitle: lang.translate(
-              vi: 'Xem tỉ lệ chính xác và tiến độ trên 20 khối kiến thức',
+              vi: 'Xem tÃ¡Â»â€° lÃ¡Â»â€¡ chÃƒÂ­nh xÃƒÂ¡c vÃƒÂ  tiÃ¡ÂºÂ¿n Ã„â€˜Ã¡Â»â„¢ trÃƒÂªn 20 khÃ¡Â»â€˜i kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c',
               en: 'View accuracy rate across 20 Flutter knowledge blocks',
             ),
             onTap: () {

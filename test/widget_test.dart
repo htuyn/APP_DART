@@ -16,13 +16,13 @@ class FakeQuizRepository implements IQuizRepository {
       const QuestionModel(
         id: 'T01',
         blockId: 1,
-        blockName: LocalizedText(vi: 'Dart cơ bản', en: 'Dart Basics'),
-        level: 'Nhớ',
-        question: LocalizedText(vi: 'Câu hỏi thử nghiệm?', en: 'Test question?'),
+        blockName: LocalizedText(vi: 'Dart cÆ¡ báº£n', en: 'Dart Basics'),
+        level: 'Nhá»›',
+        question: LocalizedText(vi: 'CÃ¢u há»i thá»­ nghiá»‡m?', en: 'Test question?'),
         optionsVi: ['A', 'B', 'C', 'D'],
         optionsEn: ['A', 'B', 'C', 'D'],
         correctIndex: 0,
-        explanation: LocalizedText(vi: 'Giải thích', en: 'Explanation'),
+        explanation: LocalizedText(vi: 'Giáº£i thÃ­ch', en: 'Explanation'),
       ),
     ];
   }
@@ -66,13 +66,13 @@ void main() {
     await tester.pump();
 
     // Verify main title is displayed
-    expect(find.text('Flutter Song Ngữ'), findsOneWidget);
+    expect(find.text('Flutter Song NgÆ°Ìƒ'), findsOneWidget);
 
     // Verify Learning Modes exist
-    expect(find.text('Chế độ Luyện Tập'), findsOneWidget);
-    expect(find.text('Chế độ Thi Thử (Mock Exam)'), findsOneWidget);
-    expect(find.text('Làm Lại Câu Sai'), findsOneWidget);
-    expect(find.text('Thống Kê Theo Khối Kiến Thức'), findsOneWidget);
+    expect(find.text('Cháº¿ Ä‘á»™ Luyá»‡n Táº­p'), findsOneWidget);
+    expect(find.text('Cháº¿ Ä‘á»™ Thi Thá»­ (Mock Exam)'), findsOneWidget);
+    expect(find.text('LÃ m Láº¡i CÃ¢u Sai'), findsOneWidget);
+    expect(find.text('Thá»‘ng KÃª Theo Khá»‘i Kiáº¿n Thá»©c'), findsOneWidget);
   });
 
   testWidgets('Toggling language switches UI between VI and EN', (WidgetTester tester) async {

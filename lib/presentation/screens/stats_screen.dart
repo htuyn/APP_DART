@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../providers/stats_provider.dart';
-import 'practice_screen.dart';
+import 'diep_practice_screen.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
@@ -39,7 +39,7 @@ class _StatsScreenState extends State<StatsScreen> {
         appBar: AppBar(
           title: Text(
             lang.translate(
-              vi: 'Thống Kê Kiến Thức',
+              vi: 'ThÃ¡Â»â€˜ng KÃƒÂª KiÃ¡ÂºÂ¿n ThÃ¡Â»Â©c',
               en: 'Knowledge Statistics',
             ),
           ),
@@ -47,13 +47,13 @@ class _StatsScreenState extends State<StatsScreen> {
             tabs: [
               Tab(
                 text: lang.translate(
-                  vi: '20 Khối Kiến Thức',
+                  vi: '20 KhÃ¡Â»â€˜i KiÃ¡ÂºÂ¿n ThÃ¡Â»Â©c',
                   en: '20 Knowledge Blocks',
                 ),
               ),
               Tab(
                 text: lang.translate(
-                  vi: 'Lịch Sử Thi Thử',
+                  vi: 'LÃ¡Â»â€¹ch SÃ¡Â»Â­ Thi ThÃ¡Â»Â­',
                   en: 'Exam History',
                 ),
               ),
@@ -62,7 +62,7 @@ class _StatsScreenState extends State<StatsScreen> {
         ),
         body: TabBarView(
           children: [
-            // Tab 1: 20 Khối
+            // Tab 1: 20 KhÃ¡Â»â€˜i
             ListView.builder(
               padding: const EdgeInsets.all(16.0),
               itemCount: blockStats.length,
@@ -77,7 +77,7 @@ class _StatsScreenState extends State<StatsScreen> {
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 8),
                     title: Text(
-                      'Khối ${stat.blockId}. ${stat.blockTitle}',
+                      'KhÃ¡Â»â€˜i ${stat.blockId}. ${stat.blockTitle}',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
@@ -102,7 +102,7 @@ class _StatsScreenState extends State<StatsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${lang.translate(vi: "Đúng:", en: "Correct:")} ${stat.correctCount}/${stat.totalQuestions} (${rate.toStringAsFixed(0)}%)',
+                              '${lang.translate(vi: "Ã„ÂÃƒÂºng:", en: "Correct:")} ${stat.correctCount}/${stat.totalQuestions} (${rate.toStringAsFixed(0)}%)',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade700,
@@ -110,7 +110,7 @@ class _StatsScreenState extends State<StatsScreen> {
                             ),
                             if (isWeak)
                               Text(
-                                '${stat.wrongQuestions} ${lang.translate(vi: "câu sai", en: "incorrect")}',
+                                '${stat.wrongQuestions} ${lang.translate(vi: "cÃƒÂ¢u sai", en: "incorrect")}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -136,12 +136,12 @@ class _StatsScreenState extends State<StatsScreen> {
               },
             ),
 
-            // Tab 2: Lịch sử thi
+            // Tab 2: LÃ¡Â»â€¹ch sÃ¡Â»Â­ thi
             statsProv.history.isEmpty
                 ? Center(
                     child: Text(
                       lang.translate(
-                        vi: 'Chưa có lịch sử làm bài thi thử nào.',
+                        vi: 'ChÃ†Â°a cÃƒÂ³ lÃ¡Â»â€¹ch sÃ¡Â»Â­ lÃƒÂ m bÃƒÂ i thi thÃ¡Â»Â­ nÃƒÂ o.',
                         en: 'No mock exam history yet.',
                       ),
                       style: const TextStyle(color: Colors.grey),
@@ -169,11 +169,11 @@ class _StatsScreenState extends State<StatsScreen> {
                             ),
                           ),
                           title: Text(
-                            '${lang.translate(vi: "Điểm:", en: "Score:")} ${item.score}/${item.totalQuestions} (${item.percentage.toStringAsFixed(1)}%)',
+                            '${lang.translate(vi: "Ã„ÂiÃ¡Â»Æ’m:", en: "Score:")} ${item.score}/${item.totalQuestions} (${item.percentage.toStringAsFixed(1)}%)',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            '${item.timestamp.toLocal().toString().split(".")[0]} • ${item.timeSpentSeconds ~/ 60}m ${item.timeSpentSeconds % 60}s',
+                            '${item.timestamp.toLocal().toString().split(".")[0]} Ã¢â‚¬Â¢ ${item.timeSpentSeconds ~/ 60}m ${item.timeSpentSeconds % 60}s',
                           ),
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(
@@ -186,8 +186,8 @@ class _StatsScreenState extends State<StatsScreen> {
                             ),
                             child: Text(
                               isPassed
-                                  ? lang.translate(vi: 'ĐẠT', en: 'PASS')
-                                  : lang.translate(vi: 'TRƯỢT', en: 'FAIL'),
+                                  ? lang.translate(vi: 'Ã„ÂÃ¡ÂºÂ T', en: 'PASS')
+                                  : lang.translate(vi: 'TRÃ†Â¯Ã¡Â»Â¢T', en: 'FAIL'),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: isPassed

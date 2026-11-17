@@ -2,10 +2,10 @@ import 'dart:math';
 
 import '../data/models/question_model.dart';
 
-/// Các chế độ làm bài được ViewModel hỗ trợ.
+/// CÃ¡c cháº¿ Ä‘á»™ lÃ m bÃ i Ä‘Æ°á»£c ViewModel há»— trá»£.
 enum CheDoBaiThi { luyenTap, thiThu, lamLaiCauSai }
 
-/// Cấu hình mặc định, giữ tương ứng với trải nghiệm thi thử đang có.
+/// Cáº¥u hÃ¬nh máº·c Ä‘á»‹nh, giá»¯ tÆ°Æ¡ng á»©ng vá»›i tráº£i nghiá»‡m thi thá»­ Ä‘ang cÃ³.
 class CauHinhThi {
   const CauHinhThi._();
 
@@ -13,7 +13,7 @@ class CauHinhThi {
   static const int thoiGianThiThuGiay = 15 * 60;
 }
 
-/// Kết quả chấm một phiên.
+/// Káº¿t quáº£ cháº¥m má»™t phiÃªn.
 class KetQuaCham {
   const KetQuaCham({
     required this.soDung,
@@ -26,13 +26,13 @@ class KetQuaCham {
   final int soChuaLam;
 }
 
-/// Lọc theo khối; null hoặc 0 có nghĩa là lấy tất cả.
+/// Lá»c theo khá»‘i; null hoáº·c 0 cÃ³ nghÄ©a lÃ  láº¥y táº¥t cáº£.
 List<QuestionModel> locTheoKhoi(List<QuestionModel> ds, int? blockId) {
   if (blockId == null || blockId == 0) return List.of(ds);
   return ds.where((question) => question.blockId == blockId).toList();
 }
 
-/// Trộn danh sách và lấy tối đa [soCau] câu; không sửa danh sách nguồn.
+/// Trá»™n danh sÃ¡ch vÃ  láº¥y tá»‘i Ä‘a [soCau] cÃ¢u; khÃ´ng sá»­a danh sÃ¡ch nguá»“n.
 List<QuestionModel> tronVaLay(
   List<QuestionModel> ds,
   int soCau, {
@@ -43,15 +43,15 @@ List<QuestionModel> tronVaLay(
   return ban.take(soCau).toList();
 }
 
-/// Lọc các câu có ID nằm trong sổ câu sai.
+/// Lá»c cÃ¡c cÃ¢u cÃ³ ID náº±m trong sá»• cÃ¢u sai.
 List<QuestionModel> locCauSai(
   List<QuestionModel> ds,
   Set<String> idCauSai,
 ) =>
     ds.where((question) => idCauSai.contains(question.id)).toList();
 
-/// Chấm toàn bộ câu trong phiên; câu bỏ trống được tính chưa làm và vẫn nằm
-/// trong danh sách cần ôn lại, giống hành vi chấm bài hiện tại.
+/// Cháº¥m toÃ n bá»™ cÃ¢u trong phiÃªn; cÃ¢u bá» trá»‘ng Ä‘Æ°á»£c tÃ­nh chÆ°a lÃ m vÃ  váº«n náº±m
+/// trong danh sÃ¡ch cáº§n Ã´n láº¡i, giá»‘ng hÃ nh vi cháº¥m bÃ i hiá»‡n táº¡i.
 KetQuaCham chamDiem(
   List<QuestionModel> ds,
   Map<String, int> dapAnDaChon,

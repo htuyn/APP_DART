@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Trạng thái đồng hồ đếm ngược cho bài thi thử.
+/// Tráº¡ng thÃ¡i Ä‘á»“ng há»“ Ä‘áº¿m ngÆ°á»£c cho bÃ i thi thá»­.
 class DongHoState {
   const DongHoState({
     this.tongGiay = 0,

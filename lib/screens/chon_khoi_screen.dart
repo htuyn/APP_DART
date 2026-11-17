@@ -5,7 +5,7 @@ import '../core/constants/app_colors.dart';
 import '../core/navigation/app_page_route.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
-import '../presentation/screens/practice_screen.dart';
+import '../presentation/screens/diep_practice_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';

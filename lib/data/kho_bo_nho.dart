@@ -3,8 +3,8 @@ import 'models/quiz_result_model.dart';
 import 'models/thong_ke.dart';
 import 'kho_du_lieu.dart';
 
-/// Kho dữ liệu lưu trong RAM, dùng để chạy thử và viết test.
-/// Tắt app là dữ liệu trong kho này mất.
+/// Kho dá»¯ liá»‡u lÆ°u trong RAM, dÃ¹ng Ä‘á»ƒ cháº¡y thá»­ vÃ  viáº¿t test.
+/// Táº¯t app lÃ  dá»¯ liá»‡u trong kho nÃ y máº¥t.
 class KhoBoNho implements KhoDuLieu {
   KhoBoNho({List<QuestionModel>? cauHoi}) : _cauHoi = cauHoi ?? mau();
 
@@ -15,8 +15,8 @@ class KhoBoNho implements KhoDuLieu {
   double _diemCaoNhat = 0;
   String? _ngonNgu;
 
-  /// Sinh dữ liệu giả: [soKhoi] khối, mỗi khối [moiKhoi] câu, 4 đáp án.
-  /// ID câu và chỉ số đáp án đúng tiếp tục theo logic dữ liệu mẫu cũ.
+  /// Sinh dá»¯ liá»‡u giáº£: [soKhoi] khá»‘i, má»—i khá»‘i [moiKhoi] cÃ¢u, 4 Ä‘Ã¡p Ã¡n.
+  /// ID cÃ¢u vÃ  chá»‰ sá»‘ Ä‘Ã¡p Ã¡n Ä‘Ãºng tiáº¿p tá»¥c theo logic dá»¯ liá»‡u máº«u cÅ©.
   static List<QuestionModel> mau({int soKhoi = 2, int moiKhoi = 5}) {
     final ds = <QuestionModel>[];
     var n = 1;
@@ -26,17 +26,17 @@ class KhoBoNho implements KhoDuLieu {
           QuestionModel(
             id: 'Q${n.toString().padLeft(3, '0')}',
             blockId: k,
-            blockName: LocalizedText(vi: 'Khối $k', en: 'Block $k'),
-            level: 'Nhớ',
+            blockName: LocalizedText(vi: 'Khá»‘i $k', en: 'Block $k'),
+            level: 'Nhá»›',
             question: LocalizedText(
-              vi: 'Câu hỏi số $n',
+              vi: 'CÃ¢u há»i sá»‘ $n',
               en: 'Question number $n',
             ),
-            optionsVi: const ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'],
+            optionsVi: const ['ÄÃ¡p Ã¡n A', 'ÄÃ¡p Ã¡n B', 'ÄÃ¡p Ã¡n C', 'ÄÃ¡p Ã¡n D'],
             optionsEn: const ['Answer A', 'Answer B', 'Answer C', 'Answer D'],
             correctIndex: n % 4,
             explanation: LocalizedText(
-              vi: 'Giải thích cho câu $n',
+              vi: 'Giáº£i thÃ­ch cho cÃ¢u $n',
               en: 'Explanation for question $n',
             ),
           ),
@@ -83,7 +83,7 @@ class KhoBoNho implements KhoDuLieu {
     final cu = _thongKe[blockId];
     var title = cu?.blockTitle ?? 'Block $blockId';
 
-    // Giữ tên khối theo ngôn ngữ Việt từ dữ liệu câu hỏi khi tạo thống kê lần đầu.
+    // Giá»¯ tÃªn khá»‘i theo ngÃ´n ngá»¯ Viá»‡t tá»« dá»¯ liá»‡u cÃ¢u há»i khi táº¡o thá»‘ng kÃª láº§n Ä‘áº§u.
     if (cu == null) {
       for (final question in _cauHoi) {
         if (question.blockId == blockId) {

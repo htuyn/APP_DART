@@ -5,7 +5,7 @@ import '../../data/models/question_model.dart';
 import '../../data/models/diep_spaced_repetition_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/diep_spaced_repetition_provider.dart';
-import '../widgets/option_tile.dart';
+import '../widgets/diep_option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
 
@@ -42,7 +42,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            const Text('🧠 Ôn tập thông minh'),
+            const Text('Ã°Å¸Â§Â  Ãƒâ€n tÃ¡ÂºÂ­p thÃƒÂ´ng minh'),
             const SizedBox(width: 10),
             if (dueCount > 0)
               Container(
@@ -53,7 +53,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '$dueCount câu cần ôn hôm nay',
+                  '$dueCount cÃƒÂ¢u cÃ¡ÂºÂ§n ÃƒÂ´n hÃƒÂ´m nay',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,
@@ -68,10 +68,10 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
         child: questions.isEmpty
             ? EmptyView(
                 icon: Icons.psychology_rounded,
-                title: 'Chưa có câu nào cần ôn',
+                title: 'ChÃ†Â°a cÃƒÂ³ cÃƒÂ¢u nÃƒÂ o cÃ¡ÂºÂ§n ÃƒÂ´n',
                 message:
-                    'Hãy bookmark câu hỏi từ các bài luyện tập để AI sắp xếp lịch ôn theo đường cong lãng quên.',
-                actionText: 'Quay về',
+                    'HÃƒÂ£y bookmark cÃƒÂ¢u hÃ¡Â»Âi tÃ¡Â»Â« cÃƒÂ¡c bÃƒÂ i luyÃ¡Â»â€¡n tÃ¡ÂºÂ­p Ã„â€˜Ã¡Â»Æ’ AI sÃ¡ÂºÂ¯p xÃ¡ÂºÂ¿p lÃ¡Â»â€¹ch ÃƒÂ´n theo Ã„â€˜Ã†Â°Ã¡Â»Âng cong lÃƒÂ£ng quÃƒÂªn.',
+                actionText: 'Quay vÃ¡Â»Â',
                 onAction: () => Navigator.pop(context),
               )
             : ListView.builder(
@@ -89,7 +89,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
     );
   }
 
-  // ─── Header info card ──────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Header info card Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   Widget _buildHeaderCard(int dueCount) {
     return Container(
@@ -133,7 +133,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Hệ thống tự động sắp xếp câu hỏi theo đường cong lãng quên Ebbinghaus — ôn đúng lúc, nhớ lâu hơn.',
+                  'HÃ¡Â»â€¡ thÃ¡Â»â€˜ng tÃ¡Â»Â± Ã„â€˜Ã¡Â»â„¢ng sÃ¡ÂºÂ¯p xÃ¡ÂºÂ¿p cÃƒÂ¢u hÃ¡Â»Âi theo Ã„â€˜Ã†Â°Ã¡Â»Âng cong lÃƒÂ£ng quÃƒÂªn Ebbinghaus Ã¢â‚¬â€ ÃƒÂ´n Ã„â€˜ÃƒÂºng lÃƒÂºc, nhÃ¡Â»â€º lÃƒÂ¢u hÃ†Â¡n.',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 12.5,
@@ -148,7 +148,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
     );
   }
 
-  // ─── Question card ─────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Question card Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   Widget _buildQuestionItem(
     BuildContext context,
@@ -177,12 +177,12 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Top row: ID + status chip ──────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Top row: ID + status chip Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    '${q.id} • ${q.blockName.getText(lang.code)}',
+                    '${q.id} Ã¢â‚¬Â¢ ${q.blockName.getText(lang.code)}',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,
@@ -195,7 +195,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
             ),
             const SizedBox(height: 10),
 
-            // ── Question text ──────────────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Question text Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             Text(
               q.question.getText(lang.code),
               style: theme.textTheme.titleMedium?.copyWith(
@@ -206,17 +206,17 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
             ),
             const SizedBox(height: 10),
 
-            // ── Stats row ──────────────────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Stats row Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             if (entry != null) _buildStatsRow(entry, theme),
 
             const SizedBox(height: 12),
 
-            // ── Expand / options ───────────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Expand / options Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             if (!isExpanded && !isAnswered)
               OutlinedButton.icon(
                 onPressed: () => setState(() => _expanded[q.id] = true),
                 icon: const Icon(Icons.replay_rounded, size: 16),
-                label: const Text('Làm lại'),
+                label: const Text('LÃƒÂ m lÃ¡ÂºÂ¡i'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: BorderSide(
@@ -280,8 +280,8 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
                         Expanded(
                           child: Text(
                             userChoice == q.correctIndex
-                                ? 'Chính xác! Lịch ôn tập đã được cập nhật.'
-                                : 'Chưa đúng. AI sẽ nhắc bạn ôn lại sớm hơn.',
+                                ? 'ChÃƒÂ­nh xÃƒÂ¡c! LÃ¡Â»â€¹ch ÃƒÂ´n tÃ¡ÂºÂ­p Ã„â€˜ÃƒÂ£ Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t.'
+                                : 'ChÃ†Â°a Ã„â€˜ÃƒÂºng. AI sÃ¡ÂºÂ½ nhÃ¡ÂºÂ¯c bÃ¡ÂºÂ¡n ÃƒÂ´n lÃ¡ÂºÂ¡i sÃ¡Â»â€ºm hÃ†Â¡n.',
                             style: TextStyle(
                               fontSize: 13,
                               color: userChoice == q.correctIndex
@@ -302,7 +302,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
     );
   }
 
-  // ─── Status chip (overdue / due today / upcoming) ──────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Status chip (overdue / due today / upcoming) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   Widget _buildStatusChip(SpacedRepetitionEntry entry) {
     final now = DateTime.now();
@@ -315,18 +315,18 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
     if (diff > 0) {
       bg = AppColors.errorLight;
       fg = AppColors.error;
-      label = 'Quá hạn $diff ngày';
+      label = 'QuÃƒÂ¡ hÃ¡ÂºÂ¡n $diff ngÃƒÂ y';
     } else if (diff == 0 ||
         entry.nextReviewDate
             .isBefore(now.add(const Duration(hours: 24)))) {
       bg = AppColors.successLight;
       fg = AppColors.success;
-      label = 'Ôn hôm nay';
+      label = 'Ãƒâ€n hÃƒÂ´m nay';
     } else {
       final remaining = entry.nextReviewDate.difference(now).inDays;
       bg = const Color(0xFFF1F5F9);
       fg = const Color(0xFF64748B);
-      label = 'Còn $remaining ngày';
+      label = 'CÃƒÂ²n $remaining ngÃƒÂ y';
     }
 
     return Container(
@@ -343,14 +343,14 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
     );
   }
 
-  // ─── Stats row (wrong count + urgency score) ───────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Stats row (wrong count + urgency score) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   Widget _buildStatsRow(SpacedRepetitionEntry entry, ThemeData theme) {
     return Row(
       children: [
         _StatPill(
           icon: Icons.close_rounded,
-          value: '${entry.wrongCount} lần sai',
+          value: '${entry.wrongCount} lÃ¡ÂºÂ§n sai',
           color: AppColors.error,
         ),
         const SizedBox(width: 8),
@@ -362,7 +362,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
         const SizedBox(width: 8),
         _StatPill(
           icon: Icons.refresh_rounded,
-          value: '${entry.reviewCount}× ôn',
+          value: '${entry.reviewCount}Ãƒâ€” ÃƒÂ´n',
           color: AppColors.accentIndigo,
         ),
       ],
@@ -370,7 +370,7 @@ class _SpacedRepetitionScreenState extends State<SpacedRepetitionScreen> {
   }
 }
 
-// ─── Small helper widget ──────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Small helper widget Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _StatPill extends StatelessWidget {
   final IconData icon;

@@ -86,7 +86,7 @@ class _BlockchainCertificatesScreenState
                     Text(language.t('wallet_title'),
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 6),
-                    Text(provider.recipientAddress ?? '—', style: Theme.of(context).textTheme.bodyMedium),
+                    Text(provider.recipientAddress ?? 'Ã¢â‚¬â€', style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: 4),
                     Text(language.t(provider.isUsingEmbeddedWallet ? 'wallet_embedded_label' : 'wallet_personal_label'), style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 10),
@@ -115,11 +115,11 @@ class _BlockchainCertificatesScreenState
               ButtonSegment(value: null, label: Text(language.t('all_certificates'))),
               ButtonSegment(
                 value: CertificateType.achievement,
-                label: Text(isVi ? 'Thành tích' : 'Achievement'),
+                label: Text(isVi ? 'ThÃƒÂ nh tÃƒÂ­ch' : 'Achievement'),
               ),
               ButtonSegment(
                 value: CertificateType.courseCompletion,
-                label: Text(isVi ? 'Khóa học' : 'Course'),
+                label: Text(isVi ? 'KhÃƒÂ³a hÃ¡Â»Âc' : 'Course'),
               ),
             ],
             selected: {_filter},
@@ -179,7 +179,7 @@ class _BlockchainCertificatesScreenState
     final dialogFormKey = GlobalKey<FormState>();
     await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
       title: Text(language.t('change_wallet')),
-      content: Form(key: dialogFormKey, child: TextFormField(controller: _addressController, autocorrect: false, enableSuggestions: false, decoration: InputDecoration(labelText: language.t('wallet_address'), hintText: '0x…'), validator: (value) => RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(value?.trim() ?? '') ? null : language.t('wallet_invalid'))),
+      content: Form(key: dialogFormKey, child: TextFormField(controller: _addressController, autocorrect: false, enableSuggestions: false, decoration: InputDecoration(labelText: language.t('wallet_address'), hintText: '0xÃ¢â‚¬Â¦'), validator: (value) => RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(value?.trim() ?? '') ? null : language.t('wallet_invalid'))),
       actions: [
         TextButton(onPressed: () async { await provider.useEmbeddedWallet(); if (dialogContext.mounted) Navigator.pop(dialogContext); }, child: Text(language.t('use_embedded_wallet'))),
         FilledButton(onPressed: () async { if (dialogFormKey.currentState?.validate() ?? false) { await provider.setRecipientAddress(_addressController.text); if (dialogContext.mounted) Navigator.pop(dialogContext); } }, child: Text(language.t('save_wallet'))),
@@ -197,13 +197,13 @@ class _BlockchainCertificatesScreenState
   }
 
   String _certificateName(String code, String language) => switch (code) {
-        'perfectScore' => language == 'vi' ? 'Điểm tuyệt đối' : 'Perfect score',
-        'sevenDayStreak' => language == 'vi' ? 'Chuỗi 7 ngày' : '7-day streak',
+        'perfectScore' => language == 'vi' ? 'Ã„ÂiÃ¡Â»Æ’m tuyÃ¡Â»â€¡t Ã„â€˜Ã¡Â»â€˜i' : 'Perfect score',
+        'sevenDayStreak' => language == 'vi' ? 'ChuÃ¡Â»â€”i 7 ngÃƒÂ y' : '7-day streak',
         'flutterMaster' => 'Flutter Master',
         'knowledgeExplorer' =>
-          language == 'vi' ? 'Khám phá kiến thức' : 'Knowledge Explorer',
+          language == 'vi' ? 'KhÃƒÂ¡m phÃƒÂ¡ kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c' : 'Knowledge Explorer',
         'course_completion' =>
-          language == 'vi' ? 'Hoàn thành khóa học' : 'Course completion',
+          language == 'vi' ? 'HoÃƒÂ n thÃƒÂ nh khÃƒÂ³a hÃ¡Â»Âc' : 'Course completion',
         _ => code,
       };
 }

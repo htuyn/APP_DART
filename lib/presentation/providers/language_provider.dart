@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/l10n/app_strings.dart';
 
 enum AppLanguage {
-  vi('Tiếng Việt', 'vi'),
+  vi('Tiáº¿ng Viá»‡t', 'vi'),
   en('English', 'en');
 
   final String label;

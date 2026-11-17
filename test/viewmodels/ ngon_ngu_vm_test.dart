@@ -11,19 +11,19 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('mặc định tiếng Việt và tải ngôn ngữ đã lưu', () async {
+  test('máº·c Ä‘á»‹nh tiáº¿ng Viá»‡t vÃ  táº£i ngÃ´n ngá»¯ Ä‘Ã£ lÆ°u', () async {
     SharedPreferences.setMockInitialValues({'selected_language': 'en'});
     final container = ProviderContainer();
     addTearDown(container.dispose);
 
-    // Đọc provider để khởi động quá trình tải bất đồng bộ.
+    // Äá»c provider Ä‘á»ƒ khá»Ÿi Ä‘á»™ng quÃ¡ trÃ¬nh táº£i báº¥t Ä‘á»“ng bá»™.
     container.read(ngonNguProvider);
     await Future<void>.delayed(Duration.zero);
 
     expect(container.read(ngonNguProvider), NgonNgu.en);
   });
 
-  test('đổi và lưu ngôn ngữ Việt/Anh', () async {
+  test('Ä‘á»•i vÃ  lÆ°u ngÃ´n ngá»¯ Viá»‡t/Anh', () async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 

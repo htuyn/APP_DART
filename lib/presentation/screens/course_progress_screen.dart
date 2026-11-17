@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/course_progress_provider.dart';
 import '../providers/language_provider.dart';
-import 'exam_screen.dart';
+import 'diep_exam_screen.dart';
 
 class CourseProgressScreen extends StatelessWidget {
   const CourseProgressScreen({super.key});
@@ -75,7 +75,7 @@ class CourseProgressScreen extends StatelessWidget {
               subtitle: Text(
                 eligibility.eligible
                     ? (language.code == 'vi'
-                        ? 'Bạn đã đáp ứng mọi tiêu chí chứng chỉ.'
+                        ? 'BÃ¡ÂºÂ¡n Ã„â€˜ÃƒÂ£ Ã„â€˜ÃƒÂ¡p Ã¡Â»Â©ng mÃ¡Â»Âi tiÃƒÂªu chÃƒÂ­ chÃ¡Â»Â©ng chÃ¡Â»â€°.'
                         : 'You have met all certificate criteria.')
                     : language
                         .t('course_requirements_body')

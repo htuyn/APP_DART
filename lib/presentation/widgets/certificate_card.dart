@@ -64,16 +64,16 @@ class CertificateCard extends StatelessWidget {
   }
 
   String _shortAddress(String address) =>
-      address.length > 14 ? '${address.substring(0, 8)}…${address.substring(address.length - 6)}' : address;
+      address.length > 14 ? '${address.substring(0, 8)}â€¦${address.substring(address.length - 6)}' : address;
 
   String _certificateName(String code, String language) => switch (code) {
-        'perfectScore' => language == 'vi' ? 'Điểm tuyệt đối' : 'Perfect score',
-        'sevenDayStreak' => language == 'vi' ? 'Chuỗi 7 ngày' : '7-day streak',
+        'perfectScore' => language == 'vi' ? 'Äiá»ƒm tuyá»‡t Ä‘á»‘i' : 'Perfect score',
+        'sevenDayStreak' => language == 'vi' ? 'Chuá»—i 7 ngÃ y' : '7-day streak',
         'flutterMaster' => 'Flutter Master',
         'knowledgeExplorer' =>
-          language == 'vi' ? 'Khám phá kiến thức' : 'Knowledge Explorer',
+          language == 'vi' ? 'KhÃ¡m phÃ¡ kiáº¿n thá»©c' : 'Knowledge Explorer',
         'course_completion' =>
-          language == 'vi' ? 'Hoàn thành khóa học' : 'Course completion',
+          language == 'vi' ? 'HoÃ n thÃ nh khÃ³a há»c' : 'Course completion',
         _ => code,
       };
 }

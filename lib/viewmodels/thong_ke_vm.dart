@@ -2,7 +2,7 @@ import '../data/models/question_model.dart';
 import '../data/models/thong_ke.dart';
 import '../domain/repositories/quiz_repository.dart';
 
-/// Gói dữ liệu tổng hợp cho màn thống kê.
+/// GÃ³i dá»¯ liá»‡u tá»•ng há»£p cho mÃ n thá»‘ng kÃª.
 class ThongKeTong {
   const ThongKeTong({
     required this.theoKhoi,
@@ -13,7 +13,7 @@ class ThongKeTong {
   final QuizHistorySummary lichSu;
 }
 
-/// Tạo thống kê bằng repository và mã ngôn ngữ do Provider truyền vào.
+/// Táº¡o thá»‘ng kÃª báº±ng repository vÃ  mÃ£ ngÃ´n ngá»¯ do Provider truyá»n vÃ o.
 Future<ThongKeTong> tinhThongKe(
   IQuizRepository repository, {
   required String langCode,

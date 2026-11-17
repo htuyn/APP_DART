@@ -4,9 +4,9 @@ import '../../data/models/diep_spaced_repetition_model.dart';
 
 /// Pure implementation of the SM-2 spaced-repetition algorithm.
 ///
-/// Quality scale (0–5):
-///   >= 3  → correct answer (varying confidence)
-///   <  3  → incorrect answer
+/// Quality scale (0â€“5):
+///   >= 3  â†’ correct answer (varying confidence)
+///   <  3  â†’ incorrect answer
 class SM2Algorithm {
   SM2Algorithm._(); // non-instantiable utility class
 
@@ -25,14 +25,14 @@ class SM2Algorithm {
     );
   }
 
-  /// Advance [entry] by one review with the given [quality] score (0–5).
+  /// Advance [entry] by one review with the given [quality] score (0â€“5).
   ///
   /// SM-2 update rules:
-  ///   newEF = max(1.3, EF + 0.1 − (5−q) × (0.08 + (5−q) × 0.02))
+  ///   newEF = max(1.3, EF + 0.1 âˆ’ (5âˆ’q) Ã— (0.08 + (5âˆ’q) Ã— 0.02))
   ///   if quality < 3 : interval = 1, reviewCount stays (not incremented)
   ///   if reviewCount == 0 : interval = 1
   ///   if reviewCount == 1 : interval = 6
-  ///   else               : interval = round(prevInterval × newEF)
+  ///   else               : interval = round(prevInterval Ã— newEF)
   static SpacedRepetitionEntry computeNext(
     SpacedRepetitionEntry entry,
     int quality,
@@ -41,7 +41,7 @@ class SM2Algorithm {
 
     final now = DateTime.now();
 
-    // ── 1. Update ease factor ───────────────────────────────────────────────
+    // â”€â”€ 1. Update ease factor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     final double newEF = max(
       1.3,
       entry.easeFactor +
@@ -49,7 +49,7 @@ class SM2Algorithm {
           (5 - quality) * (0.08 + (5 - quality) * 0.02),
     );
 
-    // ── 2. Determine new interval & reviewCount ─────────────────────────────
+    // â”€â”€ 2. Determine new interval & reviewCount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     int newInterval;
     int newReviewCount;
 
@@ -71,11 +71,11 @@ class SM2Algorithm {
     // Clamp interval to at least 1 day
     newInterval = max(1, newInterval);
 
-    // ── 3. Track wrong count ────────────────────────────────────────────────
+    // â”€â”€ 3. Track wrong count â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     final int newWrongCount =
         quality < 3 ? entry.wrongCount + 1 : entry.wrongCount;
 
-    // ── 4. Build updated entry ──────────────────────────────────────────────
+    // â”€â”€ 4. Build updated entry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     return entry.copyWith(
       wrongCount: newWrongCount,
       reviewCount: newReviewCount,

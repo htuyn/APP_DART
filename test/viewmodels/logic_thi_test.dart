@@ -6,13 +6,13 @@ QuestionModel _question(String id, int blockId, int correctIndex) {
   return QuestionModel(
     id: id,
     blockId: blockId,
-    blockName: LocalizedText(vi: 'Khối $blockId', en: 'Block $blockId'),
-    level: 'Nhớ',
-    question: LocalizedText(vi: 'Câu $id', en: 'Question $id'),
+    blockName: LocalizedText(vi: 'Khá»‘i $blockId', en: 'Block $blockId'),
+    level: 'Nhá»›',
+    question: LocalizedText(vi: 'CÃ¢u $id', en: 'Question $id'),
     optionsVi: const ['A', 'B', 'C', 'D'],
     optionsEn: const ['A', 'B', 'C', 'D'],
     correctIndex: correctIndex,
-    explanation: const LocalizedText(vi: 'Giải thích', en: 'Explanation'),
+    explanation: const LocalizedText(vi: 'Giáº£i thÃ­ch', en: 'Explanation'),
   );
 }
 
@@ -24,14 +24,14 @@ void main() {
   ];
 
   group('logic thi', () {
-    test('lọc theo khối; null hoặc 0 lấy tất cả', () {
+    test('lá»c theo khá»‘i; null hoáº·c 0 láº¥y táº¥t cáº£', () {
       expect(locTheoKhoi(questions, 1).map((q) => q.id), ['Q1', 'Q2']);
       expect(locTheoKhoi(questions, 2).map((q) => q.id), ['Q3']);
       expect(locTheoKhoi(questions, null), hasLength(3));
       expect(locTheoKhoi(questions, 0), hasLength(3));
     });
 
-    test('trộn và lấy tối đa số câu yêu cầu mà không sửa danh sách gốc', () {
+    test('trá»™n vÃ  láº¥y tá»‘i Ä‘a sá»‘ cÃ¢u yÃªu cáº§u mÃ  khÃ´ng sá»­a danh sÃ¡ch gá»‘c', () {
       final originalIds = questions.map((q) => q.id).toList();
 
       final selected = tronVaLay(questions, 2);
@@ -43,14 +43,14 @@ void main() {
       expect(tronVaLay(questions, -1), isEmpty);
     });
 
-    test('lọc câu sai theo ID', () {
+    test('lá»c cÃ¢u sai theo ID', () {
       expect(
         locCauSai(questions, {'Q2', 'Q3'}).map((q) => q.id),
         ['Q2', 'Q3'],
       );
     });
 
-    test('chấm đúng, sai và bỏ trống; câu bỏ trống thuộc danh sách ôn lại', () {
+    test('cháº¥m Ä‘Ãºng, sai vÃ  bá» trá»‘ng; cÃ¢u bá» trá»‘ng thuá»™c danh sÃ¡ch Ã´n láº¡i', () {
       final result = chamDiem(questions, {'Q1': 0, 'Q2': 1});
 
       expect(result.soDung, 1);

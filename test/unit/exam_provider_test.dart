@@ -43,13 +43,13 @@ void main() {
       (i) => QuestionModel(
         id: 'Q$i',
         blockId: 1,
-        blockName: const LocalizedText(vi: 'Khối 1', en: 'Block 1'),
-        level: 'Nhớ',
-        question: LocalizedText(vi: 'Câu $i', en: 'Question $i'),
+        blockName: const LocalizedText(vi: 'Khá»‘i 1', en: 'Block 1'),
+        level: 'Nhá»›',
+        question: LocalizedText(vi: 'CÃ¢u $i', en: 'Question $i'),
         optionsVi: ['A', 'B', 'C', 'D'],
         optionsEn: ['A', 'B', 'C', 'D'],
         correctIndex: 1, // 'B' is always correct
-        explanation: const LocalizedText(vi: 'Giải thích', en: 'Explanation'),
+        explanation: const LocalizedText(vi: 'Giáº£i thÃ­ch', en: 'Explanation'),
       ),
     );
 

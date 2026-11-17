@@ -4,47 +4,47 @@ import 'models/question_model.dart';
 import 'models/quiz_result_model.dart';
 import 'models/thong_ke.dart';
 
-/// Giao diện truy cập dữ liệu của ứng dụng.
+/// Giao diá»‡n truy cáº­p dá»¯ liá»‡u cá»§a á»©ng dá»¥ng.
 abstract class KhoDuLieu {
-  /// Đọc câu hỏi từ ngân hàng dữ liệu.
+  /// Äá»c cÃ¢u há»i tá»« ngÃ¢n hÃ ng dá»¯ liá»‡u.
   Future<List<QuestionModel>> layTatCaCauHoi();
 
-  // ---- Sổ câu sai ----
+  // ---- Sá»• cÃ¢u sai ----
   Future<Set<String>> layIdCauSai();
   Future<void> luuCauSai(String idCau);
   Future<void> xoaCauSai(String idCau);
 
-  // ---- Kết quả & điểm ----
-  /// Lưu kết quả một lần thi vào lịch sử.
+  // ---- Káº¿t quáº£ & Ä‘iá»ƒm ----
+  /// LÆ°u káº¿t quáº£ má»™t láº§n thi vÃ o lá»‹ch sá»­.
   Future<void> luuKetQua(QuizResultModel ketQua);
 
-  /// Lịch sử các lần thi, mới nhất trước.
+  /// Lá»‹ch sá»­ cÃ¡c láº§n thi, má»›i nháº¥t trÆ°á»›c.
   Future<List<QuizResultModel>> layLichSuThi();
 
   Future<double> layDiemCaoNhat();
   Future<void> luuDiemCaoNhat(double diem);
 
-  // ---- Thống kê theo khối ----
-  /// Key là mã khối số từ QuestionModel.blockId.
+  // ---- Thá»‘ng kÃª theo khá»‘i ----
+  /// Key lÃ  mÃ£ khá»‘i sá»‘ tá»« QuestionModel.blockId.
   Future<Map<int, BlockStat>> layThongKeKhoi();
 
-  /// Cộng dồn số câu đã làm và số câu đúng cho khối.
+  /// Cá»™ng dá»“n sá»‘ cÃ¢u Ä‘Ã£ lÃ m vÃ  sá»‘ cÃ¢u Ä‘Ãºng cho khá»‘i.
   Future<void> capNhatThongKeKhoi(
     int blockId, {
     required int daLam,
     required int dung,
   });
 
-  // ---- Ngôn ngữ ----
-  /// 'vi' | 'en' | null nếu chưa từng lưu.
+  // ---- NgÃ´n ngá»¯ ----
+  /// 'vi' | 'en' | null náº¿u chÆ°a tá»«ng lÆ°u.
   Future<String?> layNgonNgu();
   Future<void> luuNgonNgu(String ma);
 }
 
-/// Provider cung cấp kho dữ liệu. Cần được override trong ProviderScope.
+/// Provider cung cáº¥p kho dá»¯ liá»‡u. Cáº§n Ä‘Æ°á»£c override trong ProviderScope.
 final khoDuLieuProvider = Provider<KhoDuLieu>((ref) {
   throw UnimplementedError(
-    'Hãy override khoDuLieuProvider trong ProviderScope bằng một '
-    'implementation của KhoDuLieu.',
+    'HÃ£y override khoDuLieuProvider trong ProviderScope báº±ng má»™t '
+    'implementation cá»§a KhoDuLieu.',
   );
 });

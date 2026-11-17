@@ -38,10 +38,10 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isVietnamese ? 'Chứng chỉ blockchain' : 'Blockchain certificates'),
+        title: Text(isVietnamese ? 'ChÃ¡Â»Â©ng chÃ¡Â»â€° blockchain' : 'Blockchain certificates'),
         actions: [
           IconButton(
-            tooltip: isVietnamese ? 'Đồng bộ' : 'Sync',
+            tooltip: isVietnamese ? 'Ã„ÂÃ¡Â»â€œng bÃ¡Â»â„¢' : 'Sync',
             onPressed: provider.isSyncing
                 ? null
                 : () => provider.synchronize(),
@@ -56,10 +56,10 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
             controller: _addressController,
             autocorrect: false,
             decoration: InputDecoration(
-              labelText: isVietnamese ? 'Địa chỉ ví Ethereum' : 'Ethereum wallet address',
-              hintText: '0x…',
+              labelText: isVietnamese ? 'Ã„ÂÃ¡Â»â€¹a chÃ¡Â»â€° vÃƒÂ­ Ethereum' : 'Ethereum wallet address',
+              hintText: '0xÃ¢â‚¬Â¦',
               suffixIcon: IconButton(
-                tooltip: isVietnamese ? 'Lưu địa chỉ ví' : 'Save wallet address',
+                tooltip: isVietnamese ? 'LÃ†Â°u Ã„â€˜Ã¡Â»â€¹a chÃ¡Â»â€° vÃƒÂ­' : 'Save wallet address',
                 onPressed: () => provider.setRecipientAddress(
                   _addressController.text,
                 ),
@@ -76,7 +76,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
           ],
           const SizedBox(height: 20),
           Text(
-            isVietnamese ? 'Đủ điều kiện nhận' : 'Eligible to request',
+            isVietnamese ? 'Ã„ÂÃ¡Â»Â§ Ã„â€˜iÃ¡Â»Âu kiÃ¡Â»â€¡n nhÃ¡ÂºÂ­n' : 'Eligible to request',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           if (provider.eligibleCertificates.isEmpty)
@@ -84,7 +84,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 isVietnamese
-                    ? 'Chưa có chứng chỉ nào đủ điều kiện.'
+                    ? 'ChÃ†Â°a cÃƒÂ³ chÃ¡Â»Â©ng chÃ¡Â»â€° nÃƒÂ o Ã„â€˜Ã¡Â»Â§ Ã„â€˜iÃ¡Â»Âu kiÃ¡Â»â€¡n.'
                     : 'No certificates are eligible yet.',
               ),
             ),
@@ -95,27 +95,27 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                 title: Text(_certificateName(eligibility.code, isVietnamese)),
                 subtitle: Text(
                   eligibility.type == CertificateType.achievement
-                      ? (isVietnamese ? 'Thành tích' : 'Achievement')
-                      : (isVietnamese ? 'Hoàn thành khóa học' : 'Course completion'),
+                      ? (isVietnamese ? 'ThÃƒÂ nh tÃƒÂ­ch' : 'Achievement')
+                      : (isVietnamese ? 'HoÃƒÂ n thÃƒÂ nh khÃƒÂ³a hÃ¡Â»Âc' : 'Course completion'),
                 ),
                 trailing: TextButton(
                   onPressed: provider.recipientAddress == null
                       ? null
                       : () => provider.requestCertificate(eligibility.code),
-                  child: Text(isVietnamese ? 'Yêu cầu' : 'Request'),
+                  child: Text(isVietnamese ? 'YÃƒÂªu cÃ¡ÂºÂ§u' : 'Request'),
                 ),
               ),
             ),
           const SizedBox(height: 20),
           Text(
-            isVietnamese ? 'Chứng chỉ đã yêu cầu' : 'Requested certificates',
+            isVietnamese ? 'ChÃ¡Â»Â©ng chÃ¡Â»â€° Ã„â€˜ÃƒÂ£ yÃƒÂªu cÃ¡ÂºÂ§u' : 'Requested certificates',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           if (provider.certificates.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                isVietnamese ? 'Chưa có yêu cầu.' : 'No requests yet.',
+                isVietnamese ? 'ChÃ†Â°a cÃƒÂ³ yÃƒÂªu cÃ¡ÂºÂ§u.' : 'No requests yet.',
               ),
             ),
           for (final certificate in provider.certificates)
@@ -131,7 +131,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                 ),
                 isThreeLine: true,
                 trailing: IconButton(
-                  tooltip: isVietnamese ? 'Xác minh' : 'Verify',
+                  tooltip: isVietnamese ? 'XÃƒÂ¡c minh' : 'Verify',
                   onPressed: () => provider.synchronize(),
                   icon: const Icon(Icons.verified_outlined),
                 ),
@@ -143,22 +143,22 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
   }
 
   String _certificateName(String code, bool vi) => switch (code) {
-    'perfectScore' => vi ? 'Điểm tuyệt đối' : 'Perfect score',
-    'sevenDayStreak' => vi ? 'Chuỗi 7 ngày' : '7-day streak',
+    'perfectScore' => vi ? 'Ã„ÂiÃ¡Â»Æ’m tuyÃ¡Â»â€¡t Ã„â€˜Ã¡Â»â€˜i' : 'Perfect score',
+    'sevenDayStreak' => vi ? 'ChuÃ¡Â»â€”i 7 ngÃƒÂ y' : '7-day streak',
     'flutterMaster' => vi ? 'Flutter Master' : 'Flutter Master',
-    'knowledgeExplorer' => vi ? 'Khám phá kiến thức' : 'Knowledge Explorer',
-    'course_completion' => vi ? 'Hoàn thành khóa học' : 'Course completion',
+    'knowledgeExplorer' => vi ? 'KhÃƒÂ¡m phÃƒÂ¡ kiÃ¡ÂºÂ¿n thÃ¡Â»Â©c' : 'Knowledge Explorer',
+    'course_completion' => vi ? 'HoÃƒÂ n thÃƒÂ nh khÃƒÂ³a hÃ¡Â»Âc' : 'Course completion',
     _ => code,
   };
 
   String _statusLabel(CertificateStatus status, bool vi) => switch (status) {
-    CertificateStatus.eligible => vi ? 'Đủ điều kiện' : 'Eligible',
-    CertificateStatus.requested => vi ? 'Đã gửi yêu cầu' : 'Requested',
-    CertificateStatus.pending => vi ? 'Đang chờ xác minh/cấp phát' : 'Pending issuer/chain confirmation',
-    CertificateStatus.confirmed => vi ? 'Đã xác nhận trên Sepolia' : 'Confirmed on Sepolia',
-    CertificateStatus.failed => vi ? 'Xác minh thất bại' : 'Verification failed',
-    CertificateStatus.revoked => vi ? 'Đã thu hồi' : 'Revoked',
-    CertificateStatus.unverified => vi ? 'Chưa xác minh' : 'Unverified',
+    CertificateStatus.eligible => vi ? 'Ã„ÂÃ¡Â»Â§ Ã„â€˜iÃ¡Â»Âu kiÃ¡Â»â€¡n' : 'Eligible',
+    CertificateStatus.requested => vi ? 'Ã„ÂÃƒÂ£ gÃ¡Â»Â­i yÃƒÂªu cÃ¡ÂºÂ§u' : 'Requested',
+    CertificateStatus.pending => vi ? 'Ã„Âang chÃ¡Â»Â xÃƒÂ¡c minh/cÃ¡ÂºÂ¥p phÃƒÂ¡t' : 'Pending issuer/chain confirmation',
+    CertificateStatus.confirmed => vi ? 'Ã„ÂÃƒÂ£ xÃƒÂ¡c nhÃ¡ÂºÂ­n trÃƒÂªn Sepolia' : 'Confirmed on Sepolia',
+    CertificateStatus.failed => vi ? 'XÃƒÂ¡c minh thÃ¡ÂºÂ¥t bÃ¡ÂºÂ¡i' : 'Verification failed',
+    CertificateStatus.revoked => vi ? 'Ã„ÂÃƒÂ£ thu hÃ¡Â»â€œi' : 'Revoked',
+    CertificateStatus.unverified => vi ? 'ChÃ†Â°a xÃƒÂ¡c minh' : 'Unverified',
   };
 
   IconData _statusIcon(CertificateStatus status) => switch (status) {

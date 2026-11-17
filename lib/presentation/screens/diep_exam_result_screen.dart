@@ -10,11 +10,11 @@ import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../providers/stats_provider.dart';
 import '../widgets/badge_unlocked_dialog.dart';
-import '../widgets/explanation_card.dart';
+import '../widgets/diep_explanation_card.dart';
 import '../widgets/language_button.dart';
 import '../widgets/responsive_body.dart';
-import 'exam_screen.dart';
-import 'wrong_questions_screen.dart';
+import 'diep_exam_screen.dart';
+import 'diep_wrong_questions_screen.dart';
 
 class ExamResultScreen extends StatefulWidget {
   final QuizResultModel result;
@@ -105,7 +105,7 @@ class _ExamResultScreenState extends State<ExamResultScreen>
           ),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
           children: [
-            // ── Hero Score Card (animated) ──────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Hero Score Card (animated) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             FadeTransition(
               opacity: _heroFade,
               child: ScaleTransition(
@@ -164,7 +164,7 @@ class _ExamResultScreenState extends State<ExamResultScreen>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '${result.score}/${result.totalQuestions} ${lang.t('questions')} · ${percentage.toStringAsFixed(0)}%',
+                        '${result.score}/${result.totalQuestions} ${lang.t('questions')} Ã‚Â· ${percentage.toStringAsFixed(0)}%',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.88),
                           fontSize: 14,
@@ -219,7 +219,7 @@ class _ExamResultScreenState extends State<ExamResultScreen>
 
             const SizedBox(height: 24),
 
-            // ── Action Buttons ──────────────────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Action Buttons Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             if (result.wrongQuestionIds.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -260,7 +260,7 @@ class _ExamResultScreenState extends State<ExamResultScreen>
               label: Text(lang.t('go_home')),
             ),
 
-            // ── Answer Review Section ───────────────────────────────────────
+            // Ã¢â€â‚¬Ã¢â€â‚¬ Answer Review Section Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
             if (questions.isNotEmpty) ...[
               const SizedBox(height: 24),
               Padding(

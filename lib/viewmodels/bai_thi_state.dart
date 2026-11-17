@@ -2,7 +2,7 @@ import '../data/models/question_model.dart';
 import '../data/models/quiz_result_model.dart';
 import 'logic_thi.dart';
 
-/// Trạng thái của một phiên luyện tập, thi thử hoặc làm lại câu sai.
+/// Tráº¡ng thÃ¡i cá»§a má»™t phiÃªn luyá»‡n táº­p, thi thá»­ hoáº·c lÃ m láº¡i cÃ¢u sai.
 class BaiThiState {
   const BaiThiState({
     this.cheDo = CheDoBaiThi.luyenTap,
@@ -21,7 +21,7 @@ class BaiThiState {
   final List<QuestionModel> cauHoi;
   final int viTri;
 
-  /// Lưu lựa chọn theo ID câu hỏi để thứ tự câu không ảnh hưởng đáp án.
+  /// LÆ°u lá»±a chá»n theo ID cÃ¢u há»i Ä‘á»ƒ thá»© tá»± cÃ¢u khÃ´ng áº£nh hÆ°á»Ÿng Ä‘Ã¡p Ã¡n.
   final Map<String, int> dapAnDaChon;
   final bool dangTai;
   final bool daNop;

@@ -9,7 +9,7 @@ import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
 import '../presentation/providers/stats_provider.dart';
 import '../presentation/providers/theme_provider.dart';
-import '../presentation/screens/practice_screen.dart';
+import '../presentation/screens/diep_practice_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';
@@ -276,7 +276,7 @@ class _ProfileCard extends StatelessWidget {
               children: [
                 ChoiceChip(
                   avatar: const Icon(Icons.check_rounded, size: 16),
-                  label: const Text('Tiếng Việt'),
+                  label: const Text('Tiáº¿ng Viá»‡t'),
                   selected: lang.isVietnamese,
                   onSelected: (selected) {
                     if (selected) lang.setLanguage(AppLanguage.vi);
@@ -450,7 +450,7 @@ class _HistoryTile extends StatelessWidget {
           child: Icon(passed ? Icons.check_rounded : Icons.close_rounded, size: 20),
         ),
         title: Text(
-          '$score/$total $questionLabel · $percent%',
+          '$score/$total $questionLabel Â· $percent%',
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
         subtitle: Text(resultTime, style: Theme.of(context).textTheme.bodySmall),
@@ -721,7 +721,7 @@ class _StatRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '$correctLabel ${stat.correctCount}/${stat.totalQuestions} · $incorrectLabel ${stat.wrongQuestions}',
+                    '$correctLabel ${stat.correctCount}/${stat.totalQuestions} Â· $incorrectLabel ${stat.wrongQuestions}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Icon(

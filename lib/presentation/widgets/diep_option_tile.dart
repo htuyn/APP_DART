@@ -68,7 +68,7 @@ class _OptionTileState extends State<OptionTile>
     final isDark = theme.brightness == Brightness.dark;
     final scheme = theme.colorScheme;
 
-    // ── Color tokens per state ──────────────────────────────────────────────
+    // â”€â”€ Color tokens per state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     Color borderColor;
     Color bgColor;
     Color textColor =

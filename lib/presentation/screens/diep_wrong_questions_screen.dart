@@ -5,9 +5,9 @@ import '../../data/models/question_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/ai_tutor_sheet.dart';
-import '../widgets/explanation_card.dart';
+import '../widgets/diep_explanation_card.dart';
 import '../widgets/language_button.dart';
-import '../widgets/option_tile.dart';
+import '../widgets/diep_option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
 
@@ -82,7 +82,7 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    '${q.id} • ${q.blockName.getText(currentLang)}',
+                    '${q.id} Ã¢â‚¬Â¢ ${q.blockName.getText(currentLang)}',
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('đếm ngược về 0 rồi dừng', () {
+  test('Ä‘áº¿m ngÆ°á»£c vá» 0 rá»“i dá»«ng', () {
     fakeAsync((async) {
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -26,7 +26,7 @@ void main() {
     });
   });
 
-  test('tạm dừng giữ thời gian, tiếp tục đếm và dừng đặt lại trạng thái', () {
+  test('táº¡m dá»«ng giá»¯ thá»i gian, tiáº¿p tá»¥c Ä‘áº¿m vÃ  dá»«ng Ä‘áº·t láº¡i tráº¡ng thÃ¡i', () {
     fakeAsync((async) {
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -50,7 +50,7 @@ void main() {
     });
   });
 
-  test('thời lượng không dương không khởi chạy timer', () {
+  test('thá»i lÆ°á»£ng khÃ´ng dÆ°Æ¡ng khÃ´ng khá»Ÿi cháº¡y timer', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);
 

@@ -39,7 +39,7 @@ abstract final class BadgeCatalog {
   static const List<BadgeDefinition> all = [
     BadgeDefinition(
       id: 'first_answer',
-      icon: '🌱',
+      icon: 'ðŸŒ±',
       titleKey: 'badge_first_answer_title',
       descriptionKey: 'badge_first_answer_description',
       metric: BadgeMetric.answers,
@@ -47,7 +47,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'answers_10',
-      icon: '📚',
+      icon: 'ðŸ“š',
       titleKey: 'badge_answers_10_title',
       descriptionKey: 'badge_answers_10_description',
       metric: BadgeMetric.answers,
@@ -55,7 +55,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'answers_50',
-      icon: '🧠',
+      icon: 'ðŸ§ ',
       titleKey: 'badge_answers_50_title',
       descriptionKey: 'badge_answers_50_description',
       metric: BadgeMetric.answers,
@@ -63,7 +63,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'answers_100',
-      icon: '🏅',
+      icon: 'ðŸ…',
       titleKey: 'badge_answers_100_title',
       descriptionKey: 'badge_answers_100_description',
       metric: BadgeMetric.answers,
@@ -71,7 +71,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'streak_3',
-      icon: '🔥',
+      icon: 'ðŸ”¥',
       titleKey: 'badge_streak_3_title',
       descriptionKey: 'badge_streak_3_description',
       metric: BadgeMetric.streak,
@@ -79,7 +79,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'streak_7',
-      icon: '⚡',
+      icon: 'âš¡',
       titleKey: 'badge_streak_7_title',
       descriptionKey: 'badge_streak_7_description',
       metric: BadgeMetric.streak,
@@ -87,7 +87,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'streak_30',
-      icon: '👑',
+      icon: 'ðŸ‘‘',
       titleKey: 'badge_streak_30_title',
       descriptionKey: 'badge_streak_30_description',
       metric: BadgeMetric.streak,
@@ -95,7 +95,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'first_exam',
-      icon: '🎯',
+      icon: 'ðŸŽ¯',
       titleKey: 'badge_first_exam_title',
       descriptionKey: 'badge_first_exam_description',
       metric: BadgeMetric.exams,
@@ -103,7 +103,7 @@ abstract final class BadgeCatalog {
     ),
     BadgeDefinition(
       id: 'perfect_exam',
-      icon: '💯',
+      icon: 'ðŸ’¯',
       titleKey: 'badge_perfect_exam_title',
       descriptionKey: 'badge_perfect_exam_description',
       metric: BadgeMetric.perfectExams,

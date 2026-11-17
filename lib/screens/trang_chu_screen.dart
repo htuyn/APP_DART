@@ -8,9 +8,9 @@ import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
 import '../presentation/providers/diep_spaced_repetition_provider.dart';
 import '../presentation/screens/achievements_screen.dart';
-import '../presentation/screens/practice_screen.dart';
+import '../presentation/screens/diep_practice_screen.dart';
 import '../presentation/screens/diep_spaced_repetition_screen.dart';
-import '../presentation/screens/wrong_questions_screen.dart';
+import '../presentation/screens/diep_wrong_questions_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';
@@ -220,7 +220,7 @@ class TrangChuScreen extends StatelessWidget {
           title: lang.t('wrong_book'),
           subtitle: wrong == 0
               ? lang.t('wrong_hint')
-              : '$wrong · ${lang.t('wrong_hint')}',
+              : '$wrong Â· ${lang.t('wrong_hint')}',
           badgeText: wrong > 0 ? '$wrong ${lang.t('incorrect')}' : null,
           badgeColor: const Color(0xFFEDE9FE),
           badgeTextColor: const Color(0xFF5B21B6),
@@ -240,9 +240,9 @@ class TrangChuScreen extends StatelessWidget {
           title: lang.t('spaced_repetition'),
           subtitle: lang.t('spaced_repetition_hint'),
           badgeText: spacedRepetition.dueTodayCount > 0
-              ? '${spacedRepetition.dueTodayCount} cần ôn'
+              ? '${spacedRepetition.dueTodayCount} cáº§n Ã´n'
               : (spacedRepetition.sortedReviewQuestions.isNotEmpty
-                  ? '${spacedRepetition.sortedReviewQuestions.length} câu'
+                  ? '${spacedRepetition.sortedReviewQuestions.length} cÃ¢u'
                   : null),
           badgeColor: const Color(0xFFEEF2FF),
           badgeTextColor: const Color(0xFF3730A3),
@@ -275,9 +275,9 @@ class TrangChuScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          title: lang.translate(vi: 'Tiến độ khóa học', en: 'Course progress'),
+          title: lang.translate(vi: 'Tiáº¿n Ä‘á»™ khÃ³a há»c', en: 'Course progress'),
           subtitle: lang.translate(
-            vi: 'Theo dõi điều kiện hoàn thành khóa học',
+            vi: 'Theo dÃµi Ä‘iá»u kiá»‡n hoÃ n thÃ nh khÃ³a há»c',
             en: 'Track course completion requirements',
           ),
           badgeColor: const Color(0xFFCFFAFE),
@@ -294,9 +294,9 @@ class TrangChuScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          title: lang.translate(vi: 'Chứng chỉ', en: 'Certificates'),
+          title: lang.translate(vi: 'Chá»©ng chá»‰', en: 'Certificates'),
           subtitle: lang.translate(
-            vi: 'Yêu cầu và xác minh chứng chỉ Sepolia',
+            vi: 'YÃªu cáº§u vÃ  xÃ¡c minh chá»©ng chá»‰ Sepolia',
             en: 'Request and verify Sepolia certificates',
           ),
           badgeColor: const Color(0xFFCCFBF1),
@@ -427,7 +427,7 @@ class _WelcomeCard extends StatelessWidget {
                 _HeaderStat(
                   icon: Icons.bookmark_border_rounded,
                   value: '$wrongCount',
-                  label: 'câu sai',
+                  label: 'cÃ¢u sai',
                 ),
               ],
             ),

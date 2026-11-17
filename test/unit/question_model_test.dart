@@ -6,10 +6,10 @@ void main() {
     final sampleJson = {
       "id": "K01-001",
       "block_id": 1,
-      "block_name": {"vi": "Khối 1. Ngôn ngữ Dart", "en": "Block 1. Dart"},
-      "level": "Nhớ",
+      "block_name": {"vi": "Khá»‘i 1. NgÃ´n ngá»¯ Dart", "en": "Block 1. Dart"},
+      "level": "Nhá»›",
       "question": {
-        "vi": "Từ khoá nào yêu cầu hằng số lúc biên dịch?",
+        "vi": "Tá»« khoÃ¡ nÃ o yÃªu cáº§u háº±ng sá»‘ lÃºc biÃªn dá»‹ch?",
         "en": "Which keyword requires compile-time constant?"
       },
       "options": {
@@ -18,7 +18,7 @@ void main() {
       },
       "correct_index": 2,
       "explanation": {
-        "vi": "const tạo hằng số lúc biên dịch.",
+        "vi": "const táº¡o háº±ng sá»‘ lÃºc biÃªn dá»‹ch.",
         "en": "const creates compile-time constants."
       }
     };
@@ -28,7 +28,7 @@ void main() {
 
       expect(model.id, 'K01-001');
       expect(model.blockId, 1);
-      expect(model.level, 'Nhớ');
+      expect(model.level, 'Nhá»›');
       expect(model.correctIndex, 2);
       expect(model.optionsVi.length, 4);
       expect(model.optionsVi[2], 'const');
@@ -37,7 +37,7 @@ void main() {
     test('Returns correct localized question text', () {
       final model = QuestionModel.fromJson(sampleJson);
 
-      expect(model.question.getText('vi'), 'Từ khoá nào yêu cầu hằng số lúc biên dịch?');
+      expect(model.question.getText('vi'), 'Tá»« khoÃ¡ nÃ o yÃªu cáº§u háº±ng sá»‘ lÃºc biÃªn dá»‹ch?');
       expect(model.question.getText('en'), 'Which keyword requires compile-time constant?');
     });
 
