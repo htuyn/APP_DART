@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/question_model.dart';
-import '../../data/models/spaced_repetition_model.dart';
-import '../../data/datasources/spaced_repetition_datasource.dart';
-import '../../domain/spaced_repetition/sm2_algorithm.dart';
+import '../../data/models/diep_spaced_repetition_model.dart';
+import '../../data/datasources/diep_spaced_repetition_datasource.dart';
+import '../../domain/spaced_repetition/diep_sm2_algorithm.dart';
 
 class SpacedRepetitionProvider with ChangeNotifier {
   final SpacedRepetitionDataSource _dataSource = SpacedRepetitionDataSource();

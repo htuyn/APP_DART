@@ -20,7 +20,7 @@ import 'presentation/providers/exam_provider.dart';
 import 'presentation/providers/gamification_provider.dart';
 import 'presentation/providers/language_provider.dart';
 import 'presentation/providers/quiz_provider.dart';
-import 'presentation/providers/spaced_repetition_provider.dart';
+import 'presentation/providers/diep_spaced_repetition_provider.dart';
 import 'presentation/providers/stats_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/screens/blockchain_certificates_screen.dart';

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/spaced_repetition_model.dart';
+import '../models/diep_spaced_repetition_model.dart';
 
 class SpacedRepetitionDataSource {
   static const String _prefsKey = 'spaced_repetition_data';

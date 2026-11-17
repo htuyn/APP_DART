@@ -6,7 +6,7 @@ import '../../data/models/question_model.dart';
 import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
-import '../providers/spaced_repetition_provider.dart';
+import '../providers/diep_spaced_repetition_provider.dart';
 import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/explanation_card.dart';
 import '../widgets/language_button.dart';

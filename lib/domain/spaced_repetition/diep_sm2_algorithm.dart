@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../data/models/spaced_repetition_model.dart';
+import '../../data/models/diep_spaced_repetition_model.dart';
 
 /// Pure implementation of the SM-2 spaced-repetition algorithm.
 ///
