@@ -71,6 +71,7 @@ void main() {
     expect(find.text('Thành tích'), findsOneWidget);
     expect(find.text('3 ngày liên tiếp'), findsOneWidget);
     expect(find.text('3/10 câu hôm nay'), findsOneWidget);
+    expect(find.text('1 lượt bảo vệ chuỗi'), findsOneWidget);
     expect(find.text('3/10'), findsOneWidget);
     expect(find.text('Cấp 2 · Người chăm học'), findsOneWidget);
     expect(find.text('135 XP'), findsOneWidget);

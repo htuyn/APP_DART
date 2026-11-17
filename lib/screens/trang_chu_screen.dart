@@ -7,6 +7,7 @@ import '../presentation/providers/gamification_provider.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
 import '../presentation/screens/achievements_screen.dart';
+import '../presentation/screens/practice_screen.dart';
 import '../presentation/screens/wrong_questions_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
@@ -31,7 +32,8 @@ class TrangChuScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                color: Theme.of(context).colorScheme.primary
+                    .withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -91,6 +93,35 @@ class TrangChuScreen extends StatelessWidget {
             currentStreak: gamification.currentStreak,
             levelProgress: gamification.levelProgress,
             languageCode: lang.code,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Consumer<GamificationProvider>(
+          builder: (context, gamification, _) => _ModeCard(
+            icon: Icons.bolt_rounded,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            title: lang.t('daily_challenge_title'),
+            subtitle: gamification.dailyChallengeCompleted
+                ? lang.t('daily_challenge_done')
+                : lang.t('daily_challenge_pending'),
+            badgeText: gamification.dailyChallengeCompleted ? null : '+50 XP',
+            onTap: () {
+              final questions = gamification.dailyChallengeQuestions(
+                quiz.allQuestions,
+              );
+              Navigator.of(context).push(
+                openAppPage(
+                  PracticeScreen(
+                    fixedQuestions: questions,
+                    isDailyChallenge: true,
+                  ),
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(height: 24),
@@ -185,7 +216,8 @@ class TrangChuScreen extends StatelessWidget {
           badgeColor: const Color(0xFFEDE9FE),
           badgeTextColor: const Color(0xFF5B21B6),
           onTap: () {
-            Navigator.of(context).push(openAppPage(const WrongQuestionsScreen()));
+            Navigator.of(context)
+                .push(openAppPage(const WrongQuestionsScreen()));
           },
         ),
         const SizedBox(height: 14),
@@ -259,7 +291,11 @@ class _WelcomeCard extends StatelessWidget {
                     width: 1.2,
                   ),
                 ),
-                child: const Icon(Icons.school_rounded, color: Colors.white, size: 32),
+                child: const Icon(
+                  Icons.school_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -425,7 +461,9 @@ class _ModeCardState extends State<_ModeCard> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppMetrics.radiusCard),
             side: BorderSide(
-              color: scheme.outlineVariant.withValues(alpha: isDark ? 0.4 : 0.7),
+              color: scheme.outlineVariant.withValues(
+                alpha: isDark ? 0.4 : 0.7,
+              ),
             ),
           ),
           child: InkWell(
@@ -448,7 +486,9 @@ class _ModeCardState extends State<_ModeCard> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: widget.gradient.colors.first.withValues(alpha: 0.3),
+                          color: widget.gradient.colors.first.withValues(
+                            alpha: 0.3,
+                          ),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -480,7 +520,8 @@ class _ModeCardState extends State<_ModeCard> {
                                 decoration: BoxDecoration(
                                   color: isDark
                                       ? scheme.primaryContainer
-                                      : (widget.badgeColor ?? scheme.primaryContainer),
+                                      : (widget.badgeColor ??
+                                            scheme.primaryContainer),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -490,7 +531,8 @@ class _ModeCardState extends State<_ModeCard> {
                                     fontWeight: FontWeight.w800,
                                     color: isDark
                                         ? scheme.onPrimaryContainer
-                                        : (widget.badgeTextColor ?? scheme.onPrimaryContainer),
+                                        : (widget.badgeTextColor ??
+                                              scheme.onPrimaryContainer),
                                   ),
                                 ),
                               ),
