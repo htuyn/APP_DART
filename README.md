@@ -5,52 +5,104 @@ Dự án cuối kỳ học phần **INT1449 - Lập trình di động**.
 
 ---
 
-## 🌟 Tính Năng Nổi Bật
+## 🌟 Tính Năng
 
-### 1. Tính Năng Tối Thiểu (Đạt chuẩn Rubric)
-* **Nạp 300 câu từ JSON:** Dữ liệu chuẩn hóa 20 khối kiến thức Flutter, lưu tại `assets/data/questions.json`.
-* **Chế độ Luyện Tập (Practice Mode):**
-  * Luyện tự do theo từng khối kiến thức (hoặc tất cả các khối).
-  * Hiển thị giải thích chi tiết ngay sau khi chọn đáp án.
-* **Chế độ Thi Thử (Mock Exam):**
-  * Trộn ngẫu nhiên câu hỏi từ ngân hàng đề.
-  * Tự động chấm điểm, phân loại Đạt / Chưa đạt, hiển thị thời gian làm bài.
-* **Làm Lại Câu Sai (Wrong Questions Book):**
-  * Tự động lưu các câu người dùng trả lời sai vào bộ nhớ máy.
-  * Cho phép luyện riêng các câu sai; khi làm đúng sẽ tự động gỡ khỏi danh sách câu sai.
-* **Thống Kê Theo Khối (Knowledge Statistics):**
-  * Biểu đồ tiến độ và tỉ lệ chính xác trên toàn bộ 20 khối kiến thức.
-  * Bấm vào từng khối để luyện tập trực tiếp khối kiến thức còn yếu.
-  * Lưu trữ lịch sử tất cả các lần thi thử.
-
-### 2. Tính Năng Mở Rộng
-* **Đa Ngôn Ngữ Song Ngữ (Bilingual VI / EN):**
-  * Chuyển đổi ngôn ngữ toàn bộ giao diện chỉ với 1 chạm trên AppBar.
-  * **Tính năng lật ngữ cảnh:** Cho phép đổi ngôn ngữ Tiếng Việt / Tiếng Anh ngay trên từng câu hỏi khi đang làm bài.
-* **Đồng Hồ Đếm Ngược (Countdown Timer):**
-  * Bộ đếm giờ đếm ngược thời gian làm bài trong phòng thi.
-  * Tự động cảnh báo khi sắp hết giờ và tự động thu bài khi hết thời gian.
+* **Ngân hàng câu hỏi Flutter:** Nạp câu hỏi song ngữ từ `assets/data/questions.json`, phân nhóm theo khối kiến thức để luyện tập.
+* **Luyện tập:** Luyện theo khối hoặc làm lại sổ câu sai; hiển thị đáp án và giải thích, cập nhật danh sách câu sai theo kết quả.
+* **Thi thử:** Chọn đề, trả lời câu hỏi có giới hạn thời gian, tự động nộp khi hết giờ và xem điểm, thời gian, đáp án cùng phần giải thích.
+* **Thống kê:** Xem tiến độ theo khối, độ chính xác và lịch sử kết quả thi.
+* **Tiếng Việt và English:** Chuyển đổi ngôn ngữ giao diện và nội dung câu hỏi.
+* **Chuỗi ngày học (Streak):** Ghi nhận ngày có hoạt động học, số ngày liên tiếp và kỷ lục chuỗi học dài nhất.
+* **Hệ thống huy hiệu:** Tự mở khóa huy hiệu theo số câu trả lời, ngày học liên tiếp, số bài thi và bài thi đạt điểm tuyệt đối. Trang Thành tích hiển thị tiến độ và ngày nhận huy hiệu; khi thi mở khóa huy hiệu mới, ứng dụng hiện hộp thoại chúc mừng.
+* **Gia sư AI:** Cung cấp hỗ trợ giải thích trong quá trình học thông qua luồng gia sư AI.
+* **Giao diện và trợ năng:** Hỗ trợ giao diện sáng/tối, bố cục co giãn và vùng chạm tối thiểu 48dp cho các thành phần tương tác.
 
 ---
 
-## 🏗️ Kiến Trúc Ứng Dụng (Architecture)
+## 🏗️ Kiến Trúc và Cấu Trúc `lib/`
 
-Ứng dụng tuân thủ mô hình **Clean Architecture & Repository Pattern**:
+Ứng dụng tổ chức theo các lớp `core`, `data`, `domain` và `presentation`, kết hợp Repository Pattern với package `provider` cho các luồng giao diện hiện tại. `lib/viewmodels/` chứa các ViewModel và logic bài thi riêng của dự án.
 
-```
+```text
 lib/
-├── core/                  # Constants, Theme Material 3, Localization
+├── core/
+│   ├── constants/app_colors.dart
+│   ├── l10n/app_strings.dart
+│   ├── navigation/app_page_route.dart
+│   ├── theme/app_theme.dart
+│   └── utils/
+│       ├── clock.dart
+│       └── date_key.dart
 ├── data/
-│   ├── datasources/       # QuizLocalDataSource (JSON), QuizStorageDataSource (Prefs)
-│   ├── models/            # QuestionModel, QuizResultModel
-│   └── repositories/      # QuizRepositoryImpl
+│   ├── datasources/
+│   │   ├── ai_tutor_datasource.dart
+│   │   ├── gamification_storage_datasource.dart
+│   │   ├── quiz_local_datasource.dart
+│   │   └── quiz_storage_datasource.dart
+│   ├── models/
+│   │   ├── gamification_model.dart
+│   │   ├── question_model.dart
+│   │   ├── quiz_result_model.dart
+│   │   └── thong_ke.dart
+│   ├── repositories/
+│   │   ├── gamification_repository_impl.dart
+│   │   └── quiz_repository_impl.dart
+│   ├── kho_bo_nho.dart
+│   └── kho_du_lieu.dart
 ├── domain/
-│   └── repositories/      # IQuizRepository (Trừu tượng, dễ Mock khi test)
-└── presentation/
-    ├── providers/         # State Management (Provider: Quiz, Exam, Stats, Language)
-    ├── screens/           # Home, Practice, Exam, ExamResult, WrongQuestions, Stats
-    └── widgets/           # OptionTile (>= 48dp), CountdownTimer, StateViews (Loading, Error, Empty)
+│   ├── gamification/
+│   │   ├── badge_catalog.dart
+│   │   └── gamification_engine.dart
+│   └── repositories/
+│       ├── ai_repository.dart
+│       ├── i_gamification_repository.dart
+│       └── quiz_repository.dart
+├── presentation/
+│   ├── providers/
+│   │   ├── ai_tutor_provider.dart
+│   │   ├── exam_provider.dart
+│   │   ├── gamification_provider.dart
+│   │   ├── language_provider.dart
+│   │   ├── quiz_provider.dart
+│   │   ├── stats_provider.dart
+│   │   └── theme_provider.dart
+│   ├── screens/
+│   │   ├── achievements_screen.dart
+│   │   ├── exam_result_screen.dart
+│   │   ├── exam_screen.dart
+│   │   ├── home_screen.dart
+│   │   ├── practice_screen.dart
+│   │   ├── stats_screen.dart
+│   │   └── wrong_questions_screen.dart
+│   └── widgets/
+│       ├── ai_tutor_sheet.dart
+│       ├── badge_tile.dart
+│       ├── badge_unlocked_dialog.dart
+│       ├── countdown_timer_widget.dart
+│       ├── explanation_card.dart
+│       ├── language_button.dart
+│       ├── option_tile.dart
+│       ├── responsive_body.dart
+│       ├── state_views.dart
+│       └── streak_card.dart
+├── screens/
+│   ├── chon_de_screen.dart
+│   ├── chon_khoi_screen.dart
+│   ├── cua_toi_screen.dart
+│   └── trang_chu_screen.dart
+├── viewmodels/
+│   ├── bai_thi_state.dart
+│   ├── bai_thi_vm.dart
+│   ├── dong_ho_vm.dart
+│   ├── logic_thi.dart
+│   ├── ngon_ngu.dart
+│   ├── ngon_ngu_vm.dart
+│   ├── providers.dart
+│   └── thong_ke_vm.dart
+└── main.dart
 ```
+
+Màn hình khởi chạy hiện tại là `screens/trang_chu_screen.dart` (`TrangChuScreen`).
 
 ---
 
@@ -83,7 +135,7 @@ lib/
    ```bash
    flutter test
    ```
-   *(Bao gồm 17 test kiểm tra logic, widget và trợ năng)*
+   *(Chạy toàn bộ unit test, widget test và kiểm thử trợ năng trong thư mục `test/`.)*
 
 4. Khởi chạy ứng dụng:
    ```bash
@@ -92,12 +144,13 @@ lib/
 
 ---
 
-## 🧪 Kiểm Thử (Automated Tests)
+## 🧪 Kiểm Thử
 
-Bộ kiểm thử gồm **17 test** đạt chuẩn Rubric xuất sắc:
-* **Unit Tests:** Kiểm tra parse JSON, logic tính điểm, lọc câu hỏi theo khối, bộ đếm timer, lưu/xóa câu sai.
-* **Widget Tests:** Kiểm tra hiển thị màn hình chính, chuyển đổi ngôn ngữ linh hoạt.
-* **Accessibility Test:** Kiểm tra vùng chạm nút bấm đạt chuẩn tối thiểu `48x48dp` với `androidTapTargetGuideline`.
+Chạy bộ kiểm thử bằng `flutter test`. Các nhóm test hiện có bao gồm:
+
+* **Unit tests:** Parse dữ liệu, nghiệp vụ bài thi, ViewModels, đồng hồ, lưu trữ, streak và điều kiện mở khóa huy hiệu.
+* **Widget tests:** Màn hình chính, Thành tích, chuyển đổi ngôn ngữ và các thành phần giao diện.
+* **Accessibility tests:** Kiểm tra vùng chạm tối thiểu `48x48dp`.
 
 ---
 
@@ -112,26 +165,10 @@ Bộ kiểm thử gồm **17 test** đạt chuẩn Rubric xuất sắc:
 
 ---
 
-## 🧩 Phần Bổ Sung: State Management & Kiểm Thử
+## 🧠 State Management và Gamification
 
-### Model và Kho Dữ Liệu
-
-* Đồng bộ `KhoDuLieu` và `KhoBoNho` với các model hiện có: `QuestionModel`, `QuizResultModel` và `BlockStat`.
-* Kho trong bộ nhớ hỗ trợ danh sách câu hỏi, sổ câu sai, lịch sử thi, điểm cao nhất, thống kê theo khối và ngôn ngữ.
-
-### ViewModels Riverpod
-
-* `BaiThiVm`: quản lý luyện tập, thi thử và làm lại câu sai; lọc/trộn câu hỏi, ghi đáp án, chấm điểm, cập nhật sổ câu sai và lưu kết quả thi thử.
-* `DongHoVm`: quản lý đồng hồ thi thử, tạm dừng/tiếp tục và phát trạng thái hết giờ để tự nộp bài.
-* `NgonNguVm`: tải, đổi và lưu lựa chọn tiếng Việt/tiếng Anh bằng SharedPreferences.
-* `providers.dart`: cung cấp repository, ngân hàng câu hỏi, sổ câu sai, lịch sử, thống kê và mã ngôn ngữ.
-* `logic_thi.dart` và `bai_thi_state.dart`: chứa các hàm nghiệp vụ thuần và trạng thái phiên làm bài.
-
-### Test cho ViewModels
-
-* Bổ sung test lọc/trộn/chấm câu, các chế độ làm bài, đồng hồ và lưu lựa chọn ngôn ngữ trong `test/viewmodels/`.
-* Kết quả kiểm tra hiện tại: `flutter analyze` — `No issues found`; `flutter test` — **34 test passed**.
-
-### Ghi Chú Tích Hợp
-
-Các ViewModels Riverpod đã có thể được kiểm thử độc lập. `main.dart` hiện vẫn khởi tạo giao diện bằng package `provider`; để giao diện sử dụng các provider Riverpod mới, ứng dụng cần được tích hợp `ProviderScope` và chuyển phần giao diện tương ứng sang đọc Riverpod.
+* Giao diện hiện khởi tạo các `ChangeNotifier` bằng package `provider` trong `main.dart`, gồm quiz, thi thử, thống kê, ngôn ngữ, giao diện, gia sư AI và gamification.
+* `lib/viewmodels/` chứa các ViewModel/logic bài thi, đồng hồ, ngôn ngữ và thống kê; `bai_thi_state.dart` cùng `logic_thi.dart` biểu diễn trạng thái và nghiệp vụ bài thi.
+* `GamificationEngine` xử lý ngày học liên tiếp và điều kiện mở huy hiệu; `GamificationProvider` giữ tiến độ, phối hợp với luồng quiz/thi và cung cấp huy hiệu mới mở khóa cho giao diện.
+* Tiến độ gamification được lưu cục bộ dưới khóa `gamification_v1`; `Clock` cho phép kiểm thử logic đổi ngày.
+* `BadgeCatalog` định nghĩa các huy hiệu; `AchievementsScreen`, `StreakCard`, `BadgeTile` và `BadgeUnlockedDialog` hiển thị thành tích và thông báo mở khóa.
