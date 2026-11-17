@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/navigation/app_page_route.dart';
+import '../presentation/providers/gamification_provider.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
+import '../presentation/screens/achievements_screen.dart';
 import '../presentation/screens/wrong_questions_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';
+import '../presentation/widgets/streak_card.dart';
 import 'chon_de_screen.dart';
 import 'chon_khoi_screen.dart';
 import 'cua_toi_screen.dart';
@@ -79,6 +82,15 @@ class TrangChuScreen extends StatelessWidget {
           wrongCount: wrong,
           blockLabel: lang.t('block').toLowerCase(),
           questionLabel: lang.t('questions'),
+        ),
+        // Gamification summary is shown on the app's active home screen.
+        const SizedBox(height: 12),
+        Consumer<GamificationProvider>(
+          builder: (context, gamification, _) => StreakCard(
+            progress: gamification.progress,
+            currentStreak: gamification.currentStreak,
+            languageCode: lang.code,
+          ),
         ),
         const SizedBox(height: 24),
         Row(
@@ -173,6 +185,22 @@ class TrangChuScreen extends StatelessWidget {
           badgeTextColor: const Color(0xFF5B21B6),
           onTap: () {
             Navigator.of(context).push(openAppPage(const WrongQuestionsScreen()));
+          },
+        ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.emoji_events_rounded,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFA726), Color(0xFFFF6F00)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          title: lang.t('achievements'),
+          subtitle: lang.t('achievements_subtitle'),
+          badgeColor: const Color(0xFFFFF3E0),
+          badgeTextColor: const Color(0xFFE65100),
+          onTap: () {
+            Navigator.of(context).push(openAppPage(const AchievementsScreen()));
           },
         ),
       ],

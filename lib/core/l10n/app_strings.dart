@@ -151,6 +151,80 @@ class AppStrings {
     ),
     'question_status': (vi: 'Danh sách câu hỏi', en: 'Question Overview'),
     'quick_nav': (vi: 'Chuyển nhanh đến câu', en: 'Quick Jump'),
+
+    // Gamification: streaks, learning achievements, and badge copy.
+    'achievements': (vi: 'Thành tích', en: 'Achievements'),
+    'achievements_subtitle': (
+      vi: 'Theo dõi chuỗi ngày học và các cột mốc của bạn.',
+      en: 'Track your study streak and learning milestones.',
+    ),
+    'streak_title': (vi: 'Chuỗi ngày học', en: 'Study streak'),
+    'streak_days': (vi: 'ngày liên tiếp', en: 'day streak'),
+    'streak_best': (vi: 'Kỷ lục', en: 'Personal best'),
+    'streak_encouragement': (
+      vi: 'Học một chút mỗi ngày để giữ chuỗi nhé!',
+      en: 'Study a little every day to keep your streak going!',
+    ),
+    'today_answered': (vi: 'Câu đã học hôm nay', en: 'Answered today'),
+    'total_answered': (vi: 'Tổng câu đã học', en: 'Total answered'),
+    'exam_count': (vi: 'Bài thi đã hoàn thành', en: 'Exams completed'),
+    'perfect_count': (vi: 'Bài thi tuyệt đối', en: 'Perfect exams'),
+    'badges_title': (vi: 'Bộ sưu tập huy hiệu', en: 'Badge collection'),
+    'badge_unlocked': (vi: 'Đã mở khóa', en: 'Unlocked'),
+    'badge_locked': (vi: 'Chưa mở khóa', en: 'Locked'),
+    'badge_earned_on': (vi: 'Đạt ngày', en: 'Earned on'),
+    'badge_unlocked_dialog_title': (vi: 'Huy hiệu mới!', en: 'New achievement!'),
+    'badge_unlocked_dialog_body': (
+      vi: 'Chúc mừng bạn đã mở khóa:',
+      en: 'Congratulations! You unlocked:',
+    ),
+    'close': (vi: 'Đóng', en: 'Close'),
+
+    'badge_first_answer_title': (vi: 'Bước đầu tiên', en: 'First step'),
+    'badge_first_answer_description': (
+      vi: 'Trả lời câu hỏi đầu tiên.',
+      en: 'Answer your first question.',
+    ),
+    'badge_answers_10_title': (vi: 'Người chăm học', en: 'Getting curious'),
+    'badge_answers_10_description': (
+      vi: 'Trả lời tổng cộng 10 câu hỏi.',
+      en: 'Answer 10 questions in total.',
+    ),
+    'badge_answers_50_title': (vi: 'Kiên trì', en: 'Dedicated learner'),
+    'badge_answers_50_description': (
+      vi: 'Trả lời tổng cộng 50 câu hỏi.',
+      en: 'Answer 50 questions in total.',
+    ),
+    'badge_answers_100_title': (vi: 'Bậc thầy kiến thức', en: 'Knowledge master'),
+    'badge_answers_100_description': (
+      vi: 'Trả lời tổng cộng 100 câu hỏi.',
+      en: 'Answer 100 questions in total.',
+    ),
+    'badge_streak_3_title': (vi: 'Khởi đầu bền bỉ', en: 'Three-day streak'),
+    'badge_streak_3_description': (
+      vi: 'Học liên tiếp trong 3 ngày.',
+      en: 'Study for 3 consecutive days.',
+    ),
+    'badge_streak_7_title': (vi: 'Một tuần quyết tâm', en: 'Weekly champion'),
+    'badge_streak_7_description': (
+      vi: 'Học liên tiếp trong 7 ngày.',
+      en: 'Study for 7 consecutive days.',
+    ),
+    'badge_streak_30_title': (vi: 'Thói quen vàng', en: 'Unstoppable habit'),
+    'badge_streak_30_description': (
+      vi: 'Học liên tiếp trong 30 ngày.',
+      en: 'Study for 30 consecutive days.',
+    ),
+    'badge_first_exam_title': (vi: 'Vào phòng thi', en: 'First exam'),
+    'badge_first_exam_description': (
+      vi: 'Hoàn thành bài thi thử đầu tiên.',
+      en: 'Complete your first mock exam.',
+    ),
+    'badge_perfect_exam_title': (vi: 'Điểm tuyệt đối', en: 'Perfect score'),
+    'badge_perfect_exam_description': (
+      vi: 'Đạt 100% trong một bài thi thử.',
+      en: 'Score 100% on a mock exam.',
+    ),
   };
 
   static String text(String code, String key) {
