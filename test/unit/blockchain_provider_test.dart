@@ -49,6 +49,13 @@ class _BlockchainRepository implements IBlockchainRepository {
   String? address = _wallet;
   final certificates = <AchievementCertificateModel>[];
   int saveCount = 0;
+  bool relayerOffline = false;
+
+  @override
+  Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate) async {
+    if (relayerOffline) throw Exception('relayer offline');
+    return null;
+  }
 
   @override
   Future<void> saveCertificateRequest(AchievementCertificateModel certificate) async {
@@ -65,6 +72,12 @@ class _BlockchainRepository implements IBlockchainRepository {
   Future<void> saveRecipientAddress(String value) async => address = value;
   @override
   Future<String?> loadRecipientAddress() async => address;
+  @override
+  Future<String?> loadEmbeddedAddress() async => address;
+  @override
+  Future<String?> loadEmbeddedPrivateKey() async => null;
+  @override
+  Future<void> useEmbeddedWallet() async {}
   @override
   Future<List<String>> findIssuedCertificateIds({required String recipientAddress, required int fromBlock, required int toBlock}) async => const [];
   @override
@@ -87,7 +100,7 @@ void main() {
     final gamification = GamificationProvider(
       repository: _GamificationRepository(),
     );
-    final blockchainRepository = _BlockchainRepository();
+    final blockchainRepository = _BlockchainRepository()..relayerOffline = true;
     final blockchain = BlockchainProvider(
       repository: blockchainRepository,
       gamificationProvider: gamification,
@@ -104,6 +117,8 @@ void main() {
     final second = await blockchain.requestCertificate('perfectScore');
 
     expect(first, isNotNull);
+    expect(first?.status, CertificateStatus.pending);
+    expect(blockchain.noticeMessage, 'issuance_pending_notice');
     expect(second?.certificateId, first?.certificateId);
     expect(blockchainRepository.saveCount, 1);
     expect(blockchain.certificates, hasLength(1));

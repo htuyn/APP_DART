@@ -45,6 +45,9 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
   List<CertificateEligibility> _eligibleCertificates = const [];
   List<AchievementCertificateModel> _certificates = const [];
   String? _recipientAddress;
+  String? _embeddedAddress;
+  String? _embeddedPrivateKey;
+  String? _noticeMessage;
   String? _errorMessage;
   bool _isLoading = false;
   bool _isSyncing = false;
@@ -55,6 +58,10 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
   List<AchievementCertificateModel> get certificates =>
       List.unmodifiable(_certificates);
   String? get recipientAddress => _recipientAddress;
+  String? get embeddedAddress => _embeddedAddress;
+  String? get embeddedPrivateKey => _embeddedPrivateKey;
+  bool get isUsingEmbeddedWallet => _embeddedAddress != null && _recipientAddress?.toLowerCase() == _embeddedAddress!.toLowerCase();
+  String? get noticeMessage => _noticeMessage;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get isSyncing => _isSyncing;
@@ -72,6 +79,8 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
 
     try {
       _recipientAddress = await repository.loadRecipientAddress();
+      _embeddedAddress = await repository.loadEmbeddedAddress();
+      _embeddedPrivateKey = await repository.loadEmbeddedPrivateKey();
       _certificates = await repository.loadLocalCertificates();
       _recomputeEligibility();
       await synchronize();
@@ -79,6 +88,20 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
       _errorMessage = error.toString();
     } finally {
       _isLoading = false;
+      _notifyIfActive();
+    }
+  }
+
+  Future<void> useEmbeddedWallet() async {
+    try {
+      await repository.useEmbeddedWallet();
+      _recipientAddress = await repository.loadRecipientAddress();
+      _embeddedAddress = await repository.loadEmbeddedAddress();
+      _embeddedPrivateKey = await repository.loadEmbeddedPrivateKey();
+      _errorMessage = null;
+      await synchronize();
+    } catch (error) {
+      _errorMessage = error.toString();
       _notifyIfActive();
     }
   }
@@ -93,6 +116,7 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
     try {
       await repository.saveRecipientAddress(normalized);
       _recipientAddress = normalized;
+      _noticeMessage = null;
       _errorMessage = null;
       _notifyIfActive();
       await synchronize();
@@ -161,9 +185,27 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
       await repository.saveCertificateRequest(certificate);
       _upsertCertificate(certificate);
       _errorMessage = null;
+      _noticeMessage = 'issuance_pending_notice';
+      _notifyIfActive();
+      try {
+        final issued = await repository.issueCertificate(certificate);
+        if (issued != null) {
+          final updated = certificate.copyWith(
+            status: CertificateStatus.confirmed,
+            transactionHash: issued['transactionHash'] as String?,
+            blockNumber: (issued['blockNumber'] as num?)?.toInt(),
+            issuedAt: issued['issuedAt'] is String ? DateTime.tryParse(issued['issuedAt'] as String) : null,
+          );
+          await repository.saveCertificateRequest(updated);
+          _upsertCertificate(updated);
+          _noticeMessage = null;
+        }
+      } catch (_) {
+        // Keep the saved request pending when the relayer is offline.
+      }
       _notifyIfActive();
       unawaited(synchronize());
-      return certificate;
+      return _certificates.firstWhere((item) => item.certificateId == certificate.certificateId);
     } catch (error) {
       _errorMessage = error.toString();
       _notifyIfActive();

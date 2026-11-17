@@ -102,6 +102,23 @@ class BlockchainRepositoryImpl implements IBlockchainRepository {
   Future<String?> loadRecipientAddress() => storage.loadRecipientAddress();
 
   @override
+  Future<String?> loadEmbeddedAddress() => storage.loadEmbeddedAddress();
+
+  @override
+  Future<String?> loadEmbeddedPrivateKey() => storage.loadEmbeddedPrivateKey();
+
+  @override
+  Future<void> useEmbeddedWallet() => storage.useEmbeddedWallet();
+
+  @override
+  Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate) => ethereum.issueCertificate(
+    certificateId: certificate.certificateId,
+    certificateType: certificate.type.chainValue,
+    recipientAddress: certificate.recipientAddress,
+    achievementHash: certificate.achievementHash,
+  );
+
+  @override
   Future<List<String>> findIssuedCertificateIds({
     required String recipientAddress,
     required int fromBlock,

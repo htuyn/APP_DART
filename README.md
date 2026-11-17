@@ -242,36 +242,156 @@ Chạy toàn bộ bộ kiểm thử bằng `flutter test` (tất cả đều pas
 
 ---
 
-## ⛓️ Blockchain Certificate System
+## ⛓️ Blockchain Certificate System (Hệ Thống Chứng Chỉ Blockchain)
 
-Hệ thống dùng một contract `AchievementCertificate` trên Ethereum Sepolia. Flutter chỉ tạo yêu cầu và SHA-256 hash xác định; private key Issuer không được lưu trong app. Trạng thái trong SharedPreferences chỉ là cache — khi đồng bộ, app gọi `verifyCertificate(bytes32)` trên contract để lấy trạng thái hiện tại.
+Hệ thống tích hợp giải pháp cấp chứng chỉ số phi tập trung (Decentralized Achievement Certificates) dựa trên công nghệ Blockchain Ethereum Sepolia Testnet. Giải pháp kết hợp giữa kiểm tra điều kiện đủ (Eligibility Engine) cục bộ tại thiết bị di động và hợp đồng thông minh (Smart Contract) trên On-Chain để đảm bảo tính minh bạch, chống giả mạo và dễ dàng xác minh độc lập.
 
-* `lib/core/utils/achievement_hasher.dart`: chuẩn hóa dữ liệu criteria rồi tạo SHA-256 ổn định.
-* `lib/domain/blockchain/certificate_eligibility_engine.dart`: pure Dart eligibility cho bốn thành tích (Perfect Score, 7-Day Streak, Flutter Master, Knowledge Explorer) và khóa học.
-* `lib/data/datasources/`: lưu yêu cầu/địa chỉ ví cục bộ và đọc contract qua Ethereum RPC; datasource đọc blockchain không ký giao dịch.
-* `lib/data/repositories/blockchain_repository_impl.dart`: ghi cache và đối chiếu certificate ID, type, recipient, hash cùng trạng thái on-chain.
-* `lib/presentation/providers/blockchain_provider.dart` và `course_progress_provider.dart`: nối tiến độ hiện có với yêu cầu chứng chỉ và đồng bộ.
-* `lib/presentation/screens/blockchain_certificates_screen.dart`, `certificate_detail_screen.dart`, `course_progress_screen.dart`: nhập ví, theo dõi điều kiện, xem/xác minh chứng chỉ.
-* `contracts/AchievementCertificate.sol`: `certificateType = 1` là Achievement; `certificateType = 2` là Course Completion.
+---
 
-### Quy trình demo cấp chứng chỉ thủ công trên Sepolia
+### 📜 1. Hợp Đồng Thông Minh (Smart Contract Specification)
 
-1. Cài ví MetaMask và chọn **Sepolia Test Network**. Dùng faucet để nạp Sepolia ETH vào ví Issuer; recipient dùng địa chỉ ví công khai của người nhận.
-2. Đảm bảo địa chỉ Issuer trong ví MetaMask trùng với `issuer` của contract. Địa chỉ contract hiện tại nằm trong `lib/core/constants/blockchain_config.dart`. Mở địa chỉ đó trên [Sepolia Etherscan](https://sepolia.etherscan.io/) → tab **Contract** → **Write Contract** → **Connect to Web3** bằng ví Issuer. Nếu Etherscan chưa có ABI/source verified, verify contract trước hoặc dùng Hardhat console/script tại thư mục `contracts/`.
-3. Trong app, mở **Cá nhân → Chứng chỉ Blockchain**, nhập địa chỉ ví recipient, lưu ví. Khi đủ điều kiện, nhấn **Yêu cầu chứng chỉ**. Yêu cầu được lưu local ở trạng thái pending; mở chi tiết để lấy certificate ID và achievement hash. Không nhập private key vào app.
-4. Trên Etherscan **Write Contract**, gọi `issueCertificate` với:
-   * `certificateId`: bytes32 từ app (giữ nguyên 0x nếu form chấp nhận).
-   * `certificateType`: `1` cho Achievement hoặc `2` cho Course Completion.
-   * `recipient`: địa chỉ ví người học.
-   * `achievementHash`: bytes32 hash từ chi tiết chứng chỉ.
-   Xác nhận giao dịch trong ví Issuer và đợi transaction được mined trên Sepolia.
-5. Khi transaction đã mined, mở app và nhấn **Đồng bộ / Xác minh từ Blockchain**. App đọc record contract rồi truy vấn event `CertificateIssued` theo indexed `certificateId`; transaction hash và block number được lưu cùng chứng chỉ. Nút Sepolia Explorer bật sau khi metadata được đồng bộ. Nếu Issuer thu hồi chứng chỉ, gọi `revokeCertificate(certificateId)` từ trang Write Contract rồi đồng bộ lại để thấy **Revoked**.
-6. Nhấn **Xem trên Sepolia Explorer** để trình bày transaction receipt/event `CertificateIssued` trong buổi demo. Mặc định app quét tối đa 5.000 block gần nhất; nếu contract được deploy lâu hơn, cấu hình block deploy bằng `--dart-define=CERTIFICATE_CONTRACT_DEPLOYMENT_BLOCK=<block_number>` để tra cứu từ block đó. Event `CertificateIssued` vẫn giữ transaction gốc ngay cả khi chứng chỉ bị thu hồi; giao dịch thu hồi là event riêng `CertificateRevoked`.
+Hợp đồng `contracts/AchievementCertificate.sol` được viết bằng Solidity (`^0.8.20`) và quản lý/kiểm thử qua Hardhat framework.
 
-**Bảo mật:** `contracts/.env` chứa cấu hình Issuer/RPC cho Hardhat và phải được giữ ngoài Git. Không đưa private key vào source, README, ảnh chụp demo hoặc build Flutter. Flutter chỉ cần RPC URL công khai và contract address.
+* **Địa chỉ Contract (Sepolia Testnet):** `0x40Cc19d362D52f6d7bf2A3bC5C3298B204ECFEa9` (Được cấu hình trong `lib/core/constants/blockchain_config.dart`).
+* **Phân loại chứng chỉ (`uint8 certificateType`):**
+  * `1` — `ACHIEVEMENT_CERTIFICATE`: Chứng chỉ thành tích cá nhân (Perfect Score, 7-Day Streak, Flutter Master, Knowledge Explorer).
+  * `2` — `COURSE_COMPLETION_CERTIFICATE`: Chứng chỉ hoàn thành toàn bộ khóa học Flutter.
+* **Cấu trúc dữ liệu chứng chỉ (`struct Certificate`):**
+  ```solidity
+  struct Certificate {
+      bytes32 certificateId;     // Định danh duy nhất của chứng chỉ (derived SHA-256)
+      uint8 certificateType;    // Loại chứng chỉ (1: Thành tích, 2: Hoàn thành khóa học)
+      address recipient;        // Địa chỉ ví Ethereum của người học
+      bytes32 achievementHash;  // Băm cryptographic SHA-256 của dữ liệu thành tích/tiêu chí
+      uint256 issuedAt;         // Timestamp thời điểm cấp phát (block.timestamp)
+      bool revoked;             // Trạng thái thu hồi (true/false)
+  }
+  ```
+* **Các phương thức chính trên Smart Contract:**
+  * `issueCertificate(bytes32 certificateId, uint8 certificateType, address recipient, bytes32 achievementHash)`: Hàm cấp chứng chỉ chỉ dành cho Issuer (`onlyIssuer`). Tự động kiểm tra điều kiện đầu vào và chống trùng lặp `certificateId` hoặc `achievementHash`.
+  * `revokeCertificate(bytes32 certificateId)`: Hàm thu hồi chứng chỉ đã cấp (Chỉ `issuer`).
+  * `verifyCertificate(bytes32 certificateId)`: Hàm đọc trực tiếp (`view`) trả về thông tin chứng chỉ kèm trạng thái hợp lệ (`valid = !revoked`).
+* **Sự kiện On-Chain (Events):**
+  * `event CertificateIssued(bytes32 indexed certificateId, uint8 indexed certificateType, address indexed recipient, bytes32 achievementHash, uint256 issuedAt)`
+  * `event CertificateRevoked(bytes32 indexed certificateId, address indexed issuer)`
+* **Chống gian lận & Trùng lặp:**
+  * Mappings `certificateIdExists` và `achievementHashExists` ngăn chặn việc cấp lại cùng một thành tích cho cùng địa chỉ ví hoặc tạo trùng mã chứng chỉ trên Blockchain.
 
-### Kiểm thử Blockchain
+---
 
-* Unit tests cho deterministic hashing, biên eligibility (199/200 câu, 79/80%), trạng thái repository pending/confirmed/revoked và tiến độ khóa học nằm trong `test/unit/`.
-* Widget tests cho validate địa chỉ ví, loại/trạng thái chứng chỉ và màn hình chi tiết nằm trong `test/widget/`.
-* Chạy `flutter analyze` và `flutter test` để kiểm tra toàn bộ ứng dụng.
+### 🔐 2. Thuật Toán Băm Cryptographic Deterministic Hashing
+
+Ứng dụng đảm bảo tính nhất quán dữ liệu giữa Flutter Client và Smart Contract bằng cơ chế băm SHA-256 chuẩn hóa dữ liệu:
+
+1. **Chuẩn hóa & Băm Thành Tích (`achievementHash`):**
+   * Sử dụng `AchievementHasher`: Sắp xếp các từ khóa (keys) trong bảng tiêu chí `criteria` theo thứ tự bảng chữ cái alphabet (`_canonicalize`), đảm bảo JSON output đồng nhất 100% ở mọi thời điểm.
+   * Cấu trúc Payload băm:
+     ```json
+     {
+       "schema": "app-dart-certificate-v1",
+       "subject_id": "0xrecipient_address_lowercased",
+       "certificate_type": 1,
+       "achievement_code": "perfectScore",
+       "criteria": { ... }
+     }
+     ```
+   * Tạo digest SHA-256: `sha256(utf8.encode(jsonEncode(payload)))` $\rightarrow$ Trả về chuỗi `achievementHash` định dạng `0x...` (bytes32).
+
+2. **Mã Chứng Chỉ (`certificateId`):**
+   * Được tạo độc lập từ `achievementHash` thông qua `CertificateHasher`: `sha256('app-dart-certificate-id-v1:' + achievementHash)`.
+   * Đảm bảo tính suy rộng 1-1 không thể đảo ngược, sử dụng làm khóa chính tra cứu `bytes32` trên Blockchain.
+
+---
+
+### 🎯 3. Bộ Quy Tắc Đủ Điều Kiện (Certificate Eligibility Engine)
+
+Lớp `CertificateEligibilityEngine` (Pure Dart Engine) tự động tính toán các tiêu chí nhận chứng chỉ mà không phụ thuộc vào bộ nhớ mạng:
+
+#### A. Chứng Chỉ Thành Tích (`CertificateType.achievement`)
+* **Perfect Score (`perfectScore`):** Đạt điểm tuyệt đối 100% trong ít nhất 1 bài thi thử hoặc bài luyện tập.
+* **7-Day Streak (`sevenDayStreak`):** Duy trì chuỗi ngày học liên tiếp $\ge 7$ ngày.
+* **Flutter Master (`flutterMaster`):** Đạt cấp độ Level $\ge 5$ VÀ đã hoàn thành nộp bài $\ge 10$ bài thi thử.
+* **Knowledge Explorer (`knowledgeExplorer`):** Hoàn thành tất cả các khối kiến thức trong ứng dụng.
+
+#### B. Chứng Chỉ Hoàn Thành Khóa Học (`CertificateType.courseCompletion`)
+Yêu cầu đạt đồng thời 4 điều kiện:
+1. Hoàn thành 100% các khối bài học kiến thức.
+2. Số câu hỏi luyện tập đã làm $\ge 100$ câu (`requiredPracticeQuestions`).
+3. Tỷ lệ trả lời đúng tích lũy $\ge 80\%$.
+4. Đạt điểm bài thi tổng hợp cuối khóa (Capstone Exam) $\ge 80\%$.
+
+---
+
+### 💼 4. Kiến Trúc Ví Hybrid (Hybrid Wallet) & Auto-Issuer Relayer
+
+* **Ví nhúng (Embedded Local Wallet):**
+  * Tự động khởi tạo cặp khóa ví Ethereum bí mật cục bộ bằng package `wallet` (lưu an toàn trong `SharedPreferences`).
+  * Người học có thể sử dụng ngay lập tức mà không cần cài đặt các phần mềm ví Web3 bên thứ ba.
+  * Hỗ trợ sao lưu khóa riêng tư (Private Key) hoặc linh hoạt chuyển đổi nhập địa chỉ ví bên ngoài (ví dụ: ví MetaMask).
+* **Cơ chế Cấp Phát Tự Động (Auto-Issuer Relayer Service):**
+  * **An toàn cho Client:** Ứng dụng Flutter không lưu trữ `ISSUER_PRIVATE_KEY` nhằm ngăn ngừa rủi ro lộ khóa ký giao dịch.
+  * Khi người học gửi yêu cầu cấp chứng chỉ đủ điều kiện, Flutter gọi API `POST /api/certificates/issue` tới Auto-Issuer Relayer Service (Cấu hình qua `ISSUER_RELAYER_URL`, mặc định `http://localhost:8787`).
+  * Request payload gồm: `certificateId`, `certificateType`, `recipientAddress`, `achievementHash`.
+  * **Bộ đệm chờ xử lý khi Offline (Offline Pending Buffer):** Nếu Relayer tạm thời ngắt kết nối/offline, yêu cầu chứng chỉ được lưu ở trạng thái `pending` trong bộ nhớ cục bộ. `BlockchainProvider` sẽ tự động thực hiện đồng bộ lại (`synchronize`) khi thiết bị kết nối mạng trở lại hoặc khi ứng dụng khôi phục trạng thái hoạt động (App Lifecycle Resumed).
+
+---
+
+### 🔍 5. Đồng Bộ Trạng Thái On-Chain & Tra Cứu Sự Kiện Event Log
+
+* **Đồng bộ & Đối chiếu (`AchievementVerifier` & `EthereumBlockchainDataSource`):**
+  * Đọc dữ liệu trực tiếp từ Ethereum Sepolia RPC URL (`https://rpc.sepolia.org`) qua thư viện `web3dart`.
+  * Gửi lời gọi hàm `verifyCertificate(bytes32)` để đối chiếu địa chỉ recipient, `achievementHash` và thời điểm cấp `issuedAt`.
+  * Xác định chính xác các trạng thái chứng chỉ: `eligible` (đủ điều kiện), `requested` / `pending` (đang chờ cấp/đang xử lý), `confirmed` (đã cấp và xác thực thành công on-chain), `revoked` (đã bị thu hồi), `failed` (dữ liệu không trùng khớp).
+* **Tra cứu Transaction Log (`findCertificateIssuedEvent`):**
+  * Sử dụng filter `getLogs` quét sự kiện `CertificateIssued` trong cửa sổ block xác định (`BlockchainConfig.eventScanWindow = 5000` block hoặc `CERTIFICATE_CONTRACT_DEPLOYMENT_BLOCK`).
+  * Trích xuất `transactionHash` và `blockNumber` của giao dịch cấp chứng chỉ.
+* **Tích hợp Trình Khám Phá Khối (Sepolia Etherscan Integration):**
+  * Cung cấp đường dẫn tra cứu trực tiếp trên Sepolia Etherscan:
+    * Tra cứu giao dịch: `https://sepolia.etherscan.io/tx/{transactionHash}`
+    * Tra cứu địa chỉ ví: `https://sepolia.etherscan.io/address/{recipientAddress}`
+
+---
+
+### 🛠️ 6. Hướng Dẫn Cấu Hình & Kiểm Thử Hardhat Smart Contract
+
+Thư mục `contracts/` chứa toàn bộ mã nguồn hợp đồng thông minh Solidity và bộ kịch bản kiểm thử/deploy:
+
+1. **Cài đặt thư viện phát triển contract:**
+   ```bash
+   cd contracts
+   npm install
+   ```
+2. **Biên dịch hợp đồng Solidity:**
+   ```bash
+   npx hardhat compile
+   ```
+3. **Chạy kịch bản kiểm thử tự động (Contract Tests):**
+   ```bash
+   npx hardhat test
+   ```
+   *(File `contracts/test/AchievementCertificate.test.js` kiểm thử toàn bộ logic: cấp phát chứng chỉ thành tích & khóa học, từ chối người dùng không phải Issuer, chống trùng lặp `certificateId` & `achievementHash`, thu hồi chứng chỉ và kiểm tra tính hợp lệ).*
+
+4. **Triển khai (Deploy) Hợp Đồng Lên Ethereum Sepolia:**
+   * Tạo file `.env` từ `.env.example`:
+     ```env
+     SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+     ISSUER_PRIVATE_KEY=your_private_key_here
+     ```
+   * Chạy kịch bản deploy:
+     ```bash
+     npx hardhat run scripts/deploy.js --network sepolia
+     ```
+
+---
+
+### 🧪 7. Kiểm Thử Hệ Thống Blockchain Trên Flutter
+
+* **Unit Tests (`test/unit/`):**
+  * `achievement_hasher_test.dart`: Kiểm thử tính ổn định của hàm băm SHA-256.
+  * `certificate_eligibility_test.dart`: Kiểm thử chính xác các quy tắc đủ điều kiện cho 4 thành tích và hoàn thành khóa học.
+  * `ethereum_blockchain_datasource_test.dart`: Kiểm thử đọc dữ liệu contract RPC và tra cứu log sự kiện.
+  * `blockchain_repository_test.dart`: Kiểm thử đối chiếu dữ liệu local cache và trạng thái on-chain.
+  * `blockchain_provider_test.dart`: Kiểm thử quản lý trạng thái, tự động kết nối và yêu cầu cấp chứng chỉ.
+* **Widget Tests (`test/widget/`):**
+  * `blockchain_certificates_screen_test.dart`: Kiểm thử giao diện danh sách chứng chỉ, nhập/validate địa chỉ ví.
+  * `certificate_detail_screen_test.dart`: Kiểm thử màn hình chi tiết, hiển thị mã băm, trạng thái badge xác nhận và liên kết Explorer.

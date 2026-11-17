@@ -15,6 +15,14 @@ abstract interface class IBlockchainRepository {
 
   Future<String?> loadRecipientAddress();
 
+  Future<String?> loadEmbeddedAddress();
+
+  Future<String?> loadEmbeddedPrivateKey();
+
+  Future<void> useEmbeddedWallet();
+
+  Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate);
+
   Future<List<String>> findIssuedCertificateIds({
     required String recipientAddress,
     required int fromBlock,

@@ -50,6 +50,9 @@ class _FakeEthereum implements EthereumBlockchainDataSource {
   bool shouldFail = false;
 
   @override
+  Future<Map<String, dynamic>?> issueCertificate({required String certificateId, required int certificateType, required String recipientAddress, required String achievementHash}) async => null;
+
+  @override
   Future<OnChainCertificate?> verifyCertificate(String certificateId) async {
     if (shouldFail) throw Exception('offline');
     return record;
@@ -93,6 +96,19 @@ void main() {
     storage = _MemoryStorage();
     ethereum = _FakeEthereum();
     repository = BlockchainRepositoryImpl(storage: storage, ethereum: ethereum);
+  });
+
+  test('generates and persists a reusable embedded wallet on first read', () async {
+    final walletStorage = BlockchainStorageDataSource();
+    final firstAddress = await walletStorage.ensureEmbeddedWallet();
+    final firstKey = await walletStorage.loadEmbeddedPrivateKey();
+    final activeAddress = await walletStorage.loadRecipientAddress();
+    final secondAddress = await walletStorage.ensureEmbeddedWallet();
+
+    expect(firstAddress, matches(RegExp(r'^0x[0-9a-fA-F]{40}$')));
+    expect(firstKey, matches(RegExp(r'^[0-9a-f]{64}$')));
+    expect(activeAddress, firstAddress);
+    expect(secondAddress, firstAddress);
   });
 
   test('saves certificate request and recipient locally', () async {

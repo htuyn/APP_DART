@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -85,42 +86,24 @@ class _BlockchainCertificatesScreenState
                     Text(language.t('wallet_title'),
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 6),
-                    Text(language.t('wallet_guidance'),
-                        style: Theme.of(context).textTheme.bodySmall),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _addressController,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(
-                        labelText: language.t('wallet_address'),
-                        hintText: '0x0000…',
-                        border: const OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        final address = value?.trim() ?? '';
-                        return RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(address)
-                            ? null
-                            : language.t('wallet_invalid');
-                      },
-                    ),
+                    Text(provider.recipientAddress ?? '—', style: Theme.of(context).textTheme.bodyMedium),
+                    const SizedBox(height: 4),
+                    Text(language.t(provider.isUsingEmbeddedWallet ? 'wallet_embedded_label' : 'wallet_personal_label'), style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 10),
-                    FilledButton.icon(
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          await provider.setRecipientAddress(
-                            _addressController.text,
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.save_outlined),
-                      label: Text(language.t('save_wallet')),
-                    ),
+                    Wrap(spacing: 8, runSpacing: 4, children: [
+                      TextButton.icon(onPressed: () => _showWalletDialog(context, provider, language), icon: const Icon(Icons.swap_horiz), label: Text(language.t('change_wallet'))),
+                      if (provider.isUsingEmbeddedWallet)
+                        TextButton.icon(onPressed: () => _showExportDialog(context, provider, language), icon: const Icon(Icons.key), label: Text(language.t('backup_wallet_key'))),
+                    ]),
                   ],
                 ),
               ),
             ),
           ),
+          if (provider.noticeMessage != null) ...[
+            const SizedBox(height: 8),
+            Text(language.t(provider.noticeMessage!), style: Theme.of(context).textTheme.bodySmall),
+          ],
           if (provider.errorMessage != null) ...[
             const SizedBox(height: 8),
             Text(provider.errorMessage!,
@@ -189,6 +172,28 @@ class _BlockchainCertificatesScreenState
         ],
       ),
     );
+  }
+
+  Future<void> _showWalletDialog(BuildContext context, BlockchainProvider provider, LanguageProvider language) async {
+    _addressController.text = provider.isUsingEmbeddedWallet ? '' : (provider.recipientAddress ?? '');
+    final dialogFormKey = GlobalKey<FormState>();
+    await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(language.t('change_wallet')),
+      content: Form(key: dialogFormKey, child: TextFormField(controller: _addressController, autocorrect: false, enableSuggestions: false, decoration: InputDecoration(labelText: language.t('wallet_address'), hintText: '0x…'), validator: (value) => RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(value?.trim() ?? '') ? null : language.t('wallet_invalid'))),
+      actions: [
+        TextButton(onPressed: () async { await provider.useEmbeddedWallet(); if (dialogContext.mounted) Navigator.pop(dialogContext); }, child: Text(language.t('use_embedded_wallet'))),
+        FilledButton(onPressed: () async { if (dialogFormKey.currentState?.validate() ?? false) { await provider.setRecipientAddress(_addressController.text); if (dialogContext.mounted) Navigator.pop(dialogContext); } }, child: Text(language.t('save_wallet'))),
+      ],
+    ));
+  }
+
+  Future<void> _showExportDialog(BuildContext context, BlockchainProvider provider, LanguageProvider language) async {
+    final key = provider.embeddedPrivateKey ?? '';
+    await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(language.t('backup_wallet_key')),
+      content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(language.t('wallet_key_warning')), const SizedBox(height: 12), SelectableText('0x$key')]),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(language.t('close'))), FilledButton.icon(onPressed: () async { await Clipboard.setData(ClipboardData(text: '0x$key')); if (dialogContext.mounted) Navigator.pop(dialogContext); }, icon: const Icon(Icons.copy), label: Text(language.t('copy_key')))],
+    ));
   }
 
   String _certificateName(String code, String language) => switch (code) {
