@@ -42,6 +42,9 @@ void main() {
 
     expect(progress.dailyGoal, 10);
     expect(progress.xp, 0);
+    expect(progress.streakFreezes, 1);
+    expect(progress.lastFreezeWeekKey, isNull);
+    expect(progress.lastFreezeUsedDateKey, isNull);
     expect(progress.todayAnswered, 3);
     expect(progress.unlockedBadges['first_answer'], '2026-11-01');
   });
@@ -56,6 +59,9 @@ void main() {
       todayAnswered: 6,
       dailyGoal: 20,
       xp: 250,
+      streakFreezes: 0,
+      lastFreezeWeekKey: '2026-W46',
+      lastFreezeUsedDateKey: '2026-11-16',
       totalAnswered: 42,
       examCount: 3,
       perfectCount: 1,
@@ -74,6 +80,9 @@ void main() {
     expect(restored.todayAnswered, 6);
     expect(restored.dailyGoal, 20);
     expect(restored.xp, 250);
+    expect(restored.streakFreezes, 0);
+    expect(restored.lastFreezeWeekKey, '2026-W46');
+    expect(restored.lastFreezeUsedDateKey, '2026-11-16');
     expect(restored.totalAnswered, 42);
     expect(restored.examCount, 3);
     expect(restored.perfectCount, 1);

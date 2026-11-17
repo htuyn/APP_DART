@@ -33,23 +33,35 @@ class AppStrings {
       vi: 'Tìm kiếm hoặc lọc chủ đề Flutter để bắt đầu luyện tập',
       en: 'Search or filter Flutter topics to begin practicing',
     ),
-    'search_blocks': (vi: 'Tìm kiếm khối kiến thức...', en: 'Search topic blocks...'),
+    'search_blocks': (
+      vi: 'Tìm kiếm khối kiến thức...',
+      en: 'Search topic blocks...',
+    ),
     'all': (vi: 'Tất cả', en: 'All'),
     'needs_review': (vi: 'Cần ôn lại', en: 'Needs review'),
-    'no_match': (vi: 'Không tìm thấy khối phù hợp', en: 'No matching topics found'),
+    'no_match': (
+      vi: 'Không tìm thấy khối phù hợp',
+      en: 'No matching topics found',
+    ),
     'no_match_hint': (
       vi: 'Vui lòng thử từ khóa khác hoặc xóa bộ lọc.',
       en: 'Please try another search keyword or clear filters.',
     ),
     'block': (vi: 'Khối', en: 'Block'),
     'questions': (vi: 'câu hỏi', en: 'questions'),
-    'loading_questions': (vi: 'Đang tải dữ liệu câu hỏi...', en: 'Loading question bank...'),
+    'loading_questions': (
+      vi: 'Đang tải dữ liệu câu hỏi...',
+      en: 'Loading question bank...',
+    ),
     'load_error': (
       vi: 'Đã xảy ra lỗi khi nạp ngân hàng câu hỏi',
       en: 'Failed to load question bank data',
     ),
     'retry': (vi: 'Thử lại', en: 'Retry'),
-    'empty_blocks': (vi: 'Chưa có dữ liệu khối', en: 'No topic blocks available'),
+    'empty_blocks': (
+      vi: 'Chưa có dữ liệu khối',
+      en: 'No topic blocks available',
+    ),
     'empty_blocks_hint': (
       vi: 'Ngân hàng câu hỏi hiện chưa có dữ liệu.',
       en: 'The question bank currently has no entries.',
@@ -110,7 +122,10 @@ class AppStrings {
     'start_exam': (vi: 'Vào thi', en: 'Start test'),
     'mock_exam': (vi: 'Phòng thi thử', en: 'Mock Exam Room'),
     'submit': (vi: 'Nộp bài', en: 'Submit test'),
-    'submit_title': (vi: 'Xác nhận nộp bài thi?', en: 'Confirm Test Submission?'),
+    'submit_title': (
+      vi: 'Xác nhận nộp bài thi?',
+      en: 'Confirm Test Submission?',
+    ),
     'continue_exam': (vi: 'Làm tiếp', en: 'Keep working'),
     'leave_title': (vi: 'Thoát khỏi phòng thi?', en: 'Exit Exam Room?'),
     'leave_body': (
@@ -125,12 +140,18 @@ class AppStrings {
     'unanswered': (vi: 'Chưa làm', en: 'Unanswered'),
     'results_title': (vi: 'Kết quả bài thi', en: 'Test Results'),
     'passed': (vi: 'Chúc mừng! Bạn đã ĐẠT', en: 'Congratulations! You Passed'),
-    'keep_trying': (vi: 'Cố gắng lên! Hãy ôn thêm', en: 'Keep Practicing! Try Again'),
+    'keep_trying': (
+      vi: 'Cố gắng lên! Hãy ôn thêm',
+      en: 'Keep Practicing! Try Again',
+    ),
     'time_spent': (vi: 'Thời gian làm', en: 'Time spent'),
     'score': (vi: 'Điểm số', en: 'Score'),
     'retake': (vi: 'Làm lại đề thi này', en: 'Retake this paper'),
     'review_wrong': (vi: 'Xem lại câu chọn sai', en: 'Review missed questions'),
-    'see_answers': (vi: 'Chi tiết đáp án & giải thích', en: 'Answer Key & Explanations'),
+    'see_answers': (
+      vi: 'Chi tiết đáp án & giải thích',
+      en: 'Answer Key & Explanations',
+    ),
     'your_answer': (vi: 'Lựa chọn của bạn', en: 'Your answer'),
     'right_answer': (vi: 'Đáp án chính xác', en: 'Correct answer'),
     'not_answered': (vi: 'Chưa trả lời', en: 'Not answered'),
@@ -152,6 +173,32 @@ class AppStrings {
     'question_status': (vi: 'Danh sách câu hỏi', en: 'Question Overview'),
     'quick_nav': (vi: 'Chuyển nhanh đến câu', en: 'Quick Jump'),
 
+    'daily_challenge_title': (
+      vi: 'Thử thách hằng ngày (5 câu)',
+      en: 'Daily Challenge (5 questions)',
+    ),
+    'daily_challenge_pending': (
+      vi: 'Chưa hoàn thành (+50 XP)',
+      en: 'Not completed (+50 XP)',
+    ),
+    'daily_challenge_done': (
+      vi: 'Đã hoàn thành hôm nay',
+      en: 'Completed today',
+    ),
+    'daily_challenge_finish': (
+      vi: 'Hoàn thành thử thách',
+      en: 'Finish challenge',
+    ),
+    'daily_challenge_result': (
+      vi: 'Tổng kết thử thách',
+      en: 'Challenge summary',
+    ),
+    'daily_challenge_correct': (vi: 'câu đúng', en: 'correct'),
+    'daily_challenge_xp_earned': (
+      vi: 'XP thưởng nhận được',
+      en: 'Bonus XP earned',
+    ),
+
     // Gamification: streaks, learning achievements, and badge copy.
     'achievements': (vi: 'Thành tích', en: 'Achievements'),
     'achievements_subtitle': (
@@ -161,6 +208,7 @@ class AppStrings {
     'streak_title': (vi: 'Chuỗi ngày học', en: 'Study streak'),
     'streak_days': (vi: 'ngày liên tiếp', en: 'day streak'),
     'streak_best': (vi: 'Kỷ lục', en: 'Personal best'),
+    'streak_freeze_status': (vi: 'lượt bảo vệ chuỗi', en: 'Streak Freeze'),
     'level_label': (vi: 'Cấp', en: 'Level'),
     'xp_points': (vi: 'XP', en: 'XP'),
     'xp_title_newcomer': (vi: 'Người mới', en: 'Newcomer'),
@@ -181,7 +229,10 @@ class AppStrings {
     'badge_unlocked': (vi: 'Đã mở khóa', en: 'Unlocked'),
     'badge_locked': (vi: 'Chưa mở khóa', en: 'Locked'),
     'badge_earned_on': (vi: 'Đạt ngày', en: 'Earned on'),
-    'badge_unlocked_dialog_title': (vi: 'Huy hiệu mới!', en: 'New achievement!'),
+    'badge_unlocked_dialog_title': (
+      vi: 'Huy hiệu mới!',
+      en: 'New achievement!',
+    ),
     'badge_unlocked_dialog_body': (
       vi: 'Chúc mừng bạn đã mở khóa:',
       en: 'Congratulations! You unlocked:',
@@ -212,7 +263,10 @@ class AppStrings {
       vi: 'Trả lời tổng cộng 50 câu hỏi.',
       en: 'Answer 50 questions in total.',
     ),
-    'badge_answers_100_title': (vi: 'Bậc thầy kiến thức', en: 'Knowledge master'),
+    'badge_answers_100_title': (
+      vi: 'Bậc thầy kiến thức',
+      en: 'Knowledge master',
+    ),
     'badge_answers_100_description': (
       vi: 'Trả lời tổng cộng 100 câu hỏi.',
       en: 'Answer 100 questions in total.',

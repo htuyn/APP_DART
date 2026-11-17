@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/utils/clock.dart';
 import '../../data/models/gamification_model.dart';
+import '../../data/models/question_model.dart';
 import '../../domain/gamification/badge_catalog.dart';
 import '../../domain/gamification/gamification_engine.dart';
 import '../../domain/repositories/i_gamification_repository.dart';
@@ -14,8 +15,8 @@ class GamificationProvider extends ChangeNotifier {
   GamificationProvider({
     required IGamificationRepository repository,
     Clock clock = const SystemClock(),
-  })  : _repository = repository,
-        _engine = GamificationEngine(repository: repository, clock: clock);
+  }) : _repository = repository,
+       _engine = GamificationEngine(repository: repository, clock: clock);
 
   final IGamificationRepository _repository;
   final GamificationEngine _engine;
@@ -36,6 +37,10 @@ class GamificationProvider extends ChangeNotifier {
   List<BadgeDefinition> get badges => BadgeCatalog.all;
   List<BadgeDefinition> get newlyUnlockedBadges =>
       List.unmodifiable(_newBadges);
+  bool get dailyChallengeCompleted =>
+      _progress.completedDailyChallengeDateKey == _engine.todayDateKey;
+  List<QuestionModel> dailyChallengeQuestions(List<QuestionModel> questions) =>
+      _engine.dailyChallengeQuestions(questions);
 
   Future<void> initialize() async {
     final revision = _revision;
@@ -44,7 +49,7 @@ class GamificationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final loaded = await _repository.load();
+      final loaded = await _engine.refreshForToday();
       if (!_disposed && revision == _revision) _progress = loaded;
     } catch (error) {
       if (!_disposed && revision == _revision) {
@@ -61,17 +66,20 @@ class GamificationProvider extends ChangeNotifier {
   Future<void> ghiNhanTraLoi({bool? isCorrect}) =>
       _enqueue(() => _engine.ghiNhanTraLoi(isCorrect: isCorrect));
 
-  Future<void> ghiNhanBaiThi(
-    int score,
-    int total, {
-    int? answeredCount,
-  }) => _enqueue(
-    () => _engine.ghiNhanBaiThi(
-      score,
-      total,
-      answeredCount: answeredCount,
-    ),
-  );
+  Future<bool> completeDailyChallenge() async {
+    var awarded = false;
+    await _enqueue(() async {
+      final current = await _repository.load();
+      awarded = await _engine.completeDailyChallenge();
+      return awarded ? await _repository.load() : current;
+    });
+    return awarded;
+  }
+
+  Future<void> ghiNhanBaiThi(int score, int total, {int? answeredCount}) =>
+      _enqueue(
+        () => _engine.ghiNhanBaiThi(score, total, answeredCount: answeredCount),
+      );
 
   /// Updates the daily answer target and persists it with the existing model.
   Future<void> updateDailyGoal(int goal) {

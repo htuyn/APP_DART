@@ -27,13 +27,15 @@ class StreakCard extends StatelessWidget {
     final streakLabel = AppStrings.text(languageCode, 'streak_days');
     final bestLabel = AppStrings.text(languageCode, 'streak_best');
     final dailyGoalLabel = AppStrings.text(languageCode, 'daily_goal_today');
+    final freezeLabel = AppStrings.text(languageCode, 'streak_freeze_status');
     final levelLabel = AppStrings.text(languageCode, 'level_label');
     final xpPointsLabel = AppStrings.text(languageCode, 'xp_points');
     final dailyGoal = progress.dailyGoal.clamp(1, 9999);
     final todayProgress = progress.todayAnswered.clamp(0, dailyGoal);
     final semantics = '$title: $currentStreak $streakLabel. '
         '$bestLabel: ${progress.longestStreak}. '
-        '$todayProgress/$dailyGoal $dailyGoalLabel.';
+        '$todayProgress/$dailyGoal $dailyGoalLabel. '
+        '${progress.streakFreezes} $freezeLabel.';
 
     return Semantics(
       container: true,
@@ -74,6 +76,21 @@ class StreakCard extends StatelessWidget {
                       Text('$bestLabel: ${progress.longestStreak}'),
                       const SizedBox(height: 4),
                       Text('$todayProgress/$dailyGoal $dailyGoalLabel'),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.shield_outlined,
+                            size: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${progress.streakFreezes} $freezeLabel',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
