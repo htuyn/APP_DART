@@ -161,6 +161,14 @@ class AppStrings {
     'streak_title': (vi: 'Chuỗi ngày học', en: 'Study streak'),
     'streak_days': (vi: 'ngày liên tiếp', en: 'day streak'),
     'streak_best': (vi: 'Kỷ lục', en: 'Personal best'),
+    'level_label': (vi: 'Cấp', en: 'Level'),
+    'xp_points': (vi: 'XP', en: 'XP'),
+    'xp_title_newcomer': (vi: 'Người mới', en: 'Newcomer'),
+    'xp_title_dedicated': (vi: 'Người chăm học', en: 'Dedicated learner'),
+    'xp_title_master': (vi: 'Bậc thầy', en: 'Master'),
+    'daily_goal_title': (vi: 'Mục tiêu học mỗi ngày', en: 'Daily study goal'),
+    'daily_goal_questions': (vi: 'câu', en: 'questions'),
+    'daily_goal_today': (vi: 'câu hôm nay', en: 'questions today'),
     'streak_encouragement': (
       vi: 'Học một chút mỗi ngày để giữ chuỗi nhé!',
       en: 'Study a little every day to keep your streak going!',
@@ -179,6 +187,15 @@ class AppStrings {
       en: 'Congratulations! You unlocked:',
     ),
     'close': (vi: 'Đóng', en: 'Close'),
+    'share': (vi: 'Chia sẻ', en: 'Share'),
+    'badge_share_message': (
+      vi: 'Chúc mừng! Tôi vừa mở khóa thành tích:',
+      en: 'Congratulations! I just unlocked this achievement:',
+    ),
+    'badge_share_copied': (
+      vi: 'Đã sao chép thành tích vào clipboard.',
+      en: 'Achievement copied to clipboard.',
+    ),
 
     'badge_first_answer_title': (vi: 'Bước đầu tiên', en: 'First step'),
     'badge_first_answer_description': (

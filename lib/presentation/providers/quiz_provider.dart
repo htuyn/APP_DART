@@ -75,7 +75,9 @@ class QuizProvider with ChangeNotifier {
     }
     // Record each practice answer without changing the existing wrong-book flow.
     final gamification = gamificationProvider;
-    if (gamification != null) await gamification.ghiNhanTraLoi();
+    if (gamification != null) {
+      await gamification.ghiNhanTraLoi(isCorrect: isCorrect);
+    }
     notifyListeners();
   }
 }

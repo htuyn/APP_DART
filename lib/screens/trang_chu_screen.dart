@@ -89,6 +89,7 @@ class TrangChuScreen extends StatelessWidget {
           builder: (context, gamification, _) => StreakCard(
             progress: gamification.progress,
             currentStreak: gamification.currentStreak,
+            levelProgress: gamification.levelProgress,
             languageCode: lang.code,
           ),
         ),

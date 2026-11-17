@@ -20,15 +20,19 @@ class BadgeDefinition {
   final BadgeMetric metric;
   final int threshold;
 
-  bool isEarned(GamificationModel progress) {
+  /// Progress toward this badge, clamped to the display range 0..threshold.
+  (int current, int target) progressFor(GamificationModel progress) {
     final value = switch (metric) {
       BadgeMetric.answers => progress.totalAnswered,
       BadgeMetric.streak => progress.streak,
       BadgeMetric.exams => progress.examCount,
       BadgeMetric.perfectExams => progress.perfectCount,
     };
-    return value >= threshold;
+    return (value.clamp(0, threshold), threshold);
   }
+
+  bool isEarned(GamificationModel progress) =>
+      progressFor(progress).$1 >= threshold;
 }
 
 abstract final class BadgeCatalog {

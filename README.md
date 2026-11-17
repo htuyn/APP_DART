@@ -12,8 +12,9 @@ Dự án cuối kỳ học phần **INT1449 - Lập trình di động**.
 * **Thi thử:** Chọn đề, trả lời câu hỏi có giới hạn thời gian, tự động nộp khi hết giờ và xem điểm, thời gian, đáp án cùng phần giải thích.
 * **Thống kê:** Xem tiến độ theo khối, độ chính xác và lịch sử kết quả thi.
 * **Tiếng Việt và English:** Chuyển đổi ngôn ngữ giao diện và nội dung câu hỏi.
-* **Chuỗi ngày học (Streak):** Ghi nhận ngày có hoạt động học, số ngày liên tiếp và kỷ lục chuỗi học dài nhất.
-* **Hệ thống huy hiệu:** Tự mở khóa huy hiệu theo số câu trả lời, ngày học liên tiếp, số bài thi và bài thi đạt điểm tuyệt đối. Trang Thành tích hiển thị tiến độ và ngày nhận huy hiệu; khi thi mở khóa huy hiệu mới, ứng dụng hiện hộp thoại chúc mừng.
+* **Chuỗi ngày học (Streak) & Mục tiêu ngày:** Ghi nhận ngày có hoạt động học, số ngày liên tiếp và kỷ lục chuỗi dài nhất. Hỗ trợ chọn mục tiêu học mỗi ngày (5, 10, hoặc 20 câu) với vòng tròn tiến độ trực quan và tự động làm mới (reset `todayAnswered`) khi bước sang ngày mới.
+* **Hệ thống huy hiệu & Thành tích:** Tự động mở khóa huy hiệu theo số câu trả lời, streak, số bài thi và bài thi đạt 100%. Ô huy hiệu chưa mở hiển thị thanh tiến độ dạng `hiện tại/mục tiêu`. Khi thi mở khóa huy hiệu mới, ứng dụng hiển thị hộp thoại chúc mừng với hiệu ứng phóng to, rung nhẹ (haptic feedback) và nút chia sẻ thành tích (sao chép vào clipboard).
+* **Điểm kinh nghiệm (XP) & Cấp độ (Level):** Tích lũy XP khi trả lời câu hỏi (+10 XP đúng, +2 XP sai), nộp bài thi (+50 XP) và đạt điểm tuyệt đối (+100 XP). Tự động thăng cấp (Cấp 1 Người mới, Cấp 2+ Người chăm học, Cấp 5+ Bậc thầy) và hiển thị thanh tiến độ XP trực quan.
 * **Gia sư AI:** Cung cấp hỗ trợ giải thích trong quá trình học thông qua luồng gia sư AI.
 * **Giao diện và trợ năng:** Hỗ trợ giao diện sáng/tối, bố cục co giãn và vùng chạm tối thiểu 48dp cho các thành phần tương tác.
 
@@ -146,11 +147,11 @@ Màn hình khởi chạy hiện tại là `screens/trang_chu_screen.dart` (`Tran
 
 ## 🧪 Kiểm Thử
 
-Chạy bộ kiểm thử bằng `flutter test`. Các nhóm test hiện có bao gồm:
+Chạy bộ kiểm thử tự động (gồm 47 tests) bằng `flutter test`. Các nhóm test hiện có bao gồm:
 
-* **Unit tests:** Parse dữ liệu, nghiệp vụ bài thi, ViewModels, đồng hồ, lưu trữ, streak và điều kiện mở khóa huy hiệu.
-* **Widget tests:** Màn hình chính, Thành tích, chuyển đổi ngôn ngữ và các thành phần giao diện.
-* **Accessibility tests:** Kiểm tra vùng chạm tối thiểu `48x48dp`.
+* **Unit tests:** Parse dữ liệu & tương thích JSON cũ, nghiệp vụ bài thi, ViewModels, đồng hồ, lưu trữ, streak, tính toán XP/Level và điều kiện mở khóa huy hiệu.
+* **Widget tests:** Màn hình chính, Thành tích (vòng tròn tiến độ mục tiêu, ô huy hiệu, thanh XP), chuyển đổi ngôn ngữ và các thành phần giao diện.
+* **Accessibility tests:** Kiểm tra vùng chạm tối thiểu `48x48dp` (`androidTapTargetGuideline`).
 
 ---
 
@@ -169,6 +170,6 @@ Chạy bộ kiểm thử bằng `flutter test`. Các nhóm test hiện có bao g
 
 * Giao diện hiện khởi tạo các `ChangeNotifier` bằng package `provider` trong `main.dart`, gồm quiz, thi thử, thống kê, ngôn ngữ, giao diện, gia sư AI và gamification.
 * `lib/viewmodels/` chứa các ViewModel/logic bài thi, đồng hồ, ngôn ngữ và thống kê; `bai_thi_state.dart` cùng `logic_thi.dart` biểu diễn trạng thái và nghiệp vụ bài thi.
-* `GamificationEngine` xử lý ngày học liên tiếp và điều kiện mở huy hiệu; `GamificationProvider` giữ tiến độ, phối hợp với luồng quiz/thi và cung cấp huy hiệu mới mở khóa cho giao diện.
-* Tiến độ gamification được lưu cục bộ dưới khóa `gamification_v1`; `Clock` cho phép kiểm thử logic đổi ngày.
-* `BadgeCatalog` định nghĩa các huy hiệu; `AchievementsScreen`, `StreakCard`, `BadgeTile` và `BadgeUnlockedDialog` hiển thị thành tích và thông báo mở khóa.
+* `GamificationEngine` xử lý ngày học liên tiếp, cộng điểm XP, thăng cấp và điều kiện mở huy hiệu; `GamificationProvider` giữ tiến độ, phối hợp với luồng quiz/thi và cung cấp huy hiệu mới mở khóa cho giao diện.
+* Tiến độ gamification được lưu cục bộ dưới khóa `gamification_v1` (tương thích ngược an toàn khi nạp dữ liệu cũ thiếu `daily_goal` hoặc `xp`); `Clock` cho phép kiểm thử logic đổi ngày.
+* `BadgeCatalog` định nghĩa các huy hiệu; `AchievementsScreen`, `StreakCard`, `BadgeTile` và `BadgeUnlockedDialog` hiển thị thành tích, vòng tròn tiến độ mục tiêu, thanh XP và thông báo mở khóa kèm hiệu ứng & nút chia sẻ.

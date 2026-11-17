@@ -66,6 +66,24 @@ void main() {
       expect(repository.progress.lastStudyDate, '2026-11-04');
     });
 
+    test('resets today answer count on a new day before counting today answer',
+        () async {
+      repository.progress = GamificationModel(
+        streak: 4,
+        longestStreak: 4,
+        lastStudyDate: '2026-11-01',
+        todayAnswered: 7,
+        totalAnswered: 20,
+      );
+      clock.value = DateTime(2026, 11, 2, 7);
+
+      await engine.ghiNhanTraLoi();
+
+      expect(repository.progress.todayAnswered, 1);
+      expect(repository.progress.totalAnswered, 21);
+      expect(repository.progress.lastStudyDate, '2026-11-02');
+    });
+
     test('display streak expires after a missed day', () async {
       await engine.ghiNhanTraLoi();
       clock.value = DateTime(2026, 11, 3);
@@ -112,6 +130,57 @@ void main() {
         engine.huyHieuMoi().where((badge) => badge.metric == BadgeMetric.streak),
         isEmpty,
       );
+    });
+
+    test('awards XP for answer outcomes, exam submission, and perfect score',
+        () async {
+      await engine.ghiNhanTraLoi(isCorrect: true);
+      expect(repository.progress.xp, 10);
+
+      await engine.ghiNhanTraLoi(isCorrect: false);
+      expect(repository.progress.xp, 12);
+
+      await engine.ghiNhanBaiThi(1, 2, answeredCount: 2);
+      expect(repository.progress.xp, 74);
+
+      await engine.ghiNhanBaiThi(2, 2);
+      expect(repository.progress.xp, 244);
+    });
+
+    test('calculates level thresholds, titles, and next-level progress', () {
+      final beforeLevelUp = engine.levelProgressFor(99);
+      expect(beforeLevelUp.level, 1);
+      expect(beforeLevelUp.titleKey, 'xp_title_newcomer');
+      expect(beforeLevelUp.progress, 0.99);
+      expect(beforeLevelUp.xpRemaining, 1);
+
+      final dedicated = engine.levelProgressFor(149);
+      expect(dedicated.level, 2);
+      expect(dedicated.titleKey, 'xp_title_dedicated');
+      expect(dedicated.currentLevelXp, 49);
+      expect(dedicated.progress, 0.49);
+
+      final master = engine.levelProgressFor(400);
+      expect(master.level, 5);
+      expect(master.titleKey, 'xp_title_master');
+      expect(master.progress, 0);
+    });
+
+    test('calculates badge progress from its metric and clamps at target', () {
+      final progress = GamificationModel(
+        streak: 2,
+        totalAnswered: 37,
+        examCount: 0,
+        perfectCount: 4,
+      );
+
+      BadgeDefinition badge(String id) =>
+          BadgeCatalog.all.singleWhere((item) => item.id == id);
+
+      expect(badge('answers_50').progressFor(progress), (37, 50));
+      expect(badge('streak_3').progressFor(progress), (2, 3));
+      expect(badge('first_exam').progressFor(progress), (0, 1));
+      expect(badge('perfect_exam').progressFor(progress), (1, 1));
     });
   });
 }

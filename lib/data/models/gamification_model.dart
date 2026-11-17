@@ -5,6 +5,8 @@ class GamificationModel {
     this.longestStreak = 0,
     this.lastStudyDate,
     this.todayAnswered = 0,
+    this.dailyGoal = 10,
+    this.xp = 0,
     this.totalAnswered = 0,
     this.examCount = 0,
     this.perfectCount = 0,
@@ -18,6 +20,8 @@ class GamificationModel {
   final String? lastStudyDate;
 
   final int todayAnswered;
+  final int dailyGoal;
+  final int xp;
   final int totalAnswered;
   final int examCount;
   final int perfectCount;
@@ -31,6 +35,8 @@ class GamificationModel {
     String? lastStudyDate,
     bool clearLastStudyDate = false,
     int? todayAnswered,
+    int? dailyGoal,
+    int? xp,
     int? totalAnswered,
     int? examCount,
     int? perfectCount,
@@ -42,6 +48,8 @@ class GamificationModel {
       lastStudyDate:
           clearLastStudyDate ? null : lastStudyDate ?? this.lastStudyDate,
       todayAnswered: todayAnswered ?? this.todayAnswered,
+      dailyGoal: dailyGoal ?? this.dailyGoal,
+      xp: xp ?? this.xp,
       totalAnswered: totalAnswered ?? this.totalAnswered,
       examCount: examCount ?? this.examCount,
       perfectCount: perfectCount ?? this.perfectCount,
@@ -54,6 +62,8 @@ class GamificationModel {
         'longest_streak': longestStreak,
         'last_study_date': lastStudyDate,
         'today_answered': todayAnswered,
+        'daily_goal': dailyGoal,
+        'xp': xp,
         'total_answered': totalAnswered,
         'exam_count': examCount,
         'perfect_count': perfectCount,
@@ -81,6 +91,10 @@ class GamificationModel {
       longestStreak: readInt('longest_streak'),
       lastStudyDate: json['last_study_date'] as String?,
       todayAnswered: readInt('today_answered'),
+      dailyGoal: json['daily_goal'] is num
+          ? (json['daily_goal'] as num).toInt()
+          : 10,
+      xp: readInt('xp'),
       totalAnswered: readInt('total_answered'),
       examCount: readInt('exam_count'),
       perfectCount: readInt('perfect_count'),

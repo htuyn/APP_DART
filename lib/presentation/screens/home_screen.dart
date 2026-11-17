@@ -206,6 +206,7 @@ class HomeScreen extends StatelessWidget {
             StreakCard(
               progress: gamification.progress,
               currentStreak: gamification.currentStreak,
+              levelProgress: gamification.levelProgress,
               languageCode: lang.code,
               onTap: () => Navigator.push(
                 context,

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/l10n/app_strings.dart';
+import '../../data/models/gamification_model.dart';
 import '../../domain/gamification/badge_catalog.dart';
 
 /// Accessible tile showing a locked or unlocked badge and its earned date.
@@ -8,11 +9,13 @@ class BadgeTile extends StatelessWidget {
   const BadgeTile({
     super.key,
     required this.badge,
+    required this.progress,
     required this.languageCode,
     this.unlockedDate,
   });
 
   final BadgeDefinition badge;
+  final GamificationModel progress;
   final String languageCode;
   final String? unlockedDate;
 
@@ -29,8 +32,10 @@ class BadgeTile extends StatelessWidget {
     final earnedOn = unlockedDate == null
         ? ''
         : '${AppStrings.text(languageCode, 'badge_earned_on')}: $unlockedDate';
+    final (current, target) = badge.progressFor(progress);
     final semantics =
-        '$title. $description. $status${earnedOn.isEmpty ? '' : '. $earnedOn'}';
+        '$title. $description. $status${isUnlocked ? '' : '. $current/$target'}'
+        '${earnedOn.isEmpty ? '' : '. $earnedOn'}';
 
     return Semantics(
       container: true,
@@ -74,6 +79,15 @@ class BadgeTile extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                 ),
+                if (!isUnlocked) ...[
+                  const SizedBox(height: 6),
+                  Text('$current/$target'),
+                  const SizedBox(height: 4),
+                  LinearProgressIndicator(
+                    value: target == 0 ? 0 : current / target,
+                    semanticsLabel: '$title $current/$target',
+                  ),
+                ],
               ],
             ),
           ),

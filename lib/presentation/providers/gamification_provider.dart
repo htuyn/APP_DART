@@ -32,6 +32,7 @@ class GamificationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   int get currentStreak => _engine.streakHienThi(_progress);
+  LevelProgress get levelProgress => _engine.levelProgressFor(_progress.xp);
   List<BadgeDefinition> get badges => BadgeCatalog.all;
   List<BadgeDefinition> get newlyUnlockedBadges =>
       List.unmodifiable(_newBadges);
@@ -57,10 +58,34 @@ class GamificationProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> ghiNhanTraLoi() => _enqueue(_engine.ghiNhanTraLoi);
+  Future<void> ghiNhanTraLoi({bool? isCorrect}) =>
+      _enqueue(() => _engine.ghiNhanTraLoi(isCorrect: isCorrect));
 
-  Future<void> ghiNhanBaiThi(int score, int total) =>
-      _enqueue(() => _engine.ghiNhanBaiThi(score, total));
+  Future<void> ghiNhanBaiThi(
+    int score,
+    int total, {
+    int? answeredCount,
+  }) => _enqueue(
+    () => _engine.ghiNhanBaiThi(
+      score,
+      total,
+      answeredCount: answeredCount,
+    ),
+  );
+
+  /// Updates the daily answer target and persists it with the existing model.
+  Future<void> updateDailyGoal(int goal) {
+    if (![5, 10, 20].contains(goal)) {
+      return Future<void>.error(
+        ArgumentError.value(goal, 'goal', 'Must be 5, 10, or 20.'),
+      );
+    }
+    return _enqueue(() async {
+      final updated = _progress.copyWith(dailyGoal: goal);
+      await _repository.save(updated);
+      return updated;
+    });
+  }
 
   /// Returns and clears badges earned by the latest action for one-time dialogs.
   List<BadgeDefinition> takeNewlyUnlockedBadges() {

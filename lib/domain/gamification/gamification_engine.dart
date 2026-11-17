@@ -4,6 +4,25 @@ import '../../data/models/gamification_model.dart';
 import '../repositories/i_gamification_repository.dart';
 import 'badge_catalog.dart';
 
+/// XP and level summary used by the presentation layer.
+class LevelProgress {
+  const LevelProgress({
+    required this.level,
+    required this.titleKey,
+    required this.currentLevelXp,
+    required this.xpForNextLevel,
+    required this.progress,
+  });
+
+  final int level;
+  final String titleKey;
+  final int currentLevelXp;
+  final int xpForNextLevel;
+  final double progress;
+
+  int get xpRemaining => xpForNextLevel - currentLevelXp;
+}
+
 /// Domain service for date-based study streaks and badge unlocks.
 class GamificationEngine {
   GamificationEngine({
@@ -17,34 +36,66 @@ class GamificationEngine {
 
   Future<GamificationModel> load() => repository.load();
 
-  Future<GamificationModel> ghiNhanTraLoi() async {
-    final current = await repository.load();
-    final now = clock.now();
-    final today = dateKey(now);
-    final touched = _touchStudyDay(current, today, answered: 1);
-    final updated = _unlockEligible(
-      touched.copyWith(totalAnswered: current.totalAnswered + 1),
-      today,
-    );
-    await repository.save(updated);
-    return updated;
-  }
-
-  Future<GamificationModel> ghiNhanBaiThi(int score, int total) async {
+  Future<GamificationModel> ghiNhanTraLoi({bool? isCorrect}) async {
     final current = await repository.load();
     final now = clock.now();
     final today = dateKey(now);
     final touched = _touchStudyDay(current, today);
     final updated = _unlockEligible(
       touched.copyWith(
-        examCount: current.examCount + 1,
-        perfectCount: current.perfectCount +
-            (total > 0 && score == total ? 1 : 0),
+        todayAnswered: touched.todayAnswered + 1,
+        totalAnswered: current.totalAnswered + 1,
+        xp: current.xp +
+            (isCorrect == null ? 0 : isCorrect ? 10 : 2),
       ),
       today,
     );
     await repository.save(updated);
     return updated;
+  }
+
+  Future<GamificationModel> ghiNhanBaiThi(
+    int score,
+    int total, {
+    int? answeredCount,
+  }) async {
+    final current = await repository.load();
+    final now = clock.now();
+    final today = dateKey(now);
+    final touched = _touchStudyDay(current, today);
+    final answered = (answeredCount ?? total).clamp(0, total);
+    final correct = score.clamp(0, answered);
+    final perfect = total > 0 && score == total;
+    final answerXp = correct * 10 + (answered - correct) * 2;
+    final updated = _unlockEligible(
+      touched.copyWith(
+        examCount: current.examCount + 1,
+        perfectCount: current.perfectCount + (perfect ? 1 : 0),
+        xp: current.xp + 50 + answerXp + (perfect ? 100 : 0),
+      ),
+      today,
+    );
+    await repository.save(updated);
+    return updated;
+  }
+
+  /// Levels require 100 XP each. Titles advance at levels 1, 2, and 5.
+  LevelProgress levelProgressFor(int xp) {
+    final safeXp = xp < 0 ? 0 : xp;
+    final level = safeXp ~/ 100 + 1;
+    final currentLevelXp = safeXp % 100;
+    final titleKey = switch (level) {
+      1 => 'xp_title_newcomer',
+      >= 2 && < 5 => 'xp_title_dedicated',
+      _ => 'xp_title_master',
+    };
+    return LevelProgress(
+      level: level,
+      titleKey: titleKey,
+      currentLevelXp: currentLevelXp,
+      xpForNextLevel: 100,
+      progress: currentLevelXp / 100,
+    );
   }
 
   /// Returns zero when the last study date is more than one calendar day ago.
@@ -64,15 +115,10 @@ class GamificationEngine {
 
   GamificationModel _touchStudyDay(
     GamificationModel current,
-    String today, {
-    int answered = 0,
-  }) {
+    String today,
+  ) {
     final lastDate = current.lastStudyDate;
-    if (lastDate == today) {
-      return current.copyWith(
-        todayAnswered: current.todayAnswered + answered,
-      );
-    }
+    if (lastDate == today) return current;
 
     var gap = 2;
     if (lastDate != null) {
@@ -84,11 +130,7 @@ class GamificationEngine {
     }
 
     // A clock rollback must not move persisted progress backward.
-    if (gap < 0) {
-      return current.copyWith(
-        todayAnswered: current.todayAnswered + answered,
-      );
-    }
+    if (gap < 0) return current;
 
     final nextStreak = gap == 1 ? current.streak + 1 : 1;
     return current.copyWith(
@@ -96,7 +138,7 @@ class GamificationEngine {
       longestStreak:
           nextStreak > current.longestStreak ? nextStreak : current.longestStreak,
       lastStudyDate: today,
-      todayAnswered: answered,
+      todayAnswered: 0,
     );
   }
 

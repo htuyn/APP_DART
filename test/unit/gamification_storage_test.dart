@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_quiz_bilingual/data/datasources/gamification_storage_datasource.dart';
 import 'package:flutter_quiz_bilingual/data/models/gamification_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +22,30 @@ void main() {
     expect(progress.unlockedBadges, isEmpty);
   });
 
+  test('loads legacy JSON without dailyGoal or XP using defaults', () async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(
+      GamificationStorageDataSource.storageKey,
+      jsonEncode({
+        'streak': 2,
+        'longest_streak': 4,
+        'last_study_date': '2026-11-16',
+        'today_answered': 3,
+        'total_answered': 20,
+        'exam_count': 1,
+        'perfect_count': 0,
+        'unlocked_badges': {'first_answer': '2026-11-01'},
+      }),
+    );
+
+    final progress = await GamificationStorageDataSource().load();
+
+    expect(progress.dailyGoal, 10);
+    expect(progress.xp, 0);
+    expect(progress.todayAnswered, 3);
+    expect(progress.unlockedBadges['first_answer'], '2026-11-01');
+  });
+
   test('round-trips the immutable progress model under the versioned key',
       () async {
     final dataSource = GamificationStorageDataSource();
@@ -28,6 +54,8 @@ void main() {
       longestStreak: 8,
       lastStudyDate: '2026-11-17',
       todayAnswered: 6,
+      dailyGoal: 20,
+      xp: 250,
       totalAnswered: 42,
       examCount: 3,
       perfectCount: 1,
@@ -44,6 +72,8 @@ void main() {
     expect(restored.longestStreak, 8);
     expect(restored.lastStudyDate, '2026-11-17');
     expect(restored.todayAnswered, 6);
+    expect(restored.dailyGoal, 20);
+    expect(restored.xp, 250);
     expect(restored.totalAnswered, 42);
     expect(restored.examCount, 3);
     expect(restored.perfectCount, 1);
