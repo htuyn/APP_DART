@@ -58,6 +58,14 @@ class _FakeBlockchainRepository implements IBlockchainRepository {
   @override
   Future<String?> loadRecipientAddress() async => address;
   @override
+  Future<String?> loadEmbeddedAddress() async => address;
+  @override
+  Future<String?> loadEmbeddedPrivateKey() async => null;
+  @override
+  Future<void> useEmbeddedWallet() async {}
+  @override
+  Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate) async => null;
+  @override
   Future<List<String>> findIssuedCertificateIds({required String recipientAddress, required int fromBlock, required int toBlock}) async => const [];
   @override
   Future<void> dispose() async {}
@@ -119,6 +127,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.tap(find.text('Đổi ví MetaMask'));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), 'bad-wallet');
     await tester.tap(find.text('Lưu địa chỉ ví'));
     await tester.pumpAndSettle();

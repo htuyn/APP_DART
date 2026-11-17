@@ -47,6 +47,14 @@ class _BlockchainRepository implements IBlockchainRepository {
   @override
   Future<String?> loadRecipientAddress() async => _wallet;
   @override
+  Future<String?> loadEmbeddedAddress() async => _wallet;
+  @override
+  Future<String?> loadEmbeddedPrivateKey() async => null;
+  @override
+  Future<void> useEmbeddedWallet() async {}
+  @override
+  Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate) async => null;
+  @override
   Future<List<String>> findIssuedCertificateIds({required String recipientAddress, required int fromBlock, required int toBlock}) async => const [];
   @override
   Future<void> dispose() async {}

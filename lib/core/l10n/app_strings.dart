@@ -308,6 +308,14 @@ class AppStrings {
     'status_failed': (vi: 'Thất bại', en: 'Failed'),
     'status_revoked': (vi: 'Đã thu hồi', en: 'Revoked'),
     'wallet_title': (vi: 'Ví Ethereum của bạn', en: 'Your Ethereum wallet'),
+    'wallet_embedded_label': (vi: 'Ví học tập tự động', en: 'Auto learning wallet'),
+    'wallet_personal_label': (vi: 'Ví cá nhân', en: 'Personal wallet'),
+    'change_wallet': (vi: 'Đổi ví MetaMask', en: 'Change MetaMask wallet'),
+    'use_embedded_wallet': (vi: 'Dùng lại ví tự động', en: 'Use auto wallet'),
+    'backup_wallet_key': (vi: 'Sao lưu khóa ví', en: 'Back up wallet key'),
+    'wallet_key_warning': (vi: 'Không chia sẻ khóa riêng tư. Bất kỳ ai có khóa này đều có thể kiểm soát ví.', en: 'Never share this private key. Anyone with it can control the wallet.'),
+    'copy_key': (vi: 'Sao chép khóa', en: 'Copy key'),
+    'issuance_pending_notice': (vi: 'Đã lưu yêu cầu, đang chờ hệ thống xác nhận', en: 'Request saved, waiting for system confirmation.'),
     'wallet_guidance': (vi: 'Nhập địa chỉ ví công khai nhận chứng chỉ. Ứng dụng không yêu cầu private key.', en: 'Enter the public wallet address that will receive certificates. The app never asks for a private key.'),
     'wallet_address': (vi: 'Địa chỉ ví Ethereum', en: 'Ethereum wallet address'),
     'wallet_invalid': (vi: 'Địa chỉ ví không hợp lệ. Địa chỉ cần bắt đầu bằng 0x và có 40 ký tự hex.', en: 'Invalid wallet address. It must start with 0x and contain 40 hex characters.'),
@@ -347,7 +355,7 @@ class AppStrings {
     'refresh': (vi: 'Làm mới', en: 'Refresh'),
     'certificate_type_filter': (vi: 'Loại chứng chỉ', en: 'Certificate type'),
     'all_certificates': (vi: 'Tất cả', en: 'All'),
-    'issued_pending_info': (vi: 'Yêu cầu được lưu trên thiết bị và chờ Issuer cấp phát.', en: 'The request is saved on this device and awaits issuer issuance.'),
+    'issued_pending_info': (vi: 'Yêu cầu được lưu trên thiết bị và chờ hệ thống xác nhận.', en: 'The request is saved on this device and awaits system confirmation.'),
   };
 
   static String text(String code, String key) {

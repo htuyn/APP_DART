@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallet/wallet.dart' show EthereumAddress;
@@ -24,12 +26,14 @@ class EthereumBlockchainDataSource {
     String rpcUrl = BlockchainConfig.sepoliaRpcUrl,
     String contractAddress = BlockchainConfig.contractAddress,
     String abiAssetPath = BlockchainConfig.abiAssetPath,
+    String relayerUrl = BlockchainConfig.issuerRelayerUrl,
   }) {
     final client = httpClient ?? http.Client();
     return EthereumBlockchainDataSource._(
       rpcUrl,
       EthereumAddress.fromHex(contractAddress),
       abiAssetPath,
+      relayerUrl,
       client,
     );
   }
@@ -38,11 +42,13 @@ class EthereumBlockchainDataSource {
     String rpcUrl,
     this._contractAddress,
     this._abiAssetPath,
+    this._relayerUrl,
     this._httpClient,
   ) : _client = Web3Client(rpcUrl, _httpClient);
 
   final EthereumAddress _contractAddress;
   final String _abiAssetPath;
+  final String _relayerUrl;
   final http.Client _httpClient;
   final Web3Client _client;
   Future<DeployedContract>? _contractFuture;
@@ -52,6 +58,28 @@ class EthereumBlockchainDataSource {
     final abi = ContractAbi.fromJson(abiJson, 'AchievementCertificate');
     return DeployedContract(abi, _contractAddress);
   }();
+
+  Future<Map<String, dynamic>?> issueCertificate({
+    required String certificateId,
+    required int certificateType,
+    required String recipientAddress,
+    required String achievementHash,
+  }) async {
+    final response = await _httpClient.post(
+      Uri.parse('$_relayerUrl/api/certificates/issue'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'certificateId': certificateId,
+        'certificateType': certificateType,
+        'recipientAddress': recipientAddress,
+        'achievementHash': achievementHash,
+      }),
+    ).timeout(const Duration(seconds: 15));
+    if (response.statusCode < 200 || response.statusCode >= 300) return null;
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map<String, dynamic> || decoded['status'] != 'confirmed') return null;
+    return decoded;
+  }
 
   /// Reads the contract's current record. This datasource never signs
   /// transactions and never creates or loads issuer credentials.
