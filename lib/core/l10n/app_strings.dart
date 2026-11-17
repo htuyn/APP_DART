@@ -28,6 +28,11 @@ class AppStrings {
       vi: 'Ôn tập lại các câu hỏi đã chọn sai',
       en: 'Revisit questions you answered wrong',
     ),
+    'spaced_repetition': (vi: 'Ôn tập thông minh (AI)', en: 'AI Spaced Repetition'),
+    'spaced_repetition_hint': (
+      vi: 'AI sắp xếp câu hỏi theo đường cong lãng quên',
+      en: 'AI schedules reviews based on the forgetting curve',
+    ),
     'choose_block': (vi: 'Chọn khối kiến thức', en: 'Select a topic block'),
     'choose_block_hint': (
       vi: 'Tìm kiếm hoặc lọc chủ đề Flutter để bắt đầu luyện tập',

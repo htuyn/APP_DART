@@ -5,6 +5,7 @@ import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
+import '../providers/spaced_repetition_provider.dart';
 import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/explanation_card.dart';
 import '../widgets/language_button.dart';
@@ -341,6 +342,42 @@ class _QuestionPage extends StatelessWidget {
                       tooltip: lang.t('toggle_question_lang'),
                       onPressed: onToggleLang,
                       icon: const Icon(Icons.translate_rounded, size: 20),
+                    ),
+                    Consumer<SpacedRepetitionProvider>(
+                      builder: (context, sr, _) {
+                        final isBookmarked = sr.isBookmarked(question.id);
+                        return IconButton(
+                          tooltip: isBookmarked ? 'Bỏ lưu ôn tập' : 'Lưu ôn tập AI',
+                          icon: Icon(
+                            isBookmarked
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: isBookmarked
+                                ? AppColors.accentPurple
+                                : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            size: 22,
+                          ),
+                          onPressed: () {
+                            if (isBookmarked) {
+                              sr.removeBookmark(question.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Đã bỏ lưu khỏi danh sách ôn tập AI'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            } else {
+                              sr.bookmarkQuestion(question.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Đã lưu vào danh sách ôn tập AI Spaced Repetition!'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),

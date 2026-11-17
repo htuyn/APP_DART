@@ -10,6 +10,7 @@ import 'presentation/providers/ai_tutor_provider.dart';
 import 'presentation/providers/exam_provider.dart';
 import 'presentation/providers/language_provider.dart';
 import 'presentation/providers/quiz_provider.dart';
+import 'presentation/providers/spaced_repetition_provider.dart';
 import 'presentation/providers/stats_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'screens/trang_chu_screen.dart';
@@ -38,6 +39,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => StatsProvider(repository: quizRepository),
         ),
+        ChangeNotifierProvider(create: (_) => SpacedRepetitionProvider()),
         ChangeNotifierProvider(create: (_) => AiTutorProvider()),
       ],
       child: const QuizApp(),

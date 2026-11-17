@@ -5,6 +5,8 @@ import '../core/constants/app_colors.dart';
 import '../core/navigation/app_page_route.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
+import '../presentation/providers/spaced_repetition_provider.dart';
+import '../presentation/screens/spaced_repetition_screen.dart';
 import '../presentation/screens/wrong_questions_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
@@ -48,6 +50,13 @@ class TrangChuScreen extends StatelessWidget {
   }
 
   Widget _body(BuildContext context, QuizProvider quiz, LanguageProvider lang) {
+    final spacedRepetition = context.watch<SpacedRepetitionProvider>();
+    if (quiz.state == QuizLoadingState.loaded && spacedRepetition.sortedReviewQuestions.isEmpty && quiz.allQuestions.isNotEmpty) {
+      // Trigger lazy init if not initialized
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        spacedRepetition.initialize(quiz.allQuestions);
+      });
+    }
     if (quiz.state == QuizLoadingState.loading ||
         quiz.state == QuizLoadingState.initial) {
       return LoadingView(message: lang.t('loading_questions'));
@@ -173,6 +182,28 @@ class TrangChuScreen extends StatelessWidget {
           badgeTextColor: const Color(0xFF5B21B6),
           onTap: () {
             Navigator.of(context).push(openAppPage(const WrongQuestionsScreen()));
+          },
+        ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.psychology_rounded,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          title: lang.t('spaced_repetition'),
+          subtitle: lang.t('spaced_repetition_hint'),
+          badgeText: spacedRepetition.dueTodayCount > 0
+              ? '${spacedRepetition.dueTodayCount} cần ôn'
+              : (spacedRepetition.sortedReviewQuestions.isNotEmpty
+                  ? '${spacedRepetition.sortedReviewQuestions.length} câu'
+                  : null),
+          badgeColor: const Color(0xFFEEF2FF),
+          badgeTextColor: const Color(0xFF3730A3),
+          onTap: () {
+            Navigator.of(context)
+                .push(openAppPage(const SpacedRepetitionScreen()));
           },
         ),
       ],
