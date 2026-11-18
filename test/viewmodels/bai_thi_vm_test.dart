@@ -32,6 +32,15 @@ class _FakeQuizRepository implements IQuizRepository {
   }
 
   @override
+  Future<List<String>> getBookmarkedQuestionIds() async => [];
+
+  @override
+  Future<void> saveBookmarkedQuestion(String questionId) async {}
+
+  @override
+  Future<void> removeBookmarkedQuestion(String questionId) async {}
+
+  @override
   Future<List<QuizResultModel>> getQuizHistory() async => List.of(history);
 
   @override

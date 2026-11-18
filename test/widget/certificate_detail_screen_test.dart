@@ -70,6 +70,12 @@ class _QuizRepository implements IQuizRepository {
   @override
   Future<void> removeWrongQuestion(String questionId) async {}
   @override
+  Future<List<String>> getBookmarkedQuestionIds() async => const [];
+  @override
+  Future<void> saveBookmarkedQuestion(String questionId) async {}
+  @override
+  Future<void> removeBookmarkedQuestion(String questionId) async {}
+  @override
   Future<List<QuizResultModel>> getQuizHistory() async => const [];
   @override
   Future<void> saveQuizResult(QuizResultModel result) async {}

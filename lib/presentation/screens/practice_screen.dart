@@ -384,6 +384,8 @@ class _QuestionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final quiz = context.watch<QuizProvider>();
+    final isBookmarked = quiz.isBookmarked(question.id);
     final options = question.getOptions(langCode);
     final answered = selected != null;
     final correct = selected == question.correctIndex;
@@ -414,6 +416,17 @@ class _QuestionPage extends StatelessWidget {
                       tooltip: lang.t('toggle_question_lang'),
                       onPressed: onToggleLang,
                       icon: const Icon(Icons.translate_rounded, size: 20),
+                    ),
+                    IconButton(
+                      tooltip: isBookmarked ? lang.t('bookmarked') : lang.t('bookmark'),
+                      onPressed: () => quiz.toggleBookmark(question.id),
+                      icon: Icon(
+                        isBookmarked
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        size: 20,
+                        color: isBookmarked ? AppColors.warning : null,
+                      ),
                     ),
                   ],
                 ),

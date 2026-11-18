@@ -23,6 +23,7 @@ import 'presentation/providers/quiz_provider.dart';
 import 'presentation/providers/stats_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/screens/blockchain_certificates_screen.dart';
+import 'presentation/screens/cau_hoi_da_luu_screen.dart';
 import 'presentation/screens/course_progress_screen.dart';
 import 'core/navigation/app_page_route.dart';
 import 'screens/trang_chu_screen.dart';
@@ -119,6 +120,7 @@ class QuizApp extends StatelessWidget {
       routes: {
         AppPageRoutes.certificates: (_) => const BlockchainCertificatesScreen(),
         AppPageRoutes.courseProgress: (_) => const CourseProgressScreen(),
+        AppPageRoutes.bookmarkedQuestions: (_) => const CauHoiDaLuuScreen(),
       },
     );
   }

@@ -4,6 +4,7 @@ import '../models/quiz_result_model.dart';
 
 class QuizStorageDataSource {
   static const String _wrongQuestionsKey = 'wrong_question_ids';
+  static const String _bookmarkedQuestionsKey = 'bookmarked_question_ids';
   static const String _quizHistoryKey = 'quiz_history';
 
   Future<List<String>> getWrongQuestionIds() async {
@@ -25,6 +26,28 @@ class QuizStorageDataSource {
     final list = prefs.getStringList(_wrongQuestionsKey) ?? [];
     if (list.remove(questionId)) {
       await prefs.setStringList(_wrongQuestionsKey, list);
+    }
+  }
+
+  Future<List<String>> getBookmarkedQuestionIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_bookmarkedQuestionsKey) ?? [];
+  }
+
+  Future<void> saveBookmarkedQuestion(String questionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_bookmarkedQuestionsKey) ?? [];
+    if (!list.contains(questionId)) {
+      list.add(questionId);
+      await prefs.setStringList(_bookmarkedQuestionsKey, list);
+    }
+  }
+
+  Future<void> removeBookmarkedQuestion(String questionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_bookmarkedQuestionsKey) ?? [];
+    if (list.remove(questionId)) {
+      await prefs.setStringList(_bookmarkedQuestionsKey, list);
     }
   }
 

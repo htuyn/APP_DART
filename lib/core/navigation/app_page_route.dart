@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 abstract final class AppPageRoutes {
   static const certificates = '/certificates';
   static const courseProgress = '/course-progress';
+  static const bookmarkedQuestions = '/bookmarked-questions';
 }
 
 Route<T> openAppPage<T>(Widget page) {

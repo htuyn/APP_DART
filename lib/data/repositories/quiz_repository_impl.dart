@@ -34,6 +34,21 @@ class QuizRepositoryImpl implements IQuizRepository {
   }
 
   @override
+  Future<List<String>> getBookmarkedQuestionIds() {
+    return storageDataSource.getBookmarkedQuestionIds();
+  }
+
+  @override
+  Future<void> saveBookmarkedQuestion(String questionId) {
+    return storageDataSource.saveBookmarkedQuestion(questionId);
+  }
+
+  @override
+  Future<void> removeBookmarkedQuestion(String questionId) {
+    return storageDataSource.removeBookmarkedQuestion(questionId);
+  }
+
+  @override
   Future<List<QuizResultModel>> getQuizHistory() {
     return storageDataSource.getQuizHistory();
   }

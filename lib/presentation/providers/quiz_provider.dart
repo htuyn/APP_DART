@@ -15,14 +15,21 @@ class QuizProvider with ChangeNotifier {
   String? _errorMessage;
   List<QuestionModel> _allQuestions = [];
   Set<String> _wrongQuestionIds = {};
+  Set<String> _bookmarkedQuestionIds = {};
 
   QuizLoadingState get state => _state;
   String? get errorMessage => _errorMessage;
   List<QuestionModel> get allQuestions => _allQuestions;
   Set<String> get wrongQuestionIds => _wrongQuestionIds;
+  Set<String> get bookmarkedQuestionIds => _bookmarkedQuestionIds;
 
   List<QuestionModel> get wrongQuestions =>
       _allQuestions.where((q) => _wrongQuestionIds.contains(q.id)).toList();
+
+  List<QuestionModel> get bookmarkedQuestions =>
+      _allQuestions.where((q) => _bookmarkedQuestionIds.contains(q.id)).toList();
+
+  bool isBookmarked(String questionId) => _bookmarkedQuestionIds.contains(questionId);
 
   QuizProvider({
     required this.repository,
@@ -39,6 +46,8 @@ class QuizProvider with ChangeNotifier {
       _allQuestions = await repository.loadQuestions();
       final wrongList = await repository.getWrongQuestionIds();
       _wrongQuestionIds = wrongList.toSet();
+      final bookmarkedList = await repository.getBookmarkedQuestionIds();
+      _bookmarkedQuestionIds = bookmarkedList.toSet();
       _state = QuizLoadingState.loaded;
     } catch (e) {
       _state = QuizLoadingState.error;
@@ -50,6 +59,19 @@ class QuizProvider with ChangeNotifier {
   Future<void> reloadProgress() async {
     final wrongList = await repository.getWrongQuestionIds();
     _wrongQuestionIds = wrongList.toSet();
+    final bookmarkedList = await repository.getBookmarkedQuestionIds();
+    _bookmarkedQuestionIds = bookmarkedList.toSet();
+    notifyListeners();
+  }
+
+  Future<void> toggleBookmark(String questionId) async {
+    if (_bookmarkedQuestionIds.contains(questionId)) {
+      _bookmarkedQuestionIds.remove(questionId);
+      await repository.removeBookmarkedQuestion(questionId);
+    } else {
+      _bookmarkedQuestionIds.add(questionId);
+      await repository.saveBookmarkedQuestion(questionId);
+    }
     notifyListeners();
   }
 

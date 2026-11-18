@@ -473,6 +473,22 @@ class _ExamScreenState extends State<ExamScreen> {
                                     exam.toggleFlag(index),
                               ),
                             ),
+                            const SizedBox(width: 4),
+                            IconButton(
+                              tooltip: quiz.isBookmarked(question.id)
+                                  ? lang.t('bookmarked')
+                                  : lang.t('bookmark'),
+                              onPressed: () => quiz.toggleBookmark(question.id),
+                              icon: Icon(
+                                quiz.isBookmarked(question.id)
+                                    ? Icons.bookmark_rounded
+                                    : Icons.bookmark_border_rounded,
+                                size: 20,
+                                color: quiz.isBookmarked(question.id)
+                                    ? AppColors.warning
+                                    : null,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10),

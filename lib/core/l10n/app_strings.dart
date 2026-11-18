@@ -166,6 +166,30 @@ class AppStrings {
       vi: 'Tuyệt vời! Bạn chưa trả lời sai câu nào hoặc đã hoàn thành ôn lại toàn bộ.',
       en: 'Great job! You have no missed questions or have cleared them all.',
     ),
+    'bookmarked_title': (vi: 'Câu hỏi đã lưu', en: 'Bookmarked Questions'),
+    'bookmarked_hint': (
+      vi: 'Ôn tập lại các câu hỏi khó đã đánh dấu',
+      en: 'Review saved tricky questions',
+    ),
+    'bookmarked_empty': (
+      vi: 'Chưa có câu hỏi nào được lưu',
+      en: 'No bookmarked questions',
+    ),
+    'bookmarked_empty_hint': (
+      vi: 'Bấm biểu tượng bookmark/ghim khi làm bài để lưu lại các câu hỏi khó ôn tập trước ngày thi.',
+      en: 'Tap the bookmark icon while practicing to save difficult questions for revision before exam day.',
+    ),
+    'bookmark': (vi: 'Ghim câu hỏi', en: 'Bookmark question'),
+    'bookmarked': (vi: 'Đã lưu câu hỏi', en: 'Bookmarked'),
+    'bookmark_added': (
+      vi: 'Đã lưu câu hỏi vào danh sách',
+      en: 'Saved question to bookmarks',
+    ),
+    'bookmark_removed': (
+      vi: 'Đã bỏ lưu câu hỏi',
+      en: 'Removed question from bookmarks',
+    ),
+    'saved_count': (vi: 'câu đã lưu', en: 'saved questions'),
     'ask_ai_tricky': (
       vi: 'Hỏi AI vì sao câu này dễ nhầm lẫn',
       en: 'Ask AI why this question is tricky',

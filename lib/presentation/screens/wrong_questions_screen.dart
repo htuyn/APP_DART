@@ -63,6 +63,8 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
     final options = q.getOptions(currentLang);
     final theme = Theme.of(context);
 
+    final isBookmarked = quiz.isBookmarked(q.id);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 14.0),
       elevation: 0,
@@ -107,6 +109,29 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                         Icons.translate_rounded,
                         size: 18,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Material(
+                  color: isBookmarked
+                      ? AppColors.warning.withValues(alpha: 0.15)
+                      : theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => quiz.toggleBookmark(q.id),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        isBookmarked
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        size: 18,
+                        color: isBookmarked
+                            ? AppColors.warning
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ),

@@ -7,6 +7,7 @@ import '../presentation/providers/gamification_provider.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
 import '../presentation/screens/achievements_screen.dart';
+import '../presentation/screens/cau_hoi_da_luu_screen.dart';
 import '../presentation/screens/practice_screen.dart';
 import '../presentation/screens/wrong_questions_screen.dart';
 import '../presentation/widgets/language_button.dart';
@@ -69,6 +70,7 @@ class TrangChuScreen extends StatelessWidget {
     final total = quiz.allQuestions.length;
     final blocks = quiz.groupedByBlock.length;
     final wrong = quiz.wrongQuestions.length;
+    final bookmarked = quiz.bookmarkedQuestions.length;
 
     return ListView(
       physics: const BouncingScrollPhysics(
@@ -218,6 +220,26 @@ class TrangChuScreen extends StatelessWidget {
           onTap: () {
             Navigator.of(context)
                 .push(openAppPage(const WrongQuestionsScreen()));
+          },
+        ),
+        const SizedBox(height: 14),
+        _ModeCard(
+          icon: Icons.bookmark_rounded,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFEC4899), Color(0xFFBE185D)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          title: lang.t('bookmarked_title'),
+          subtitle: bookmarked == 0
+              ? lang.t('bookmarked_hint')
+              : '$bookmarked · ${lang.t('bookmarked_hint')}',
+          badgeText: bookmarked > 0 ? '$bookmarked' : null,
+          badgeColor: const Color(0xFFFCE7F3),
+          badgeTextColor: const Color(0xFF9D174D),
+          onTap: () {
+            Navigator.of(context)
+                .push(openAppPage(const CauHoiDaLuuScreen()));
           },
         ),
         const SizedBox(height: 14),
