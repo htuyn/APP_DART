@@ -126,8 +126,8 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  /// Saves an eligible request locally. Issuer signing and issuance stay
-  /// outside the Flutter app; network synchronization only verifies state.
+  /// Saves an eligible request locally, then asks the issuer relayer to sign it.
+  /// Network synchronization retries pending issuance and verifies chain state.
   Future<AchievementCertificateModel?> requestCertificate(
     String eligibilityCode,
   ) async {
@@ -204,8 +204,9 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
         // Keep the saved request pending when the relayer is offline.
       }
       _notifyIfActive();
-      unawaited(synchronize());
-      return _certificates.firstWhere((item) => item.certificateId == certificate.certificateId);
+      final result = _certificates.firstWhere((item) => item.certificateId == certificate.certificateId);
+      if (result.status == CertificateStatus.confirmed) unawaited(synchronize());
+      return result;
     } catch (error) {
       _errorMessage = error.toString();
       _notifyIfActive();
@@ -273,6 +274,12 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
     _notifyIfActive();
 
     try {
+      final local = await repository.loadLocalCertificates();
+      final activeAddress = _recipientAddress?.toLowerCase();
+      _certificates = List.unmodifiable(local.where((certificate) =>
+        activeAddress == null || certificate.recipientAddress.toLowerCase() == activeAddress,
+      ));
+      await _retryPendingRelayerRequests();
       final refreshed = await repository.loadCertificates(
         recipientAddress: _recipientAddress,
       );
@@ -288,7 +295,46 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<List<String>> findIssuedCertificateIds({
+  Future<void> _retryPendingRelayerRequests() async {
+    final pending = _certificates.where((certificate) =>
+      certificate.status == CertificateStatus.pending ||
+      certificate.status == CertificateStatus.requested,
+    ).toList(growable: false);
+    for (final certificate in pending) {
+      try {
+        final issued = await repository.issueCertificate(certificate);
+        final transactionHash = issued?['transactionHash'];
+        final blockNumber = issued?['blockNumber'];
+        if (issued?['status'] != 'confirmed' ||
+            transactionHash is! String ||
+            !RegExp(r'^0x[0-9a-fA-F]{64}$').hasMatch(transactionHash) ||
+            blockNumber is! num) {
+          continue;
+        }
+        final confirmed = certificate.copyWith(
+          status: CertificateStatus.confirmed,
+          transactionHash: transactionHash,
+          blockNumber: blockNumber.toInt(),
+          issuedAt: issued?['issuedAt'] is String
+              ? DateTime.tryParse(issued!['issuedAt'] as String)
+              : null,
+        );
+        await repository.saveCertificateRequest(confirmed);
+        _upsertCertificate(confirmed);
+      } catch (_) {
+        // Keep pending requests available for a later retry.
+      }
+    }
+    if (_certificates.any((certificate) =>
+        certificate.status == CertificateStatus.pending ||
+        certificate.status == CertificateStatus.requested)) {
+      _noticeMessage = 'issuance_pending_notice';
+    } else {
+      _noticeMessage = null;
+    }
+  }
+
+  Future<List<String>> findIssuedCertificateIds({ 
     required int fromBlock,
     required int toBlock,
   }) async {

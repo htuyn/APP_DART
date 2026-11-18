@@ -31,7 +31,7 @@ class EthereumBlockchainDataSource {
     final client = httpClient ?? http.Client();
     return EthereumBlockchainDataSource._(
       rpcUrl,
-      EthereumAddress.fromHex(contractAddress),
+      EthereumAddress.fromHex(contractAddress.replaceFirst(RegExp(r'^0x'), '').toLowerCase()),
       abiAssetPath,
       relayerUrl,
       client,
@@ -67,10 +67,13 @@ class EthereumBlockchainDataSource {
   }) async {
     final response = await _httpClient.post(
       Uri.parse('$_relayerUrl/api/certificates/issue'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': BlockchainConfig.issuerRelayerApiKey,
+      },
       body: jsonEncode({
         'certificateId': certificateId,
-        'certificateType': certificateType,
+        'certificateType': certificateType - 1,
         'recipientAddress': recipientAddress,
         'achievementHash': achievementHash,
       }),
@@ -176,7 +179,7 @@ class EthereumBlockchainDataSource {
         toBlock: BlockNum.exact(toBlock),
       ),
     );
-    final recipient = EthereumAddress.fromHex(recipientAddress);
+    final recipient = EthereumAddress.fromHex(recipientAddress.replaceFirst(RegExp(r'^0x'), '').toLowerCase());
     final certificateIds = <String>{};
 
     for (final log in logs) {
