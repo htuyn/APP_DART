@@ -8,9 +8,8 @@ import '../data/models/thong_ke.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
 import '../presentation/providers/stats_provider.dart';
-import '../presentation/providers/theme_provider.dart';
 import '../presentation/screens/practice_screen.dart';
-import '../presentation/widgets/language_button.dart';
+import '../presentation/widgets/profile_settings_button.dart';
 import '../presentation/widgets/responsive_body.dart';
 import '../presentation/widgets/state_views.dart';
 
@@ -40,7 +39,7 @@ class _CuaToiScreenState extends State<CuaToiScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(lang.t('mine')),
-        actions: const [LanguageButton()],
+        actions: const [ProfileSettingsButton()],
       ),
       body: ResponsiveBody(child: _body(context, quiz, stats, lang)),
     );
@@ -80,8 +79,6 @@ class _CuaToiScreenState extends State<CuaToiScreen> {
       ),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
       children: [
-        const _ProfileCard(),
-        const SizedBox(height: 16),
         _OverviewCard(
           title: lang.t('overall'),
           accuracyLabel: lang.t('accuracy'),
@@ -208,138 +205,7 @@ class _CuaToiScreenState extends State<CuaToiScreen> {
   }
 }
 
-class _ProfileCard extends StatelessWidget {
-  const _ProfileCard();
 
-  @override
-  Widget build(BuildContext context) {
-    final lang = context.watch<LanguageProvider>();
-    final theme = context.watch<ThemeProvider>();
-    final scheme = Theme.of(context).colorScheme;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.person_rounded,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        lang.t('learner'),
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontSize: 18,
-                            ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        lang.t('hero_subtitle'),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 28),
-            Row(
-              children: [
-                Icon(Icons.language_rounded, size: 20, color: scheme.primary),
-                const SizedBox(width: 8),
-                Text(
-                  lang.t('language'),
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              children: [
-                ChoiceChip(
-                  avatar: const Icon(Icons.check_rounded, size: 16),
-                  label: const Text('Tiếng Việt'),
-                  selected: lang.isVietnamese,
-                  onSelected: (selected) {
-                    if (selected) lang.setLanguage(AppLanguage.vi);
-                  },
-                ),
-                ChoiceChip(
-                  avatar: const Icon(Icons.check_rounded, size: 16),
-                  label: const Text('English'),
-                  selected: !lang.isVietnamese,
-                  onSelected: (selected) {
-                    if (selected) lang.setLanguage(AppLanguage.en);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                Icon(Icons.contrast_rounded, size: 20, color: scheme.primary),
-                const SizedBox(width: 8),
-                Text(
-                  lang.t('appearance'),
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  avatar: const Icon(Icons.brightness_auto_rounded, size: 16),
-                  label: Text(lang.t('theme_system')),
-                  selected: theme.mode == ThemeMode.system,
-                  onSelected: (selected) {
-                    if (selected) theme.setMode(ThemeMode.system);
-                  },
-                ),
-                ChoiceChip(
-                  avatar: const Icon(Icons.light_mode_rounded, size: 16),
-                  label: Text(lang.t('theme_light')),
-                  selected: theme.mode == ThemeMode.light,
-                  onSelected: (selected) {
-                    if (selected) theme.setMode(ThemeMode.light);
-                  },
-                ),
-                ChoiceChip(
-                  avatar: const Icon(Icons.dark_mode_rounded, size: 16),
-                  label: Text(lang.t('theme_dark')),
-                  selected: theme.mode == ThemeMode.dark,
-                  onSelected: (selected) {
-                    if (selected) theme.setMode(ThemeMode.dark);
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _HistorySummary extends StatelessWidget {
   final String attemptsLabel;

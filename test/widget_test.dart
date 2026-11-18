@@ -5,7 +5,9 @@ import 'package:flutter_quiz_bilingual/data/models/question_model.dart';
 import 'package:flutter_quiz_bilingual/domain/repositories/quiz_repository.dart';
 import 'package:flutter_quiz_bilingual/presentation/providers/language_provider.dart';
 import 'package:flutter_quiz_bilingual/presentation/providers/quiz_provider.dart';
+import 'package:flutter_quiz_bilingual/presentation/providers/theme_provider.dart';
 import 'package:flutter_quiz_bilingual/presentation/screens/home_screen.dart';
+import 'package:flutter_quiz_bilingual/presentation/widgets/profile_settings_button.dart';
 
 import 'package:flutter_quiz_bilingual/data/models/quiz_result_model.dart';
 
@@ -48,6 +50,7 @@ void main() {
     final repo = FakeQuizRepository();
     final quizProvider = QuizProvider(repository: repo);
     final langProvider = LanguageProvider();
+    final themeProvider = ThemeProvider();
 
     await quizProvider.initialize();
 
@@ -55,6 +58,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: langProvider),
+          ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: quizProvider),
         ],
         child: const MaterialApp(
@@ -75,10 +79,11 @@ void main() {
     expect(find.text('Thống Kê Theo Khối Kiến Thức'), findsOneWidget);
   });
 
-  testWidgets('Toggling language switches UI between VI and EN', (WidgetTester tester) async {
+  testWidgets('Toggling language via Profile & Settings sheet switches UI between VI and EN', (WidgetTester tester) async {
     final repo = FakeQuizRepository();
     final quizProvider = QuizProvider(repository: repo);
     final langProvider = LanguageProvider();
+    final themeProvider = ThemeProvider();
 
     await quizProvider.initialize();
 
@@ -86,6 +91,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: langProvider),
+          ChangeNotifierProvider.value(value: themeProvider),
           ChangeNotifierProvider.value(value: quizProvider),
         ],
         child: const MaterialApp(
@@ -96,11 +102,17 @@ void main() {
 
     await tester.pump();
 
-    // Tap language chip
-    final langChip = find.byType(ActionChip);
-    expect(langChip, findsOneWidget);
-    await tester.tap(langChip);
-    await tester.pump();
+    // Tap Profile & Settings icon button
+    final settingsBtn = find.byType(ProfileSettingsButton);
+    expect(settingsBtn, findsOneWidget);
+    await tester.tap(settingsBtn);
+    await tester.pumpAndSettle();
+
+    // Tap English option in bottom sheet
+    final enOption = find.text('English');
+    expect(enOption, findsWidgets);
+    await tester.tap(enOption.first);
+    await tester.pumpAndSettle();
 
     // Verify UI translated to English
     expect(find.text('Flutter Bilingual Quiz'), findsOneWidget);

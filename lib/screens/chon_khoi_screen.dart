@@ -5,6 +5,7 @@ import '../core/constants/app_colors.dart';
 import '../core/navigation/app_page_route.dart';
 import '../presentation/providers/language_provider.dart';
 import '../presentation/providers/quiz_provider.dart';
+import '../presentation/screens/flashcard_screen.dart';
 import '../presentation/screens/practice_screen.dart';
 import '../presentation/widgets/language_button.dart';
 import '../presentation/widgets/responsive_body.dart';
@@ -97,16 +98,18 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(
             children: [
-              FilterChip(
-                avatar: const Icon(Icons.grid_view_rounded, size: 16),
-                label: Text(lang.t('all')),
+              _buildFilterChip(
+                context: context,
+                label: lang.t('all'),
+                icon: Icons.grid_view_rounded,
                 selected: !_needsReview,
                 onSelected: (_) => setState(() => _needsReview = false),
               ),
               const SizedBox(width: 8),
-              FilterChip(
-                avatar: const Icon(Icons.warning_amber_rounded, size: 16),
-                label: Text(lang.t('needs_review')),
+              _buildFilterChip(
+                context: context,
+                label: lang.t('needs_review'),
+                icon: Icons.warning_amber_rounded,
                 selected: _needsReview,
                 onSelected: (_) => setState(() => _needsReview = true),
               ),
@@ -161,11 +164,11 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
                           wrongCount: wrong,
                           rate: rate,
                           questionLabel: lang.t('questions'),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              openAppPage(PracticeScreen(initialBlockId: blockId)),
-                            );
-                          },
+                          onTap: () => _showStudyModeSelectionSheet(
+                            context: context,
+                            blockId: blockId,
+                            blockTitle: title,
+                          ),
                         );
                       },
                     );
@@ -173,6 +176,290 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
                 ),
         ),
       ],
+    );
+  }
+
+  // Styled FilterChip ensuring high contrast in both Light & Dark themes
+  Widget _buildFilterChip({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required ValueChanged<bool> onSelected,
+  }) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final bg = selected
+        ? scheme.primaryContainer
+        : (isDark ? scheme.surfaceContainerHighest : scheme.surface);
+    final fg = selected ? scheme.onPrimaryContainer : scheme.onSurface;
+    final border = selected ? scheme.primary : scheme.outlineVariant;
+
+    return FilterChip(
+      showCheckmark: false,
+      avatar: Icon(icon, size: 16, color: fg),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: selected ? FontWeight.bold : FontWeight.w600,
+          color: fg,
+        ),
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      selectedColor: scheme.primaryContainer,
+      backgroundColor: bg,
+      side: BorderSide(
+        color: border,
+        width: selected ? 1.5 : 1.0,
+      ),
+    );
+  }
+
+  // Modal Bottom Sheet for selecting Traditional Quiz vs. Flashcard Mode
+  void _showStudyModeSelectionSheet({
+    required BuildContext context,
+    required int blockId,
+    required String blockTitle,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        final lang = sheetContext.watch<LanguageProvider>();
+        final scheme = Theme.of(sheetContext).colorScheme;
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: scheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.school_rounded,
+                      color: scheme.onPrimaryContainer,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${lang.t('block')} $blockId: $blockTitle',
+                          style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: scheme.onSurface,
+                              ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          lang.translate(
+                            vi: 'Chọn phương thức ôn tập phù hợp với bạn',
+                            en: 'Select your preferred study method',
+                          ),
+                          style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Divider(color: scheme.outlineVariant, height: 1),
+              const SizedBox(height: 18),
+
+              // Option 1: Traditional Mode
+              _ModeOptionCard(
+                title: lang.translate(
+                  vi: 'Chế độ truyền thống (Trắc nghiệm)',
+                  en: 'Traditional Mode (Quiz)',
+                ),
+                subtitle: lang.translate(
+                  vi: 'Lựa chọn đáp án 4 phương án, tính điểm, xem giải thích và hỗ trợ AI',
+                  en: '4-option quiz with scoring, explanations, and AI tutor support',
+                ),
+                icon: Icons.assignment_outlined,
+                gradientColors: const [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context).push(
+                    openAppPage(PracticeScreen(initialBlockId: blockId)),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Option 2: Flashcard Mode
+              _ModeOptionCard(
+                title: lang.translate(
+                  vi: 'Chế độ Flashcard (Lật thẻ thông minh)',
+                  en: 'Flashcard Mode (Flip Cards)',
+                ),
+                subtitle: lang.translate(
+                  vi: 'Lật thẻ xem câu hỏi, đáp án đúng và giải thích nhanh chóng',
+                  en: 'Flip cards to quickly review questions, correct answers & explanations',
+                ),
+                icon: Icons.style_rounded,
+                gradientColors: const [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                badge: lang.translate(vi: 'Mới', en: 'New'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context).push(
+                    openAppPage(FlashcardScreen(blockId: blockId)),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ModeOptionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final List<Color> gradientColors;
+  final String? badge;
+  final VoidCallback onTap;
+
+  const _ModeOptionCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.gradientColors,
+    this.badge,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Material(
+      color: isDark ? scheme.surfaceContainerHighest : scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: gradientColors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gradientColors.first.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: scheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        if (badge != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF8B5CF6),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              badge!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.textSecondaryLight,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.primary,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

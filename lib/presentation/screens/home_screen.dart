@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
+import '../widgets/profile_settings_button.dart';
 import '../widgets/state_views.dart';
 import '../widgets/streak_card.dart';
 import 'achievements_screen.dart';
@@ -31,21 +32,8 @@ class HomeScreen extends StatelessWidget {
           ),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: ActionChip(
-              avatar: const Icon(Icons.language, size: 16),
-              label: Text(
-                lang.isVietnamese ? 'EN' : 'VI',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              onPressed: () => lang.toggleLanguage(),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          ),
+        actions: const [
+          ProfileSettingsButton(),
         ],
       ),
       body: _buildBody(context, quiz, lang, gamification),
