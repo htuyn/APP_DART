@@ -50,17 +50,23 @@ class _BlockchainRepository implements IBlockchainRepository {
   final certificates = <AchievementCertificateModel>[];
   int saveCount = 0;
   bool relayerOffline = false;
+  Map<String, dynamic>? issueResponse;
 
   @override
   Future<Map<String, dynamic>?> issueCertificate(AchievementCertificateModel certificate) async {
     if (relayerOffline) throw Exception('relayer offline');
-    return null;
+    return issueResponse;
   }
 
   @override
   Future<void> saveCertificateRequest(AchievementCertificateModel certificate) async {
     saveCount++;
-    certificates.add(certificate);
+    final index = certificates.indexWhere((item) => item.certificateId == certificate.certificateId);
+    if (index < 0) {
+      certificates.add(certificate);
+    } else {
+      certificates[index] = certificate;
+    }
   }
   @override
   Future<List<AchievementCertificateModel>> loadLocalCertificates() async => certificates;
@@ -122,6 +128,20 @@ void main() {
     expect(second?.certificateId, first?.certificateId);
     expect(blockchainRepository.saveCount, 1);
     expect(blockchain.certificates, hasLength(1));
+
+    blockchainRepository.relayerOffline = false;
+    blockchainRepository.issueResponse = {
+      'status': 'confirmed',
+      'transactionHash': '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      'blockNumber': 7654321,
+      'issuedAt': DateTime.utc(2026, 1, 2).toIso8601String(),
+    };
+    await blockchain.synchronize();
+
+    expect(blockchain.certificates.single.status, CertificateStatus.confirmed);
+    expect(blockchain.certificates.single.transactionHash, '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    expect(blockchain.certificates.single.blockNumber, 7654321);
+    expect(blockchain.noticeMessage, isNull);
 
     blockchain.dispose();
     course.dispose();

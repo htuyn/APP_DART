@@ -115,6 +115,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_certificate.achievementHash), findsOneWidget);
+    expect(find.text('APP DART ACADEMY'), findsOneWidget);
+    expect(find.text('CHỨNG NHẬN THÀNH TÍCH'), findsOneWidget);
+    expect(find.text('Đã xác thực On-chain'), findsOneWidget);
+    expect(find.text('ETHEREUM SEPOLIA'), findsOneWidget);
+
     await tester.scrollUntilVisible(
       find.text('Xác minh On-chain'),
       250,
@@ -125,7 +130,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Chứng chỉ hợp lệ trên blockchain.'), findsOneWidget);
     expect(find.text(_txHash), findsOneWidget);
-    expect(find.text('7654321'), findsOneWidget);
+    expect(find.text('#7654321'), findsOneWidget);
+
+    final copyButtons = find.byIcon(Icons.copy_rounded);
+    expect(copyButtons, findsNWidgets(2));
+    await tester.tap(copyButtons.first);
+    await tester.pumpAndSettle();
+    expect(find.text('Đã sao chép địa chỉ ví'), findsOneWidget);
+
+    ScaffoldMessenger.of(tester.element(find.byType(CertificateDetailScreen))).removeCurrentSnackBar();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.copy_rounded).last);
+    await tester.pumpAndSettle();
+    expect(find.text('Đã sao chép mã giao dịch'), findsOneWidget);
+
     final explorerButton = tester.widget<OutlinedButton>(find.byType(OutlinedButton));
     expect(explorerButton.onPressed, isNotNull);
 

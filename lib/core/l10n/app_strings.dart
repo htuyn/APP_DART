@@ -340,6 +340,34 @@ class AppStrings {
     'on_chain_not_found': (vi: 'Không tìm thấy chứng chỉ này trên blockchain.', en: 'Certificate was not found on-chain.'),
     'on_chain_unavailable': (vi: 'Không thể xác minh blockchain lúc này.', en: 'Could not verify the blockchain right now.'),
     'sepolia_network': (vi: 'Mạng Ethereum Sepolia', en: 'Ethereum Sepolia network'),
+    'academy': (vi: 'APP DART ACADEMY', en: 'APP DART ACADEMY'),
+    'diploma_heading': (
+      vi: 'CHỨNG NHẬN THÀNH TÍCH',
+      en: 'CERTIFICATE OF ACHIEVEMENT',
+    ),
+    'on_chain_verified': (
+      vi: 'Đã xác thực On-chain',
+      en: 'Confirmed on-chain',
+    ),
+    'pending_confirmation': (
+      vi: 'Đang chờ xác nhận',
+      en: 'Pending confirmation',
+    ),
+    'revoked_status': (vi: 'Đã thu hồi', en: 'Revoked'),
+    'copy_wallet': (vi: 'Sao chép địa chỉ ví', en: 'Copy wallet address'),
+    'copy_transaction': (
+      vi: 'Sao chép mã giao dịch',
+      en: 'Copy transaction hash',
+    ),
+    'copied_wallet': (
+      vi: 'Đã sao chép địa chỉ ví',
+      en: 'Wallet address copied',
+    ),
+    'copied_transaction': (
+      vi: 'Đã sao chép mã giao dịch',
+      en: 'Transaction hash copied',
+    ),
+    'sepolia_seal': (vi: 'ETHEREUM SEPOLIA', en: 'ETHEREUM SEPOLIA'),
     'course_progress_title': (vi: 'Tiến độ khóa học', en: 'Course progress'),
     'completed_blocks_progress': (vi: 'Khối kiến thức hoàn thành', en: 'Knowledge blocks completed'),
     'practice_questions_progress': (vi: 'Câu luyện tập đã trả lời', en: 'Practice questions answered'),

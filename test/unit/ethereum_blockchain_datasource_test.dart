@@ -8,14 +8,48 @@ import 'package:http/testing.dart';
 import 'package:wallet/wallet.dart' show EthereumAddress;
 import 'package:web3dart/web3dart.dart';
 
+const _testContractAddress = '0x1111111111111111111111111111111111111111';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('posts issuance with API key and API certificate type mapping', () async {
+    late http.Request capturedRequest;
+    final client = MockClient((request) async {
+      capturedRequest = request;
+      return http.Response(jsonEncode({
+        'status': 'confirmed',
+        'transactionHash': '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        'blockNumber': 123,
+        'issuedAt': DateTime.utc(2026).toIso8601String(),
+      }), 200);
+    });
+    final datasource = EthereumBlockchainDataSource(
+      httpClient: client,
+      relayerUrl: 'http://127.0.0.1:8787',
+      contractAddress: _testContractAddress,
+    );
+
+    final result = await datasource.issueCertificate(
+      certificateId: '0x${List.filled(64, '1').join()}',
+      certificateType: 1,
+      recipientAddress: '0x1111111111111111111111111111111111111111',
+      achievementHash: '0x${List.filled(64, '2').join()}',
+    );
+
+    final body = jsonDecode(capturedRequest.body) as Map<String, dynamic>;
+    expect(capturedRequest.headers['X-API-Key'], BlockchainConfig.issuerRelayerApiKey);
+    expect(body['certificateType'], 0);
+    expect(result?['status'], 'confirmed');
+    expect(result?['blockNumber'], 123);
+    await datasource.dispose();
+  });
 
   test('filters CertificateIssued by indexed certificate ID in the configured window', () async {
     final abiJson = await rootBundle.loadString(BlockchainConfig.abiAssetPath);
     final contract = DeployedContract(
       ContractAbi.fromJson(abiJson, 'AchievementCertificate'),
-      EthereumAddress.fromHex(BlockchainConfig.contractAddress),
+      EthereumAddress.fromHex(_testContractAddress.substring(2)),
     );
     final issueEvent = contract.event('CertificateIssued');
     const certificateId =
@@ -25,7 +59,7 @@ void main() {
     const transactionHash =
         '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
     const recipient = '0x1111111111111111111111111111111111111111';
-    const contractAddress = '0x40cc19d362d52f6d7bf2a3bc5c3298b204ecfea9';
+    const contractAddress = _testContractAddress;
 
     Map<String, dynamic>? eventFilter;
     final client = MockClient((request) async {
@@ -69,7 +103,7 @@ void main() {
         200,
       );
     });
-    final datasource = EthereumBlockchainDataSource(httpClient: client);
+    final datasource = EthereumBlockchainDataSource(httpClient: client, contractAddress: _testContractAddress);
 
     final result = await datasource.findCertificateIssuedEvent(certificateId);
 

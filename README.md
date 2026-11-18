@@ -20,7 +20,7 @@ Dự án cuối kỳ học phần **INT1449 - Lập trình di động**.
 * **Popup mở khóa huy hiệu:** Khi mở khóa huy hiệu mới, hiển thị dialog chúc mừng với hiệu ứng phóng to (scale transition), rung nhẹ (haptic feedback) và nút chia sẻ thành tích (sao chép vào clipboard).
 * **Điểm kinh nghiệm (XP) & Cấp độ / Danh hiệu:** Tích lũy XP khi trả lời câu hỏi (+10 XP câu đúng, +2 XP câu sai), nộp bài thi (+50 XP) và đạt điểm tuyệt đối (+100 XP). Tự động thăng cấp (Cấp 1 Người mới / Newcomer, Cấp 2-4 Người chăm học / Dedicated Learner, Cấp 5+ Bậc thầy / Master) kèm thanh tiến độ XP trực quan.
 * **Gia sư AI:** Cung cấp hỗ trợ giải thích trong quá trình học thông qua luồng gia sư AI.
-* **Chứng chỉ & Chứng nhận Blockchain (On-Chain Certificates):** Tích hợp hợp đồng thông minh (Smart Contract) trên mạng Ethereum Sepolia. Tự động kiểm tra điều kiện đủ (Eligibility) cho các thành tích (Điểm tuyệt đối, Chuỗi 7 ngày, Flutter Master, Khám phá kiến thức) và Tiến độ khóa học (Hoàn thành % câu hỏi). Hỗ trợ nhập địa chỉ ví recipient, tạo yêu cầu cấp chứng chỉ (Pending), băm SHA-256 dữ liệu xác thực (`achievementHash` / `certificateId`), đồng bộ & xác minh trạng thái từ Blockchain (Confirmed / Revoked) qua JSON-RPC, tra cứu trực tiếp giao dịch và sự kiện `CertificateIssued` trên Sepolia Etherscan.
+* **Chứng chỉ & Chứng nhận Blockchain (On-Chain Certificates) & Thẻ bằng Web3 (`DigitalCertificateCard`):** Tích hợp hợp đồng thông minh (Smart Contract) trên mạng Ethereum Sepolia. Tự động kiểm tra điều kiện đủ (Eligibility) cho các thành tích (Điểm tuyệt đối, Chuỗi 7 ngày, Flutter Master, Khám phá kiến thức) và Tiến độ khóa học. Trình diễn giao diện **Bằng chứng nhận Kỹ thuật số cao cấp (`DigitalCertificateCard`)** phong cách Web3 Dark Theme với khung viền kép màu vàng ánh kim, họa tiết lưới mờ & radial glow, huy hiệu trạng thái Pill (Đã xác thực On-chain / Đang chờ xác nhận / Đã thu hồi), cúp vàng thành tích, khung địa chỉ ví người nhận & mã giao dịch kèm nút **Copy** 1-touch hiển thị SnackBar phản hồi, cùng con dấu xác thực **Ethereum Sepolia** chính thức. Hỗ trợ tạo yêu cầu cấp chứng chỉ (Pending), băm SHA-256 dữ liệu xác thực (`achievementHash` / `certificateId`), đồng bộ & xác minh trạng thái từ Blockchain (Confirmed / Revoked) qua JSON-RPC (`https://ethereum-sepolia-rpc.publicnode.com`), tra cứu trực tiếp giao dịch và sự kiện `CertificateIssued` trên Sepolia Etherscan.
 * **Giao diện và trợ năng:** Hỗ trợ giao diện sáng/tối (Material 3 Light/Dark mode), bố cục co giãn và vùng chạm tối thiểu 48dp cho các thành phần tương tác.
 
 ---
@@ -96,7 +96,7 @@ lib/
 │   ├── screens/
 │   │   ├── achievements_screen.dart        # Màn hình thành tích: hiển thị Streak, cấp độ XP, chọn mục tiêu ngày và lưới huy hiệu
 │   │   ├── blockchain_certificates_screen.dart # Màn hình danh sách chứng chỉ blockchain, quản lý ví và theo dõi điều kiện nhận
-│   │   ├── certificate_detail_screen.dart  # Màn hình chi tiết chứng chỉ: hiển thị Certificate ID, achievement hash, QR/trạng thái và link Sepolia Explorer
+│   │   ├── certificate_detail_screen.dart  # Màn hình chi tiết chứng chỉ: tích hợp bằng chứng nhận Web3 Digital Certificate Card, nút copy ví/hash kèm SnackBar, xác minh on-chain và link Sepolia Explorer
 │   │   ├── certificates_screen.dart        # Màn hình giao diện chứng chỉ tổng hợp
 │   │   ├── course_progress_screen.dart     # Màn hình theo dõi tiến độ hoàn thành các khối bài học và khóa học
 │   │   ├── exam_result_screen.dart         # Màn hình kết quả thi thử: hiển thị điểm số, thời gian và chi tiết đáp án/giải thích
@@ -113,6 +113,7 @@ lib/
 │       ├── certificate_card.dart           # Widget thẻ hiển thị tóm tắt thông tin chứng chỉ
 │       ├── certificate_type_badge.dart     # Widget badge phân loại chứng chỉ (Thành tích / Hoàn thành khóa học)
 │       ├── countdown_timer_widget.dart     # Widget hiển thị đồng hồ đếm ngược thời gian thi thử
+│       ├── digital_certificate_card.dart   # Widget bằng chứng nhận kỹ thuật số cao cấp (Web3 Digital Diploma Card) với viền kép vàng kim, status pill, copy 1-touch và con dấu Sepolia
 │       ├── explanation_card.dart           # Widget hiển thị thẻ giải thích chi tiết đáp án đúng/sai
 │       ├── language_button.dart            # Widget nút bấm chuyển đổi ngôn ngữ nhanh trên thanh ứng dụng
 │       ├── option_tile.dart                # Widget hiển thị phương án lựa chọn đáp án trắc nghiệm
@@ -329,17 +330,18 @@ Yêu cầu đạt đồng thời 4 điều kiện:
   * Người học có thể sử dụng ngay lập tức mà không cần cài đặt các phần mềm ví Web3 bên thứ ba.
   * Hỗ trợ sao lưu khóa riêng tư (Private Key) hoặc linh hoạt chuyển đổi nhập địa chỉ ví bên ngoài (ví dụ: ví MetaMask).
 * **Cơ chế Cấp Phát Tự Động (Auto-Issuer Relayer Service):**
-  * **An toàn cho Client:** Ứng dụng Flutter không lưu trữ `ISSUER_PRIVATE_KEY` nhằm ngăn ngừa rủi ro lộ khóa ký giao dịch.
-  * Khi người học gửi yêu cầu cấp chứng chỉ đủ điều kiện, Flutter gọi API `POST /api/certificates/issue` tới Auto-Issuer Relayer Service (Cấu hình qua `ISSUER_RELAYER_URL`, mặc định `http://localhost:8787`).
-  * Request payload gồm: `certificateId`, `certificateType`, `recipientAddress`, `achievementHash`.
-  * **Bộ đệm chờ xử lý khi Offline (Offline Pending Buffer):** Nếu Relayer tạm thời ngắt kết nối/offline, yêu cầu chứng chỉ được lưu ở trạng thái `pending` trong bộ nhớ cục bộ. `BlockchainProvider` sẽ tự động thực hiện đồng bộ lại (`synchronize`) khi thiết bị kết nối mạng trở lại hoặc khi ứng dụng khôi phục trạng thái hoạt động (App Lifecycle Resumed).
+  * Flutter không chứa `ISSUER_PRIVATE_KEY`; server đọc issuer key và `RELAYER_API_KEY` từ `contracts/.env`.
+  * Chạy server bằng `cd contracts && npm run relayer`. Server chỉ bind `127.0.0.1:8787`, yêu cầu header `X-API-Key`, và giới hạn 10 request/phút.
+  * Flutter gọi `POST /api/certificates/issue` qua `ISSUER_RELAYER_URL` (mặc định `http://localhost:8787`) và gửi `ISSUER_RELAYER_API_KEY` trong header. Ví dụ dev key được đặt trong `.env.example`; hãy thay bằng khóa ngẫu nhiên riêng trong `.env` và truyền cùng giá trị qua `--dart-define=ISSUER_RELAYER_API_KEY=...`.
+  * Request payload gồm `certificateId`, `certificateType` (`0` thành tích, `1` hoàn thành khóa học), `recipientAddress`, `achievementHash`; server ánh xạ sang giá trị contract `1/2`.
+  * Nếu relayer offline, yêu cầu được lưu `pending`; `synchronize()` sẽ thử gửi lại và cập nhật `confirmed` cùng transaction hash/block khi nhận xác nhận.
 
 ---
 
 ### 🔍 5. Đồng Bộ Trạng Thái On-Chain & Tra Cứu Sự Kiện Event Log
 
 * **Đồng bộ & Đối chiếu (`AchievementVerifier` & `EthereumBlockchainDataSource`):**
-  * Đọc dữ liệu trực tiếp từ Ethereum Sepolia RPC URL (`https://rpc.sepolia.org`) qua thư viện `web3dart`.
+  * Đọc dữ liệu trực tiếp từ Ethereum Sepolia RPC URL (`https://ethereum-sepolia-rpc.publicnode.com`) qua thư viện `web3dart`.
   * Gửi lời gọi hàm `verifyCertificate(bytes32)` để đối chiếu địa chỉ recipient, `achievementHash` và thời điểm cấp `issuedAt`.
   * Xác định chính xác các trạng thái chứng chỉ: `eligible` (đủ điều kiện), `requested` / `pending` (đang chờ cấp/đang xử lý), `confirmed` (đã cấp và xác thực thành công on-chain), `revoked` (đã bị thu hồi), `failed` (dữ liệu không trùng khớp).
 * **Tra cứu Transaction Log (`findCertificateIssuedEvent`):**
@@ -394,4 +396,29 @@ Thư mục `contracts/` chứa toàn bộ mã nguồn hợp đồng thông minh 
   * `blockchain_provider_test.dart`: Kiểm thử quản lý trạng thái, tự động kết nối và yêu cầu cấp chứng chỉ.
 * **Widget Tests (`test/widget/`):**
   * `blockchain_certificates_screen_test.dart`: Kiểm thử giao diện danh sách chứng chỉ, nhập/validate địa chỉ ví.
-  * `certificate_detail_screen_test.dart`: Kiểm thử màn hình chi tiết, hiển thị mã băm, trạng thái badge xác nhận và liên kết Explorer.
+  * `certificate_detail_screen_test.dart`: Kiểm thử màn hình chi tiết chứng chỉ, thẻ Web3 Digital Certificate Card, thao tác sao chép địa chỉ ví/hash kèm SnackBar, hiển thị mã băm, trạng thái badge xác nhận và liên kết Explorer.
+
+---
+
+### 🎨 8. Giao Diện Tấm Bằng Chứng Nhận Kỹ Thuật Số (Web3 Digital Diploma Card UI)
+
+Lớp hiển thị giao diện `DigitalCertificateCard` trong `lib/presentation/widgets/digital_certificate_card.dart` cung cấp thiết kế văn bằng kỹ thuật số cao cấp đồng bộ với Dark Theme của ứng dụng:
+
+* **Thiết Kế Khung Bằng Kép (Double Border):**
+  * Viền ngoài gradient vàng ánh kim (`#F59E0B` $\rightarrow$ `#FDE68A` $\rightarrow$ `#D97706`) bo góc `20px` với độ dầy 2px.
+  * Viền trong bo góc `18px` nét mảnh `1px` trên nền gradient tối sâu (`#0F172A` $\rightarrow$ `#1E293B`).
+  * Kết hợp hiệu ứng tỏa sáng góc (Subtle Radial Glow) cùng họa tiết lưới mờ `_DiplomaGridPainter` tạo chiều sâu và thẩm mỹ cao cấp.
+* **Đầu Bằng (Header):**
+  * Tên học viện `APP DART ACADEMY` kèm biểu tượng trường học ở góc trái.
+  * Huy hiệu trạng thái Pill ở góc phải: `Đã xác thực On-chain` màu xanh ngọc (`#10B981`) đối với chứng chỉ `confirmed`, `Đang chờ xác nhận` màu hổ phách (`#F59E0B`) đối với trạng thái `pending`, hoặc màu đỏ đối với `revoked`.
+* **Thân Bằng (Body):**
+  * Tiêu đề trang trọng `CHỨNG NHẬN THÀNH TÍCH` / `CERTIFICATE OF ACHIEVEMENT` (tracking chữ rộng, màu vàng kim).
+  * Biểu tượng cúp/sao vàng `Icons.workspace_premium_rounded` và tên chứng chỉ in hoa nổi bật ở trung tâm (ví dụ: **FLUTTER MASTER**).
+  * Khung địa chỉ ví người nhận (`recipientAddress`) rút gọn gọn gàng (dạng `0x11111111…11111111`) kèm nút **Copy** 1-touch.
+* **Chân Bằng (On-Chain Proof Footer):**
+  * Hộp thông tin xác thực bán trong suốt (`Colors.black26`) trình bày gọn gàng: **Mã chứng chỉ** (`certificateId`), **Mã băm thành tích** (`achievementHash`), **Mã giao dịch** (`transactionHash` kèm nút Copy), **Block Number** (`#...`) và **Ngày cấp** (`issuedAt`).
+  * Con dấu xác thực **ETHEREUM SEPOLIA** chính thức với biểu tượng xác thực ở góc dưới bên phải.
+* **Tương Tác & Phản Hồi (SnackBar Feedback):**
+  * Bấm nút Copy địa chỉ ví hoặc mã giao dịch sẽ ngay lập tức kích hoạt thanh thông báo SnackBar nổi trên màn hình (`Đã sao chép địa chỉ ví` / `Đã sao chép mã giao dịch`).
+  * Đảm bảo hỗ trợ song ngữ Việt / Anh qua `app_strings.dart` và tự động điều chỉnh co giãn bố cục, không tràn chữ (overflow) trên mọi kích thước màn hình thiết bị di động.
+
