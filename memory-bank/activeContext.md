@@ -1,22 +1,26 @@
 # Active Context
 
 ## 1. Trạng thái hiện tại
-Dự án `flutter_quiz_bilingual` đã hoàn thành toàn bộ khung kiến trúc Clean Architecture, UI cơ bản với 4 chế độ (Luyện tập, Thi thử, Câu sai, Thống kê), hỗ trợ song ngữ VI/EN, CI GitHub Actions và 17 automated tests vượt qua 100%.
-Hiện đang thực hiện nâng cấp:
-1. **Giao diện người dùng (UI/UX)**: Đẹp mắt, hiện đại với bảng màu công nghệ, gradient, hiệu ứng sinh động, bố cục thẻ trực quan.
-2. **Trợ lý AI Tutor**: Tích hợp hỗ trợ giải thích câu hỏi thông minh, chế độ Demo offline và sẵn sàng kết nối API giữ khóa ở backend (theo đúng Rubric điểm cộng +3).
+Dự án `flutter_quiz_bilingual` đã hoàn thành toàn bộ khung kiến trúc Clean Architecture, UI cơ bản với 4 chế độ (Luyện tập, Thi thử, Câu sai, Thống kê), hỗ trợ song ngữ VI/EN, CI GitHub Actions và 21 automated tests vượt qua 100%.
 
-## 2. Những gì đã hoàn thành
+## 2. Tính năng vừa hoàn thành — Trợ lý AI Chat trực tiếp
+- **Màn hình chat AI** (`lib/presentation/screens/ai_chat_screen.dart`): người dùng gõ câu hỏi tự do, AI trả lời ngay (streaming).
+- **ChatProvider** (`lib/presentation/providers/chat_provider.dart`): quản lý danh sách tin nhắn, trạng thái streaming/done/error, xóa lịch sử.
+- **Giao diện chat** (`chat_message_bubble.dart`, `chat_input_bar.dart`): bubbles user/AI, ô nhập tin nhắn, typing indicator, auto-scroll.
+- **Nút vào chat** trên `HomeScreen` (tab "Trợ Lý AI Tutor", badge AI).
+- **2 nhánh dữ liệu**:
+  - **Remote (AI thật qua Gemini)**: gọi backend proxy (Cloudflare Worker) giữ `GEMINI_API_KEY`, trả SSE stream.
+  - **Demo offline**: fallback từ `questions.json`, không cần key, không cần mạng (giữ rubric +3).
+- **Backend proxy** (`backend/worker.js` + `wrangler.toml`): SSE stream từ Gemini `streamGenerateContent`, CORS, health check.
+- **Dependencies mới**: `http`, `convert`.
+
+## 3. Những gì đã hoàn thành
 - Clean Architecture (Data, Domain, Presentation).
-- State Management: `Provider` (`LanguageProvider`, `QuizProvider`, `ExamProvider`, `StatsProvider`).
-- 17 Automated Tests (Unit + Widget + Accessibility `meetsGuideline` 48dp).
-- `flutter analyze`: 0 issues found.
-- `README.md` và `.github/workflows/ci.yml`.
+- State Management: `Provider` (`LanguageProvider`, `QuizProvider`, `ExamProvider`, `StatsProvider`, `AiTutorProvider`, `ChatProvider`).
+- 21 Automated Tests (Unit + Widget + Accessibility `meetsGuideline` 48dp) — **all passed**.
+- `flutter analyze`: 0 errors (3 info style-only).
 
-## 3. Kế hoạch đang thực hiện
-1. Tạo `AiTutorService` / `AiProvider`:
-   - Phân tích câu hỏi và giải thích vì sao đáp án đúng là đúng, vì sao người dùng chọn sai.
-   - Chế độ Demo Mode tích hợp sẵn (Offline 100% không cần key).
-2. Nâng cấp giao diện `OptionTile`, `HomeScreen`, `PracticeScreen`, `ExamScreen`.
-3. Tích hợp `AiTutorSheet` (Modal BottomSheet hiển thị gia sư AI với hiệu ứng gõ chữ, gợi ý code).
-4. Viết Unit Test cho AI Service & chạy lại toàn bộ test suite.
+## 4. Tùy chọn tiếp theo
+- Cấu hình `serverUrl` trong `ChatProvider` để bật AI thật (Gemini) thay vì demo offline.
+- Lưu lịch sử chat vào `SharedPreferences` để mở lại sau.
+- Thêm flashcard 3D, trích xuất 300 câu hỏi, build APK release.

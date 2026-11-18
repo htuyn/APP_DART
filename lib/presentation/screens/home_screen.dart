@@ -1,9 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
+import '../widgets/profile_settings_button.dart';
 import '../widgets/state_views.dart';
+import '../widgets/streak_card.dart';
+import 'achievements_screen.dart';
 import 'exam_screen.dart';
 import 'practice_screen.dart';
 import 'stats_screen.dart';
@@ -16,39 +20,32 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
     final quiz = context.watch<QuizProvider>();
+    // Nullable lookup keeps existing HomeScreen tests/hosts without the feature provider working.
+    final gamification = Provider.of<GamificationProvider?>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           lang.translate(
-            vi: 'Ôn Tập Flutter Song Ngữ',
+            vi: 'Flutter Song Ngữ',
             en: 'Flutter Bilingual Quiz',
           ),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: ActionChip(
-              avatar: const Icon(Icons.language, size: 16),
-              label: Text(
-                lang.isVietnamese ? 'EN' : 'VI',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              onPressed: () => lang.toggleLanguage(),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          ),
+        actions: const [
+          ProfileSettingsButton(),
         ],
       ),
-      body: _buildBody(context, quiz, lang),
+      body: _buildBody(context, quiz, lang, gamification),
     );
   }
 
   Widget _buildBody(
-      BuildContext context, QuizProvider quiz, LanguageProvider lang) {
+    BuildContext context,
+    QuizProvider quiz,
+    LanguageProvider lang,
+    GamificationProvider? gamification,
+  ) {
     if (quiz.state == QuizLoadingState.loading ||
         quiz.state == QuizLoadingState.initial) {
       return LoadingView(
@@ -193,6 +190,21 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          if (gamification != null) ...[
+            StreakCard(
+              progress: gamification.progress,
+              currentStreak: gamification.currentStreak,
+              levelProgress: gamification.levelProgress,
+              languageCode: lang.code,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AchievementsScreen(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
 
           // Section Header
           Text(
@@ -226,7 +238,27 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Mode 2: Thi thử (Có đếm ngược)
+          // Mode 2: Trợ lý AI Chat
+          _ModernMenuCard(
+            icon: Icons.chat_bubble_outline_rounded,
+            gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+            title: lang.translate(
+              vi: 'Trợ Lý AI Tutor',
+              en: 'AI Tutor Chat',
+            ),
+            subtitle: lang.translate(
+              vi: 'Hỏi đáp trực tiếp về Flutter/Dart, trả lời ngay',
+              en: 'Ask Flutter/Dart questions and get instant answers',
+            ),
+            badge: 'AI',
+            badgeColor: const Color(0xFF6366F1),
+            onTap: () {
+              Navigator.pushNamed(context, '/ai-chat');
+            },
+          ),
+          const SizedBox(height: 12),
+
+          // Mode 3: Thi thử (Có đếm ngược)
           _ModernMenuCard(
             icon: Icons.timer_outlined,
             gradientColors: const [Color(0xFFF59E0B), Color(0xFFEA580C)],

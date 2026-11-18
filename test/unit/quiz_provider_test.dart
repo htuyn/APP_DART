@@ -7,6 +7,7 @@ import 'package:flutter_quiz_bilingual/presentation/providers/quiz_provider.dart
 class InMemoryQuizRepository implements IQuizRepository {
   List<QuestionModel> questions;
   List<String> wrongIds = [];
+  List<String> bookmarkedIds = [];
   List<QuizResultModel> history = [];
 
   InMemoryQuizRepository(this.questions);
@@ -25,6 +26,19 @@ class InMemoryQuizRepository implements IQuizRepository {
   @override
   Future<void> removeWrongQuestion(String id) async {
     wrongIds.remove(id);
+  }
+
+  @override
+  Future<List<String>> getBookmarkedQuestionIds() async => bookmarkedIds;
+
+  @override
+  Future<void> saveBookmarkedQuestion(String id) async {
+    if (!bookmarkedIds.contains(id)) bookmarkedIds.add(id);
+  }
+
+  @override
+  Future<void> removeBookmarkedQuestion(String id) async {
+    bookmarkedIds.remove(id);
   }
 
   @override
@@ -117,6 +131,25 @@ void main() {
       await provider.recordAnswer(question: dummyList[0], isCorrect: true);
       expect(provider.wrongQuestionIds.contains('Q1'), false);
       expect(provider.wrongQuestions.isEmpty, true);
+    });
+
+    test('toggleBookmark adds and removes question from bookmarked list', () async {
+      await provider.initialize();
+      expect(provider.isBookmarked('Q1'), false);
+      expect(provider.bookmarkedQuestions.isEmpty, true);
+
+      // Toggle bookmark on
+      await provider.toggleBookmark('Q1');
+      expect(provider.isBookmarked('Q1'), true);
+      expect(provider.bookmarkedQuestions.length, 1);
+      expect(provider.bookmarkedQuestions.first.id, 'Q1');
+      expect(repo.bookmarkedIds.contains('Q1'), true);
+
+      // Toggle bookmark off
+      await provider.toggleBookmark('Q1');
+      expect(provider.isBookmarked('Q1'), false);
+      expect(provider.bookmarkedQuestions.isEmpty, true);
+      expect(repo.bookmarkedIds.contains('Q1'), false);
     });
   });
 }

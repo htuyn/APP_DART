@@ -20,6 +20,15 @@ class DummyRepo implements IQuizRepository {
   Future<void> removeWrongQuestion(String id) async {}
 
   @override
+  Future<List<String>> getBookmarkedQuestionIds() async => [];
+
+  @override
+  Future<void> saveBookmarkedQuestion(String id) async {}
+
+  @override
+  Future<void> removeBookmarkedQuestion(String id) async {}
+
+  @override
   Future<List<QuizResultModel>> getQuizHistory() async => history;
 
   @override

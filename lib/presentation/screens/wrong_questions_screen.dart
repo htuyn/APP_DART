@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/ai_tutor_sheet.dart';
+import '../widgets/explanation_card.dart';
+import '../widgets/language_button.dart';
 import '../widgets/option_tile.dart';
+import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
 
 class WrongQuestionsScreen extends StatefulWidget {
@@ -26,35 +30,28 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          lang.translate(
-            vi: 'Sổ Tay Câu Sai (${wrongList.length})',
-            en: 'Incorrect Questions (${wrongList.length})',
-          ),
-        ),
+        title: Text('${lang.t('wrong_title')} (${wrongList.length})'),
+        actions: const [LanguageButton()],
       ),
-      body: wrongList.isEmpty
-          ? EmptyView(
-              icon: Icons.check_circle_outline_rounded,
-              title: lang.translate(
-                vi: 'Không có câu sai nào!',
-                en: 'No Incorrect Questions!',
+      body: ResponsiveBody(
+        child: wrongList.isEmpty
+            ? EmptyView(
+                icon: Icons.check_circle_outline_rounded,
+                title: lang.t('wrong_empty'),
+                message: lang.t('wrong_empty_hint'),
+                actionText: lang.t('go_home'),
+                onAction: () => Navigator.pop(context),
+              )
+            : ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                itemCount: wrongList.length,
+                itemBuilder: (context, index) {
+                  final q = wrongList[index];
+                  return _buildWrongQuestionItem(q, lang, quiz);
+                },
               ),
-              message: lang.translate(
-                vi: 'Bạn đã làm đúng tất cả các câu hỏi hoặc chưa làm bài thi nào.',
-                en: 'You have answered all questions correctly or haven\'t taken any tests yet.',
-              ),
-              actionText: lang.translate(vi: 'Về trang chủ', en: 'Back to Home'),
-              onAction: () => Navigator.pop(context),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: wrongList.length,
-              itemBuilder: (context, index) {
-                final q = wrongList[index];
-                return _buildWrongQuestionItem(q, lang, quiz);
-              },
-            ),
+      ),
     );
   }
 
@@ -64,51 +61,93 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
     final isAnswered = _selectedAnswers.containsKey(q.id);
     final userChoice = _selectedAnswers[q.id];
     final options = q.getOptions(currentLang);
-    final labels = ['A', 'B', 'C', 'D'];
+    final theme = Theme.of(context);
+
+    final isBookmarked = quiz.isBookmarked(q.id);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      margin: const EdgeInsets.only(bottom: 14.0),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppMetrics.radiusCard),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
                     '${q.id} • ${q.blockName.getText(currentLang)}',
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.primary,
+                      letterSpacing: 0.1,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.translate, size: 18),
-                  tooltip: lang.translate(
-                      vi: 'Đổi ngôn ngữ câu này', en: 'Toggle language'),
-                  onPressed: () {
-                    setState(() {
-                      _langOverrides[q.id] = currentLang == 'vi' ? 'en' : 'vi';
-                    });
-                  },
+                Material(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      setState(() {
+                        _langOverrides[q.id] = currentLang == 'vi' ? 'en' : 'vi';
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.translate_rounded,
+                        size: 18,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Material(
+                  color: isBookmarked
+                      ? AppColors.warning.withValues(alpha: 0.15)
+                      : theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => quiz.toggleBookmark(q.id),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        isBookmarked
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        size: 18,
+                        color: isBookmarked
+                            ? AppColors.warning
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             Text(
               q.question.getText(currentLang),
-              style: const TextStyle(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
-                height: 1.35,
+                fontWeight: FontWeight.w700,
+                height: 1.46,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             ...List.generate(options.length, (optIdx) {
               OptionState state = OptionState.idle;
               if (isAnswered) {
@@ -120,7 +159,7 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
               }
 
               return OptionTile(
-                label: labels[optIdx],
+                label: optionLabel(optIdx),
                 text: options[optIdx],
                 state: state,
                 onTap: isAnswered
@@ -131,36 +170,24 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                           _selectedAnswers[q.id] = optIdx;
                         });
                         await quiz.recordAnswer(
-                            question: q, isCorrect: isCorrect);
+                          question: q,
+                          isCorrect: isCorrect,
+                        );
                       },
               );
             }),
             if (isAnswered) ...[
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: userChoice == q.correctIndex
-                      ? Colors.green.shade50
-                      : Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  userChoice == q.correctIndex
-                      ? lang.translate(
-                          vi: 'Tuyệt vời! Câu hỏi này đã được xóa khỏi danh sách câu sai.',
-                          en: 'Awesome! This question is now removed from your incorrect list.',
-                        )
-                      : '${lang.translate(vi: "Giải thích:", en: "Explanation:")} ${q.explanation.getText(currentLang)}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: userChoice == q.correctIndex
-                        ? Colors.green.shade900
-                        : Colors.orange.shade900,
-                  ),
-                ),
+              ExplanationCard(
+                correct: userChoice == q.correctIndex,
+                title: userChoice == q.correctIndex
+                    ? lang.t('correct_bang')
+                    : lang.t('explanation'),
+                body: userChoice == q.correctIndex
+                    ? lang.t('removed_wrong')
+                    : q.explanation.getText(currentLang),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: () {
                   AiTutorSheet.show(
@@ -169,19 +196,15 @@ class _WrongQuestionsScreenState extends State<WrongQuestionsScreen> {
                     userChoiceIndex: userChoice,
                   );
                 },
-                icon: const Icon(Icons.auto_awesome, size: 16),
-                label: Text(
-                  lang.translate(
-                    vi: 'Hỏi Gia Sư AI vì sao câu này dễ nhầm',
-                    en: 'Ask AI Tutor why this question is tricky',
-                  ),
-                  style: const TextStyle(fontSize: 13),
-                ),
+                icon: const Icon(Icons.auto_awesome_rounded, size: 17),
+                label: Text(lang.t('ask_ai_tricky')),
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.accentPurple,
                   side: BorderSide(
-                    color: const Color(0xFF7C3AED).withValues(alpha: 0.35),
+                      color: AppColors.accentPurple.withValues(alpha: 0.45)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  foregroundColor: const Color(0xFF7C3AED),
                   minimumSize: const Size(double.infinity, 44),
                 ),
               ),

@@ -1,0 +1,6 @@
+name = "flutter-quiz-ai-proxy"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+GEMINI_MODEL = "gemini-2.0-flash"
