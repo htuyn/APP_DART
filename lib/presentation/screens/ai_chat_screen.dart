@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../data/models/question_model.dart';
 import '../../presentation/providers/chat_provider.dart';
 import '../../presentation/providers/language_provider.dart';
 import '../../presentation/widgets/chat_input_bar.dart';
@@ -42,12 +44,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
     final chat = context.watch<ChatProvider>();
     final isVi = lang.code == 'vi';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isVi ? 'Trợ lý AI Tutor' : 'AI Tutor',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+    return Localizations(
+      locale: Locale(lang.code),
+      delegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            isVi ? 'Trợ lý AI Tutor' : 'AI Tutor',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -182,6 +191,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

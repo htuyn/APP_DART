@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
+import '../providers/chat_provider.dart';
 import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
@@ -12,6 +13,7 @@ import '../widgets/language_button.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
+import 'ai_chat_screen.dart';
 
 class PracticeScreen extends StatefulWidget {
   final int initialBlockId;
@@ -469,14 +471,20 @@ class _QuestionPage extends StatelessWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
-              AiTutorSheet.show(
-                context,
+              context.read<ChatProvider>().askAboutQuestion(
                 question: question,
                 userChoiceIndex: selected,
+                langCode: lang.code,
               );
+              Navigator.pushNamed(context, '/ai-chat');
             },
-            icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-            label: Text(lang.t('ask_ai')),
+            icon: const Icon(Icons.forum_rounded, size: 18),
+            label: Text(
+              lang.translate(
+                vi: 'Chat trực tiếp với AI',
+                en: 'Live Chat with AI',
+              ),
+            ),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.accentPurple,
               side: BorderSide(

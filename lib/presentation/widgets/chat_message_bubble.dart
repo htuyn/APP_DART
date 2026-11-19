@@ -79,7 +79,7 @@ class ChatMessageBubble extends StatelessWidget {
                   ),
                 ],
               ),
-              child: SelectableText(
+              child: Text(
                 message.content,
                 style: TextStyle(
                   color: textColor,
