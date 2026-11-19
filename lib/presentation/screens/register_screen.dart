@@ -63,7 +63,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      Navigator.pop(context);
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     }
   }
 

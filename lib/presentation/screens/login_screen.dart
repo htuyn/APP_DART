@@ -58,7 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      Navigator.pop(context);
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     }
   }
 
