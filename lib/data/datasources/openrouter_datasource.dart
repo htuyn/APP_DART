@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/chat_message_model.dart';
+import '../models/question_model.dart';
 
 /// Datasource gọi trực tiếp OpenRouter API (openrouter.ai/api/v1/chat/completions).
 /// Tương thích OpenAI Chat Completions format.
@@ -23,10 +24,14 @@ class OpenRouterDataSource {
 
   bool get hasKey => apiKey.trim().isNotEmpty;
 
-  /// System prompt song ngữ cho AI Tutor
-  String _buildSystemPrompt(String langCode) {
-    if (langCode == 'vi') {
-      return '''Bạn là AI Tutor — một trợ lý lập trình Flutter & Dart thông minh, thân thiện và tự nhiên.
+  /// System prompt song ngữ cho AI Tutor kèm ngữ cảnh câu hỏi nếu có
+  String _buildSystemPrompt(
+    String langCode, {
+    QuestionModel? activeQuestion,
+    int? userChoiceIndex,
+  }) {
+    final basePrompt = langCode == 'vi'
+        ? '''Bạn là AI Tutor — một trợ lý lập trình Flutter & Dart thông minh, thân thiện và tự nhiên.
 
 Nguyên tắc giao tiếp:
 1. Trả lời TRỰC TIẾP, ĐÚNG TRỌNG TÂM câu hỏi. Không chào hỏi rườm rà ở mỗi lượt.
@@ -34,9 +39,8 @@ Nguyên tắc giao tiếp:
 3. KHÔNG tự động chia câu trả lời thành các tiêu đề cứng nhắc. Chỉ dùng format học thuật khi người dùng yêu cầu phân tích.
 4. Khi minh họa code: Viết code Dart/Flutter chuẩn trong khối ```dart có chú thích ngắn gọn.
 5. Thích nghi linh hoạt: Trả lời súc tích khi người dùng muốn ngắn gọn; giải thích sâu khi người dùng muốn đào sâu.
-6. Sử dụng Markdown: in đậm từ khóa quan trọng, gạch đầu dòng rõ ràng, code block đẹp mắt.''';
-    }
-    return '''You are AI Tutor — an intelligent, friendly Flutter & Dart programming companion.
+6. Sử dụng Markdown: in đậm từ khóa quan trọng, gạch đầu dòng rõ ràng, code block đẹp mắt.'''
+        : '''You are AI Tutor — an intelligent, friendly Flutter & Dart programming companion.
 
 Communication Guidelines:
 1. Answer DIRECTLY and concisely. Avoid robotic boilerplate greetings in each turn.
@@ -45,12 +49,56 @@ Communication Guidelines:
 4. Code examples: Provide clean, idiomatic Dart/Flutter code inside ```dart blocks with clear comments.
 5. Adaptive response: Be brief when asked for brevity; provide rich real-world examples when asked for details.
 6. Format responses with clean Markdown (bold, bullet points, code blocks).''';
+
+    if (activeQuestion == null) return basePrompt;
+
+    final isVi = langCode == 'vi';
+    final block = activeQuestion.blockName.getText(langCode);
+    final qText = activeQuestion.question.getText(langCode);
+    final options = activeQuestion.getOptions(langCode);
+    final correct = options[activeQuestion.correctIndex];
+    final explanation = activeQuestion.explanation.getText(langCode);
+    final userChoice = (userChoiceIndex != null && userChoiceIndex < options.length)
+        ? options[userChoiceIndex]
+        : null;
+
+    final optionsList = options
+        .asMap()
+        .entries
+        .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
+        .join('\n');
+
+    final contextText = isVi
+        ? '''\n\n[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
+- Khối kiến thức: $block
+- Nội dung câu hỏi: $qText
+- Các đáp án lựa chọn:
+$optionsList
+- Đáp án chính xác: $correct
+${userChoice != null ? '- Lựa chọn của người dùng: $userChoice' : ''}
+${explanation.isNotEmpty ? '- Giải thích bài học: $explanation' : ''}
+
+LƯU Ý: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Cho ví dụ", "Giải thích kỹ hơn"), hãy trả lời dựa trên câu hỏi và chủ đề ở trên.'''
+        : '''\n\n[CURRENT QUIZ QUESTION CONTEXT]:
+- Topic: $block
+- Question: $qText
+- Options:
+$optionsList
+- Correct Answer: $correct
+${userChoice != null ? '- User Selected: $userChoice' : ''}
+${explanation.isNotEmpty ? '- Explanation: $explanation' : ''}
+
+NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "Explain further", "Give an example"), ground your answer in this question context.''';
+
+    return basePrompt + contextText;
   }
 
   /// Gửi danh sách tin nhắn và nhận phản hồi dạng SSE stream từ OpenRouter.
   Stream<String> sendMessageStream({
     required List<ChatMessageModel> messages,
     required String langCode,
+    QuestionModel? activeQuestion,
+    int? userChoiceIndex,
   }) async* {
     final key = apiKey.trim();
     if (key.isEmpty) {
@@ -76,7 +124,14 @@ Communication Guidelines:
 
     // Build messages theo OpenAI format: system + user/assistant
     final requestMessages = <Map<String, dynamic>>[
-      {'role': 'system', 'content': _buildSystemPrompt(langCode)},
+      {
+        'role': 'system',
+        'content': _buildSystemPrompt(
+          langCode,
+          activeQuestion: activeQuestion,
+          userChoiceIndex: userChoiceIndex,
+        ),
+      },
     ];
 
     for (final m in contextMessages) {

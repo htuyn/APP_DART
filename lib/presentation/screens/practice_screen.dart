@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -12,6 +12,7 @@ import '../widgets/language_button.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
+import 'ai_chat_screen.dart';
 
 class PracticeScreen extends StatefulWidget {
   final int initialBlockId;
@@ -469,12 +470,19 @@ class _QuestionPage extends StatelessWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
-              context.read<ChatProvider>().askAboutQuestion(
+              context.read<ChatProvider>().openWithQuestionContext(
                 question: question,
                 userChoiceIndex: selected,
                 langCode: lang.code,
               );
-              Navigator.pushNamed(context, '/ai-chat');
+              Navigator.pushNamed(
+                context,
+                '/ai-chat',
+                arguments: AiChatArgs(
+                  question: question,
+                  userChoiceIndex: selected,
+                ),
+              );
             },
             icon: const Icon(Icons.forum_rounded, size: 18),
             label: Text(

@@ -9,6 +9,7 @@ class _FakeAiRepository implements IAiRepository {
   bool fail = false;
   List<String> chunks = const ['Xin ', 'chào'];
   final List<List<ChatMessageModel>> calls = [];
+  final List<QuestionModel?> activeQuestions = [];
 
   // isConnected = true → chat provider sử dụng fake repo thật sự
   @override
@@ -31,6 +32,7 @@ class _FakeAiRepository implements IAiRepository {
     int? userChoiceIndex,
   }) async* {
     calls.add(messages);
+    activeQuestions.add(activeQuestion);
     if (fail) throw Exception('proxy lỗi');
     for (final chunk in chunks) {
       yield chunk;
@@ -103,18 +105,27 @@ void main() {
       expect(sent.single.content, 'Xin chào');
     });
 
-    test('askAboutQuestion keeps one context when switching question', () async {
-      provider.askAboutQuestion(question: _questionA, langCode: 'vi');
+    test('openWithQuestionContext sets greeting and context without auto-sending prompt', () async {
+      provider.openWithQuestionContext(question: _questionA, langCode: 'vi');
       await pumpEventQueue();
 
-      provider.askAboutQuestion(question: _questionB, langCode: 'vi');
+      expect(repository.calls.length, 0); // Không tự động gọi API
+      expect(provider.messages.where((m) => m.role == 'user').isEmpty, true); // Không tự tạo user message
+      expect(provider.messages.where((m) => m.role == 'assistant').isNotEmpty, true); // Có lời chào AI
+      expect(provider.hasActiveQuestion, true);
+      expect(provider.activeQuestion?.id, 'Q-A');
+
+      // Khi chuyển sang question B
+      provider.openWithQuestionContext(question: _questionB, langCode: 'vi');
       await pumpEventQueue();
 
-      expect(repository.calls.length, 2);
+      expect(repository.calls.length, 0); // Vẫn không tự động gọi API
+      expect(provider.activeQuestion?.id, 'Q-B');
 
-      final userMessages = provider.messages.where((m) => m.role == 'user');
-      expect(userMessages.length, 1);
-      expect(userMessages.single.content, contains('Câu B?'));
+      // Khi người dùng gửi câu hỏi, context câu B được truyền vào repository
+      await provider.sendMessage(content: 'Tại sao?', langCode: 'vi');
+      expect(repository.calls.length, 1);
+      expect(repository.activeQuestions.single?.id, 'Q-B');
     });
 
     test('shows error when connected provider fails', () async {

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,16 +53,17 @@ class ChatProvider extends ChangeNotifier {
     IAiRepository? customRepository,
     String? serverUrl,
     DemoChatDataSource? demoDataSource,
-  })  : _serverUrl = serverUrl,
-        _hasCustomRepository = customRepository != null,
-        demoDataSource = demoDataSource ?? const DemoChatDataSource(),
-        _repository = customRepository ??
-            AiRepositoryImpl(
-              remoteDataSource: serverUrl != null && serverUrl.isNotEmpty
-                  ? ChatRemoteDataSource(baseUrl: serverUrl)
-                  : null,
-              demoDataSource: demoDataSource ?? const DemoChatDataSource(),
-            ) {
+  }) : _serverUrl = serverUrl,
+       _hasCustomRepository = customRepository != null,
+       demoDataSource = demoDataSource ?? const DemoChatDataSource(),
+       _repository =
+           customRepository ??
+           AiRepositoryImpl(
+             remoteDataSource: serverUrl != null && serverUrl.isNotEmpty
+                 ? ChatRemoteDataSource(baseUrl: serverUrl)
+                 : null,
+             demoDataSource: demoDataSource ?? const DemoChatDataSource(),
+           ) {
     _isConnected = _repository.isConnected;
     _addSystemMessage();
     unawaited(_initSettings());
@@ -86,7 +88,10 @@ class ChatProvider extends ChangeNotifier {
 
   bool get usedFallback => _usedFallback;
   bool get isStreaming => _state == ChatState.streaming;
-  bool get hasConversation => _messages.any((m) => m.role != 'system');
+  bool get hasConversation => _messages.any((m) => m.role == 'user');
+  bool get hasActiveQuestion => _activeQuestion != null;
+  QuestionModel? get activeQuestion => _activeQuestion;
+  int? get userChoiceIndex => _userChoiceIndex;
 
   /// Khởi tạo tất cả settings từ SharedPreferences khi mở app.
   Future<void> _initSettings() async {
@@ -172,8 +177,9 @@ class ChatProvider extends ChangeNotifier {
     required String model,
   }) async {
     _openRouterKey = key.trim();
-    _openRouterModel =
-        model.trim().isEmpty ? AiConfig.defaultOpenRouterModel : model.trim();
+    _openRouterModel = model.trim().isEmpty
+        ? AiConfig.defaultOpenRouterModel
+        : model.trim();
     final prefs = await SharedPreferences.getInstance();
     if (_openRouterKey.isEmpty) {
       await prefs.remove(AiConfig.prefsOpenRouterKey);
@@ -192,15 +198,14 @@ class ChatProvider extends ChangeNotifier {
     _repository = AiRepositoryImpl(
       openRouterDataSource:
           (_aiProvider == AiProvider.openrouter && _openRouterKey.isNotEmpty)
-              ? OpenRouterDataSource(
-                  apiKey: _openRouterKey,
-                  model: _openRouterModel,
-                )
-              : null,
-      directDataSource:
-          (_aiProvider == AiProvider.gemini && _apiKey.isNotEmpty)
-              ? GeminiDirectDataSource(apiKey: _apiKey)
-              : null,
+          ? OpenRouterDataSource(
+              apiKey: _openRouterKey,
+              model: _openRouterModel,
+            )
+          : null,
+      directDataSource: (_aiProvider == AiProvider.gemini && _apiKey.isNotEmpty)
+          ? GeminiDirectDataSource(apiKey: _apiKey)
+          : null,
       remoteDataSource: (serverUrl != null && serverUrl.isNotEmpty)
           ? ChatRemoteDataSource(baseUrl: serverUrl)
           : null,
@@ -222,19 +227,15 @@ class ChatProvider extends ChangeNotifier {
 
   void _addSystemMessage() {
     _messages.add(
-      ChatMessageModel(
-        role: 'system',
-        content: '',
-        timestamp: DateTime.now(),
-      ),
+      ChatMessageModel(role: 'system', content: '', timestamp: DateTime.now()),
     );
   }
 
   ChatMessageModel _emptyAssistant() => ChatMessageModel(
-        role: 'assistant',
-        content: '',
-        timestamp: DateTime.now(),
-      );
+    role: 'assistant',
+    content: '',
+    timestamp: DateTime.now(),
+  );
 
   void _replaceLastAssistant(String content) {
     if (_messages.isEmpty || _messages.last.role != 'assistant') return;
@@ -263,9 +264,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Tạo cuộc trò chuyện mới hoàn toàn (New Chat).
-  void startNewChat() {
+  void startNewChat({String langCode = 'vi'}) {
     stopStreaming();
-    clearChat();
+    initGeneralChat(langCode: langCode, force: true);
   }
 
   /// Gửi tin nhắn người dùng và bắt đầu stream phản hồi AI.
@@ -276,12 +277,6 @@ class ChatProvider extends ChangeNotifier {
   }) async {
     final trimmed = content.trim();
     if (trimmed.isEmpty || _state == ChatState.streaming) return;
-
-    if (!fromQuestionContext) {
-      // Người dùng gõ tin nhắn tự do -> xóa ngữ cảnh câu hỏi cũ để đàm thoại tự nhiên
-      _activeQuestion = null;
-      _userChoiceIndex = null;
-    }
 
     _lastUserContent = trimmed;
     _lastLangCode = langCode;
@@ -306,10 +301,17 @@ class ChatProvider extends ChangeNotifier {
     _messages.add(_emptyAssistant());
     _notify();
 
-    // Chỉ gửi lịch sử có nội dung thật: bỏ system và bubble assistant rỗng.
-    final requestMessages = _messages
-        .where((m) => m.role != 'system' && m.content.trim().isNotEmpty)
-        .toList();
+    // Chỉ gửi các tin nhắn tính từ tin nhắn người dùng đầu tiên (bỏ qua system và lời chào cục bộ của AI)
+    final firstUserIndex = _messages.indexWhere((m) => m.role == 'user');
+    final List<ChatMessageModel> requestMessages;
+    if (firstUserIndex != -1) {
+      requestMessages = _messages
+          .sublist(firstUserIndex)
+          .where((m) => m.role != 'system' && m.content.trim().isNotEmpty)
+          .toList();
+    } else {
+      requestMessages = [];
+    }
 
     try {
       // Nếu chưa có API key và chưa có server url, chuyển thẳng sang offline fallback
@@ -447,8 +449,31 @@ class ChatProvider extends ChangeNotifier {
     await _streamAnswer(langCode: _lastLangCode);
   }
 
-  /// Bắt đầu phiên chat với ngữ cảnh câu hỏi luyện tập (văn phong tự nhiên).
-  void askAboutQuestion({
+  /// Lời chào mở đầu theo ngữ cảnh câu hỏi bài học.
+  String _questionContextGreeting({
+    required QuestionModel question,
+    int? userChoiceIndex,
+    required String langCode,
+  }) {
+    final isVi = langCode == 'vi';
+    if (isVi) {
+      return 'Xin chào! 👋 Mình đã xem câu hỏi bạn đang học rồi.\n\n'
+          'Bạn muốn hỏi gì về câu hỏi này? Mình có thể giải thích kiến thức, phân tích từng đáp án, đưa ví dụ thực tế hoặc giúp bạn hiểu vì sao đáp án đúng.';
+    } else {
+      return 'Hello! 👋 I have reviewed the question you are studying.\n\n'
+          'What would you like to know about this question? I can explain key concepts, analyze each option, give real-world examples, or help you understand why the answer is correct.';
+    }
+  }
+
+  /// Lời chào chung khi mở AI Chat bình thường.
+  String _generalGreeting(String langCode) {
+    return langCode == 'vi'
+        ? 'Xin chào! 👋 Mình là AI Tutor. Bạn cần mình giúp gì hôm nay?'
+        : 'Hello! 👋 I am your AI Tutor. How can I help you today?';
+  }
+
+  /// Mở AI Chat với ngữ cảnh câu hỏi bài học hiện tại (không gửi tin nhắn người dùng và không tự giải đáp).
+  void openWithQuestionContext({
     required QuestionModel question,
     int? userChoiceIndex,
     required String langCode,
@@ -459,45 +484,67 @@ class ChatProvider extends ChangeNotifier {
     _userChoiceIndex = userChoiceIndex;
 
     if (isSameQuestion && hasConversation) {
-      // Đã có ngữ cảnh của đúng câu hỏi này -> giữ nguyên hội thoại.
+      // Đã có cuộc trao đổi về đúng câu hỏi này -> giữ nguyên hội thoại
       return;
     }
 
-    if (!isSameQuestion) {
-      _resetConversation();
-      _activeQuestion = question;
-      _userChoiceIndex = userChoiceIndex;
-    } else if (_state == ChatState.streaming) {
-      _requestId++;
-      _removeTrailingAssistantIfEmpty();
-      _state = ChatState.idle;
-      _streamingText = '';
+    _resetConversation();
+    _currentQuestionId = question.id;
+    _activeQuestion = question;
+    _userChoiceIndex = userChoiceIndex;
+
+    _messages.add(
+      ChatMessageModel(
+        role: 'assistant',
+        content: _questionContextGreeting(
+          question: question,
+          userChoiceIndex: userChoiceIndex,
+          langCode: langCode,
+        ),
+        timestamp: DateTime.now(),
+        langCode: langCode,
+      ),
+    );
+    _state = ChatState.idle;
+    _notify();
+  }
+
+  /// Khởi tạo cuộc trò chuyện chung khi mở từ Menu chính (không có câu hỏi bài học).
+  void initGeneralChat({
+    required String langCode,
+    bool force = false,
+  }) {
+    if (!force && _currentQuestionId == null && _messages.length > 1) {
+      return;
     }
 
-    final isVi = langCode == 'vi';
-    final userOpt = userChoiceIndex != null &&
-            userChoiceIndex < question.getOptions(langCode).length
-        ? question.getOptions(langCode)[userChoiceIndex]
-        : null;
+    _resetConversation();
+    _currentQuestionId = null;
+    _activeQuestion = null;
+    _userChoiceIndex = null;
 
-    final prompt = isVi
-        ? 'Chào bạn! Mình có câu hỏi này trong bài học cần bạn hỗ trợ giải thích giúp mình:\n\n'
-            '• **Khối kiến thức:** ${question.blockName.getText(langCode)}\n'
-            '• **Câu hỏi:** ${question.question.getText(langCode)}\n'
-            '${userOpt != null ? '• **Lựa chọn của mình:** `$userOpt`\n' : ''}'
-            '• **Đáp án chuẩn:** `${question.getOptions(langCode)[question.correctIndex]}`\n\n'
-            'Nhờ bạn phân tích giúp mình vì sao đáp án đúng lại như vậy${userOpt != null ? ', và điểm mình dễ bị nhầm lẫn ở lựa chọn đã chọn' : ''} nhé!'
-        : 'Hello! I have a question from the quiz and need your help:\n\n'
-            '• **Topic:** ${question.blockName.getText(langCode)}\n'
-            '• **Question:** ${question.question.getText(langCode)}\n'
-            '${userOpt != null ? '• **My Choice:** `$userOpt`\n' : ''}'
-            '• **Correct Answer:** `${question.getOptions(langCode)[question.correctIndex]}`\n\n'
-            'Could you break down why the correct answer is right${userOpt != null ? ', and what made my choice tricky' : ''}?';
+    _messages.add(
+      ChatMessageModel(
+        role: 'assistant',
+        content: _generalGreeting(langCode),
+        timestamp: DateTime.now(),
+        langCode: langCode,
+      ),
+    );
+    _state = ChatState.idle;
+    _notify();
+  }
 
-    sendMessage(
-      content: prompt,
+  /// Bắt đầu phiên chat từ câu hỏi luyện tập (tương thích ngược: ủy quyền cho openWithQuestionContext).
+  void askAboutQuestion({
+    required QuestionModel question,
+    int? userChoiceIndex,
+    required String langCode,
+  }) {
+    openWithQuestionContext(
+      question: question,
+      userChoiceIndex: userChoiceIndex,
       langCode: langCode,
-      fromQuestionContext: true,
     );
   }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/chat_message_model.dart';
+import '../models/question_model.dart';
 
 /// Datasource gọi trực tiếp Google Gemini API (không cần backend/proxy).
 /// Sử dụng endpoint chính thức: https://generativelanguage.googleapis.com
@@ -21,6 +22,8 @@ class GeminiDirectDataSource {
   Stream<String> sendMessageStream({
     required List<ChatMessageModel> messages,
     required String langCode,
+    QuestionModel? activeQuestion,
+    int? userChoiceIndex,
   }) async* {
     final key = apiKey.trim();
     if (key.isEmpty) {
@@ -35,7 +38,7 @@ class GeminiDirectDataSource {
       'https://generativelanguage.googleapis.com/v1beta/models/$model:streamGenerateContent?alt=sse&key=$key',
     );
 
-    final systemPrompt = langCode == 'vi'
+    String systemPrompt = langCode == 'vi'
         ? '''Bạn là AI Tutor — một trợ lý lập trình Flutter & Dart thông minh, thân thiện và tự nhiên (tương tự trải nghiệm ChatGPT).
 
 Nguyên tắc giao tiếp:
@@ -54,6 +57,48 @@ Communication Guidelines:
 4. Code examples: Provide clean, idiomatic Dart/Flutter code inside ```dart blocks with clear comments.
 5. Adaptive response: Be brief when asked for brevity; provide rich real-world examples when asked for details.
 6. Format responses with clean Markdown (bold, bullet points, code blocks) for effortless readability.''';
+
+    if (activeQuestion != null) {
+      final isVi = langCode == 'vi';
+      final block = activeQuestion.blockName.getText(langCode);
+      final qText = activeQuestion.question.getText(langCode);
+      final options = activeQuestion.getOptions(langCode);
+      final correct = options[activeQuestion.correctIndex];
+      final explanation = activeQuestion.explanation.getText(langCode);
+      final userChoice = (userChoiceIndex != null && userChoiceIndex < options.length)
+          ? options[userChoiceIndex]
+          : null;
+
+      final optionsList = options
+          .asMap()
+          .entries
+          .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
+          .join('\n');
+
+      final contextText = isVi
+          ? '''\n\n[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
+- Khối kiến thức: $block
+- Nội dung câu hỏi: $qText
+- Các đáp án lựa chọn:
+$optionsList
+- Đáp án chính xác: $correct
+${userChoice != null ? '- Lựa chọn của người dùng: $userChoice' : ''}
+${explanation.isNotEmpty ? '- Giải thích bài học: $explanation' : ''}
+
+LƯU Ý: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Cho ví dụ", "Giải thích kỹ hơn"), hãy trả lời dựa trên câu hỏi và chủ đề ở trên.'''
+          : '''\n\n[CURRENT QUIZ QUESTION CONTEXT]:
+- Topic: $block
+- Question: $qText
+- Options:
+$optionsList
+- Correct Answer: $correct
+${userChoice != null ? '- User Selected: $userChoice' : ''}
+${explanation.isNotEmpty ? '- Explanation: $explanation' : ''}
+
+NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "Explain further", "Give an example"), ground your answer in this question context.''';
+
+      systemPrompt += contextText;
+    }
 
     // Giới hạn context window: giữ tối đa 20 tin nhắn gần nhất để tránh vượt token
     final contextMessages = messages.length > 20

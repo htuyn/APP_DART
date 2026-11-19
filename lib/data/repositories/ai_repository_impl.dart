@@ -63,6 +63,8 @@ class AiRepositoryImpl implements IAiRepository {
       yield* openRouterDataSource!.sendMessageStream(
         messages: messages,
         langCode: langCode,
+        activeQuestion: activeQuestion,
+        userChoiceIndex: userChoiceIndex,
       );
       return;
     }
@@ -72,6 +74,8 @@ class AiRepositoryImpl implements IAiRepository {
       yield* directDataSource!.sendMessageStream(
         messages: messages,
         langCode: langCode,
+        activeQuestion: activeQuestion,
+        userChoiceIndex: userChoiceIndex,
       );
       return;
     }

@@ -2,10 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../data/models/question_model.dart';
 import '../providers/chat_provider.dart';
 import '../providers/language_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/chat_message_bubble.dart';
+
+/// Tham số truyền vào màn hình AI Chat khi mở từ một câu hỏi cụ thể.
+class AiChatArgs {
+  final QuestionModel question;
+  final int? userChoiceIndex;
+
+  const AiChatArgs({
+    required this.question,
+    this.userChoiceIndex,
+  });
+}
 
 /// Màn hình chat AI tutor: trải nghiệm hội thoại tự nhiên, phong cách ChatGPT hiện đại.
 class AiChatScreen extends StatefulWidget {
@@ -18,6 +30,30 @@ class AiChatScreen extends StatefulWidget {
 class _AiChatScreenState extends State<AiChatScreen> {
   final ScrollController _scrollController = ScrollController();
   ChatProvider? _chat;
+  bool _routeArgsProcessed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_routeArgsProcessed) {
+      _routeArgsProcessed = true;
+      final args = ModalRoute.of(context)?.settings.arguments;
+      final lang = context.read<LanguageProvider>();
+      final chat = context.read<ChatProvider>();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (args is AiChatArgs) {
+          chat.openWithQuestionContext(
+            question: args.question,
+            userChoiceIndex: args.userChoiceIndex,
+            langCode: lang.code,
+          );
+        } else {
+          chat.initGeneralChat(langCode: lang.code);
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -119,10 +155,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               children: [
                 const Text(
                   'AI Tutor',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
                 Row(
                   children: [
@@ -133,8 +166,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         color: chat.isStreaming
                             ? AppColors.accentPurple
                             : (chat.isConnected
-                                ? const Color(0xFF10B981)
-                                : const Color(0xFFF59E0B)),
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFF59E0B)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -143,15 +176,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       chat.isStreaming
                           ? (isVi ? 'Đang trả lời...' : 'Responding...')
                           : (chat.aiProvider == AiProvider.openrouter &&
-                                  chat.hasOpenRouterKey
-                              ? (isVi
-                                  ? 'OpenRouter AI Sẵn sàng'
-                                  : 'OpenRouter AI Ready')
-                              : (chat.hasApiKey
-                                  ? (isVi
-                                      ? 'Gemini AI Sẵn sàng'
-                                      : 'Gemini AI Ready')
-                                  : (isVi ? 'Gia sư Offline' : 'Offline Tutor'))),
+                                    chat.hasOpenRouterKey
+                                ? (isVi
+                                      ? 'OpenRouter AI Sẵn sàng'
+                                      : 'OpenRouter AI Ready')
+                                : (chat.hasApiKey
+                                      ? (isVi
+                                            ? 'Gemini AI Sẵn sàng'
+                                            : 'Gemini AI Ready')
+                                      : (isVi
+                                            ? 'Gia sư Offline'
+                                            : 'Offline Tutor'))),
                       style: TextStyle(
                         fontSize: 10.5,
                         fontWeight: FontWeight.w500,
@@ -180,9 +215,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           preferredSize: const Size.fromHeight(1.5),
           child: Container(
             height: 1.5,
-            decoration: const BoxDecoration(
-              gradient: AppColors.aiGradient,
-            ),
+            decoration: const BoxDecoration(gradient: AppColors.aiGradient),
           ),
         ),
         actions: [
@@ -190,27 +223,27 @@ class _AiChatScreenState extends State<AiChatScreen> {
           IconButton(
             icon: const Icon(Icons.add_comment_outlined, size: 20),
             tooltip: isVi ? 'Cuộc hội thoại mới' : 'New chat',
-            onPressed: () => chat.startNewChat(),
+            onPressed: () => chat.startNewChat(langCode: lang.code),
           ),
           // Nút Cài đặt API Key
           IconButton(
             icon: Icon(
-              chat.isConnected
-                  ? Icons.vpn_key_rounded
-                  : Icons.key_off_outlined,
+              chat.isConnected ? Icons.vpn_key_rounded : Icons.key_off_outlined,
               size: 20,
               color: chat.isConnected ? AppColors.accentPurple : Colors.grey,
             ),
-            tooltip:
-                isVi ? 'Cài đặt AI Provider & API Key' : 'Configure AI Provider & API Key',
+            tooltip: isVi
+                ? 'Cài đặt AI Provider & API Key'
+                : 'Configure AI Provider & API Key',
             onPressed: () => _showApiKeyDialog(context),
           ),
           // Nút Xóa lịch sử
           IconButton(
             icon: const Icon(Icons.delete_outline_rounded, size: 20),
             tooltip: isVi ? 'Xóa lịch sử chat' : 'Clear history',
-            onPressed:
-                chat.isStreaming ? null : () => _showClearDialog(context),
+            onPressed: chat.isStreaming
+                ? null
+                : () => _showClearDialog(context),
           ),
           const SizedBox(width: 4),
         ],
@@ -260,15 +293,23 @@ class _AiChatScreenState extends State<AiChatScreen> {
                             horizontal: 8,
                             vertical: 12,
                           ),
-                          itemCount: visibleMessages.length,
+                          itemCount: visibleMessages.length +
+                              (!chat.hasConversation ? 1 : 0),
                           itemBuilder: (context, index) {
-                            return ChatMessageBubble(
-                              message: visibleMessages[index],
+                            if (index < visibleMessages.length) {
+                              return ChatMessageBubble(
+                                message: visibleMessages[index],
+                                langCode: lang.code,
+                                isLatestAssistant:
+                                    index == latestAssistantIndex,
+                                onRegenerate: () =>
+                                    chat.regenerateLastResponse(),
+                              );
+                            }
+                            return _QuickSuggestionsList(
+                              hasQuestionContext: chat.hasActiveQuestion,
                               langCode: lang.code,
-                              isLatestAssistant:
-                                  index == latestAssistantIndex,
-                              onRegenerate: () =>
-                                  chat.regenerateLastResponse(),
+                              onSelected: (text) => _send(chat, lang, text),
                             );
                           },
                         ),
@@ -277,8 +318,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 // Hiệu ứng đang gõ chữ
                 if (chat.isStreaming)
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     child: Row(
                       children: [
                         const SizedBox(
@@ -302,8 +345,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 // Lỗi nếu có
                 if (chat.errorMessage.isNotEmpty)
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -371,9 +416,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       builder: (context) => AlertDialog(
         title: Text(isVi ? 'Xóa lịch sử?' : 'Clear history?'),
         content: Text(
-          isVi
-              ? 'Bạn có chắc muốn xóa toàn bộ cuộc hội thoại hiện tại?'
-              : 'Are you sure you want to clear the entire current conversation?',
+          isVi ? 'Bạn có chắc muốn xóa toàn bộ cuộc hội thoại hiện tại?' : 'Are you sure you want to clear the entire current conversation?',
         ),
         actions: [
           TextButton(
@@ -435,12 +478,126 @@ class _StatusBanner extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        child: content,
-      );
+      return InkWell(onTap: onTap, child: content);
     }
     return content;
+  }
+}
+
+class _QuickSuggestionsList extends StatelessWidget {
+  final bool hasQuestionContext;
+  final String langCode;
+  final ValueChanged<String> onSelected;
+
+  const _QuickSuggestionsList({
+    required this.hasQuestionContext,
+    required this.langCode,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isVi = langCode == 'vi';
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final List<String> prompts;
+    if (hasQuestionContext) {
+      prompts = isVi
+          ? [
+              'Tại sao đáp án này đúng?',
+              'Phân tích các đáp án giúp mình',
+              'Giải thích khái niệm này',
+              'Cho ví dụ code ngắn',
+            ]
+          : [
+              'Why is this answer correct?',
+              'Analyze all options for me',
+              'Explain this concept',
+              'Give a short code example',
+            ];
+    } else {
+      prompts = isVi
+          ? [
+              'Phân biệt const và final trong Dart?',
+              'Cho ví dụ thực tế sử dụng FutureBuilder kết hợp RefreshIndicator?',
+              'Tóm tắt các giai đoạn chính trong vòng đời của StatefulWidget?',
+              'Khi nào nên dùng Provider vs Riverpod?',
+            ]
+          : [
+              'Difference between const and final in Dart?',
+              'Real-world example using FutureBuilder with RefreshIndicator?',
+              'Summarize key phases in StatefulWidget lifecycle?',
+              'When to use Provider vs Riverpod?',
+            ];
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.tips_and_updates_outlined,
+                size: 15,
+                color: AppColors.accentPurple,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                isVi ? 'Gợi ý câu hỏi nhanh:' : 'Quick questions:',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: prompts.map((p) {
+              return ActionChip(
+                elevation: 0,
+                backgroundColor: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF1F5F9),
+                side: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFCBD5E1),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                avatar: const Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  size: 13,
+                  color: AppColors.accentPurple,
+                ),
+                label: Text(
+                  p,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: isDark
+                        ? Colors.grey.shade200
+                        : const Color(0xFF334155),
+                  ),
+                ),
+                onPressed: () => onSelected(p),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -448,10 +605,7 @@ class _WelcomePanel extends StatelessWidget {
   final LanguageProvider lang;
   final ValueChanged<String> onSuggestionTap;
 
-  const _WelcomePanel({
-    required this.lang,
-    required this.onSuggestionTap,
-  });
+  const _WelcomePanel({required this.lang, required this.onSuggestionTap});
 
   @override
   Widget build(BuildContext context) {
@@ -465,35 +619,31 @@ class _WelcomePanel extends StatelessWidget {
               icon: Icons.lightbulb_outline_rounded,
               color: const Color(0xFFF59E0B),
               category: 'Giải thích một khái niệm',
-              prompt: 'Phân biệt const và final trong Dart?'
+              prompt: 'Phân biệt const và final trong Dart?',
             ),
             (
               icon: Icons.code_rounded,
               color: const Color(0xFF3B82F6),
               category: 'Hỗ trợ viết code',
-              prompt:
-                  'Viết một widget custom Button có hiệu ứng gradient và ripple animation?'
+              prompt: 'Viết một widget custom Button có hiệu ứng gradient và ripple animation?',
             ),
             (
               icon: Icons.bug_report_outlined,
               color: const Color(0xFFEF4444),
               category: 'Giải thích lỗi',
-              prompt:
-                  'Tại sao gặp lỗi "setState() called after dispose()" và cách sửa?'
+              prompt: 'Tại sao gặp lỗi "setState() called after dispose()" và cách sửa?',
             ),
             (
               icon: Icons.menu_book_rounded,
               color: const Color(0xFF10B981),
               category: 'Ôn tập kiến thức',
-              prompt:
-                  'Tóm tắt các giai đoạn chính trong vòng đời của StatefulWidget?'
+              prompt: 'Tóm tắt các giai đoạn chính trong vòng đời của StatefulWidget?',
             ),
             (
               icon: Icons.rocket_launch_outlined,
               color: const Color(0xFF8B5CF6),
               category: 'Tạo ví dụ thực tế',
-              prompt:
-                  'Cho ví dụ thực tế sử dụng FutureBuilder kết hợp RefreshIndicator?'
+              prompt: 'Cho ví dụ thực tế sử dụng FutureBuilder kết hợp RefreshIndicator?',
             ),
           ]
         : [
@@ -501,34 +651,31 @@ class _WelcomePanel extends StatelessWidget {
               icon: Icons.lightbulb_outline_rounded,
               color: const Color(0xFFF59E0B),
               category: 'Explain a concept',
-              prompt: 'Difference between const and final in Dart?'
+              prompt: 'Difference between const and final in Dart?',
             ),
             (
               icon: Icons.code_rounded,
               color: const Color(0xFF3B82F6),
               category: 'Code assistance',
-              prompt:
-                  'Write a custom Button widget with gradient and ripple effect?'
+              prompt: 'Write a custom Button widget with gradient and ripple effect?',
             ),
             (
               icon: Icons.bug_report_outlined,
               color: const Color(0xFFEF4444),
               category: 'Debug an issue',
-              prompt:
-                  'Why does "setState() called after dispose()" occur and how to fix it?'
+              prompt: 'Why does "setState() called after dispose()" occur and how to fix it?',
             ),
             (
               icon: Icons.menu_book_rounded,
               color: const Color(0xFF10B981),
               category: 'Review knowledge',
-              prompt: 'Summarize the lifecycle stages of StatefulWidget?'
+              prompt: 'Summarize the lifecycle stages of StatefulWidget?',
             ),
             (
               icon: Icons.rocket_launch_outlined,
               color: const Color(0xFF8B5CF6),
               category: 'Real-world example',
-              prompt:
-                  'Provide a real-world example of FutureBuilder with RefreshIndicator?'
+              prompt: 'Provide a real-world example of FutureBuilder with RefreshIndicator?',
             ),
           ];
 
@@ -617,11 +764,7 @@ class _WelcomePanel extends StatelessWidget {
                               color: item.color.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(
-                              item.icon,
-                              color: item.color,
-                              size: 18,
-                            ),
+                            child: Icon(item.icon, color: item.color, size: 18),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -742,8 +885,7 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
           children: [
             Text(
               isVi ? 'Chọn nguồn AI:' : 'Select AI provider:',
-              style: const TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             // Selector
@@ -803,7 +945,9 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
               Text(
                 isVi ? 'Gemini API Key:' : 'Gemini API Key:',
                 style: const TextStyle(
-                    fontSize: 12.5, fontWeight: FontWeight.w600),
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 6),
               TextField(
@@ -813,9 +957,12 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                   hintText: 'AIzaSy...',
                   isDense: true,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
@@ -824,8 +971,10 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                     ? '💡 Lấy key tại: aistudio.google.com'
                     : '💡 Get key at: aistudio.google.com',
                 style: TextStyle(
-                    fontSize: 11, color: Colors.grey.shade600,
-                    fontStyle: FontStyle.italic),
+                  fontSize: 11,
+                  color: Colors.grey.shade600,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ],
 
@@ -834,7 +983,9 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
               Text(
                 isVi ? 'OpenRouter API Key:' : 'OpenRouter API Key:',
                 style: const TextStyle(
-                    fontSize: 12.5, fontWeight: FontWeight.w600),
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 6),
               TextField(
@@ -844,16 +995,21 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                   hintText: 'sk-or-v1-...',
                   isDense: true,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 isVi ? 'Model ID:' : 'Model ID:',
                 style: const TextStyle(
-                    fontSize: 12.5, fontWeight: FontWeight.w600),
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 6),
               TextField(
@@ -862,9 +1018,12 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                   hintText: 'meta-llama/llama-3.1-8b-instruct:free',
                   isDense: true,
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
@@ -873,26 +1032,35 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                     ? '💡 Lấy key tại: openrouter.ai/keys\nModel Free Tier gợi ý:'
                     : '💡 Get key at: openrouter.ai/keys\nSuggested Free Tier models:',
                 style: TextStyle(
-                    fontSize: 11, color: Colors.grey.shade600,
-                    fontStyle: FontStyle.italic),
+                  fontSize: 11,
+                  color: Colors.grey.shade600,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
-                children: [
-                  'meta-llama/llama-3.1-8b-instruct:free',
-                  'google/gemma-2-9b-it:free',
-                  'mistralai/mistral-7b-instruct:free',
-                ].map((m) => ActionChip(
-                      label: Text(m.split('/').last,
-                          style: const TextStyle(fontSize: 10)),
-                      onPressed: () =>
-                          setState(() => _orModelCtrl.text = m),
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize:
-                          MaterialTapTargetSize.shrinkWrap,
-                    )).toList(),
+                children:
+                    [
+                          'meta-llama/llama-3.1-8b-instruct:free',
+                          'google/gemma-2-9b-it:free',
+                          'mistralai/mistral-7b-instruct:free',
+                        ]
+                        .map(
+                          (m) => ActionChip(
+                            label: Text(
+                              m.split('/').last,
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                            onPressed: () =>
+                                setState(() => _orModelCtrl.text = m),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        )
+                        .toList(),
               ),
             ],
 
@@ -904,8 +1072,7 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
                   isVi
                       ? 'Chế độ Offline sử dụng ngân hàng câu hỏi có sẵn trong app.\nKhông cần API Key.'
                       : 'Offline mode uses the built-in quiz question bank.\nNo API Key required.',
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ),
 
@@ -942,4 +1109,3 @@ class _AiProviderDialogState extends State<_AiProviderDialog> {
     );
   }
 }
-
