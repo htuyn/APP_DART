@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'auth_storage_datasource.dart';
 
 class CourseProgressStorageDataSource {
   static const String _practiceAnswerCountKey = 'course_practice_answer_count_v1';
@@ -9,46 +10,64 @@ class CourseProgressStorageDataSource {
   static const String _masteredQuestionIdsKey =
       'course_mastered_question_ids_v1';
 
+  Future<String> _getScopedKey(String baseKey) async {
+    final user = await AuthStorageDataSource().getCurrentUser();
+    if (user != null && user.id.isNotEmpty) {
+      return '${baseKey}_${user.id}';
+    }
+    return baseKey;
+  }
+
   Future<void> recordPracticeAnswer({
     required String questionId,
     required bool isCorrect,
   }) async {
     final preferences = await SharedPreferences.getInstance();
-    final answerCount = preferences.getInt(_practiceAnswerCountKey) ?? 0;
-    await preferences.setInt(_practiceAnswerCountKey, answerCount + 1);
+    final answerKey = await _getScopedKey(_practiceAnswerCountKey);
+    final correctKey = await _getScopedKey(_practiceCorrectCountKey);
+    final attemptedKey = await _getScopedKey(_attemptedQuestionIdsKey);
+    final masteredKey = await _getScopedKey(_masteredQuestionIdsKey);
 
-    final correctCount = preferences.getInt(_practiceCorrectCountKey) ?? 0;
+    final answerCount = preferences.getInt(answerKey) ?? 0;
+    await preferences.setInt(answerKey, answerCount + 1);
+
+    final correctCount = preferences.getInt(correctKey) ?? 0;
     if (isCorrect) {
-      await preferences.setInt(_practiceCorrectCountKey, correctCount + 1);
+      await preferences.setInt(correctKey, correctCount + 1);
     }
 
     final attemptedIds =
-        preferences.getStringList(_attemptedQuestionIdsKey) ?? <String>[];
+        preferences.getStringList(attemptedKey) ?? <String>[];
     if (!attemptedIds.contains(questionId)) {
       attemptedIds.add(questionId);
-      await preferences.setStringList(_attemptedQuestionIdsKey, attemptedIds);
+      await preferences.setStringList(attemptedKey, attemptedIds);
     }
 
     final masteredIds =
-        preferences.getStringList(_masteredQuestionIdsKey) ?? <String>[];
+        preferences.getStringList(masteredKey) ?? <String>[];
     if (isCorrect && !masteredIds.contains(questionId)) {
       masteredIds.add(questionId);
-      await preferences.setStringList(_masteredQuestionIdsKey, masteredIds);
+      await preferences.setStringList(masteredKey, masteredIds);
     } else if (!isCorrect && masteredIds.remove(questionId)) {
-      await preferences.setStringList(_masteredQuestionIdsKey, masteredIds);
+      await preferences.setStringList(masteredKey, masteredIds);
     }
   }
 
   Future<PracticeProgressSnapshot> load() async {
     final preferences = await SharedPreferences.getInstance();
+    final answerKey = await _getScopedKey(_practiceAnswerCountKey);
+    final correctKey = await _getScopedKey(_practiceCorrectCountKey);
+    final attemptedKey = await _getScopedKey(_attemptedQuestionIdsKey);
+    final masteredKey = await _getScopedKey(_masteredQuestionIdsKey);
+
     return PracticeProgressSnapshot(
-      answerCount: preferences.getInt(_practiceAnswerCountKey) ?? 0,
-      correctAnswerCount: preferences.getInt(_practiceCorrectCountKey) ?? 0,
+      answerCount: preferences.getInt(answerKey) ?? 0,
+      correctAnswerCount: preferences.getInt(correctKey) ?? 0,
       attemptedQuestionIds:
-          (preferences.getStringList(_attemptedQuestionIdsKey) ?? const [])
+          (preferences.getStringList(attemptedKey) ?? const [])
               .toSet(),
       masteredQuestionIds:
-          (preferences.getStringList(_masteredQuestionIdsKey) ?? const [])
+          (preferences.getStringList(masteredKey) ?? const [])
               .toSet(),
     );
   }

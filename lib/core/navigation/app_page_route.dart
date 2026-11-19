@@ -5,6 +5,8 @@ abstract final class AppPageRoutes {
   static const courseProgress = '/course-progress';
   static const bookmarkedQuestions = '/bookmarked-questions';
   static const aiChat = '/ai-chat';
+  static const login = '/login';
+  static const register = '/register';
 }
 
 Route<T> openAppPage<T>(Widget page) {
