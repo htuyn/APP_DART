@@ -2,8 +2,12 @@
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/navigation/app_page_route.dart';
+import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/theme_provider.dart';
+import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
 
 class ProfileSettingsButton extends StatelessWidget {
   const ProfileSettingsButton({super.key});
@@ -37,6 +41,12 @@ void showProfileSettingsSheet(BuildContext context) {
   // Lấy sẵn provider từ context gốc để truyền vào route riêng của modal
   final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
   final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+  AuthProvider? authProvider;
+  try {
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+  } catch (_) {
+    // Graceful fallback nếu AuthProvider chưa khởi tạo trong test
+  }
 
   showModalBottomSheet(
     context: context,
@@ -49,6 +59,8 @@ void showProfileSettingsSheet(BuildContext context) {
         providers: [
           ChangeNotifierProvider.value(value: langProvider),
           ChangeNotifierProvider.value(value: themeProvider),
+          if (authProvider != null)
+            ChangeNotifierProvider.value(value: authProvider!),
         ],
         child: Builder(
           builder: (nestedContext) {
@@ -96,6 +108,11 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
     final theme = context.watch<ThemeProvider>();
+    AuthProvider? auth;
+    try {
+      auth = context.watch<AuthProvider>();
+    } catch (_) {}
+
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -104,6 +121,8 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
         ? AppColors.textSecondaryDark
         : AppColors.textSecondaryLight;
     final headerColor = scheme.onSurface;
+    final isAuthenticated = auth?.isAuthenticated ?? false;
+    final user = auth?.currentUser;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
@@ -111,7 +130,7 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Learner Profile Info Block
+          // 1. Learner / User Profile Info Block
           Row(
             children: [
               Container(
@@ -128,8 +147,10 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.person_rounded,
+                child: Icon(
+                  isAuthenticated
+                      ? Icons.person_rounded
+                      : Icons.person_outline_rounded,
                   color: Colors.white,
                   size: 28,
                 ),
@@ -140,7 +161,7 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      lang.t('learner'),
+                      isAuthenticated ? user!.name : lang.t('guest_user'),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -149,7 +170,7 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      lang.t('hero_subtitle'),
+                      isAuthenticated ? user!.email : lang.t('learner'),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: subtitleColor,
                         height: 1.3,
@@ -160,6 +181,94 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 14),
+
+          // Auth Action Buttons
+          if (isAuthenticated) ...[
+            OutlinedButton.icon(
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(lang.t('logout_confirm')),
+                    content: Text(lang.t('logout_body')),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(lang.t('close')),
+                      ),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                            backgroundColor: scheme.error),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(lang.t('logout')),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true && context.mounted) {
+                  await auth?.logout();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                }
+              },
+              icon: Icon(Icons.logout_rounded, color: scheme.error, size: 18),
+              label: Text(
+                lang.t('logout'),
+                style: TextStyle(
+                    color: scheme.error, fontWeight: FontWeight.bold),
+              ),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 42),
+                side: BorderSide(color: scheme.error.withValues(alpha: 0.5)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ] else ...[
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      final nav = Navigator.of(context);
+                      nav.pop();
+                      nav.push(openAppPage(const LoginScreen()));
+                    },
+                    icon: const Icon(Icons.login_rounded, size: 18),
+                    label: Text(lang.t('login')),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 42),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      final nav = Navigator.of(context);
+                      nav.pop();
+                      nav.push(openAppPage(const RegisterScreen()));
+                    },
+                    icon: const Icon(Icons.person_add_rounded, size: 18),
+                    label: Text(lang.t('register')),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 42),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 18),
           Divider(color: scheme.outlineVariant, height: 1),
           const SizedBox(height: 18),

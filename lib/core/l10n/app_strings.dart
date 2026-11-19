@@ -190,6 +190,69 @@ class AppStrings {
       en: 'Removed question from bookmarks',
     ),
     'saved_count': (vi: 'câu đã lưu', en: 'saved questions'),
+    'login_title': (vi: 'Đăng nhập tài khoản', en: 'Account Sign In'),
+    'register_title': (vi: 'Đăng ký tài khoản', en: 'Account Sign Up'),
+    'login': (vi: 'Đăng nhập', en: 'Sign In'),
+    'register': (vi: 'Đăng ký', en: 'Sign Up'),
+    'logout': (vi: 'Đăng xuất', en: 'Sign Out'),
+    'email': (vi: 'Địa chỉ Email', en: 'Email Address'),
+    'password': (vi: 'Mật khẩu', en: 'Password'),
+    'confirm_password': (vi: 'Xác nhận mật khẩu', en: 'Confirm Password'),
+    'full_name': (vi: 'Họ và tên', en: 'Full Name'),
+    'email_hint': (vi: 'Nhập địa chỉ email...', en: 'Enter email address...'),
+    'password_hint': (vi: 'Nhập mật khẩu...', en: 'Enter password...'),
+    'name_hint': (vi: 'Nhập họ và tên...', en: 'Enter full name...'),
+    'invalid_email': (
+      vi: 'Email không đúng định dạng',
+      en: 'Invalid email format',
+    ),
+    'short_password': (
+      vi: 'Mật khẩu phải có ít nhất 6 ký tự',
+      en: 'Password must be at least 6 characters',
+    ),
+    'passwords_mismatch': (
+      vi: 'Mật khẩu xác nhận không khớp',
+      en: 'Passwords do not match',
+    ),
+    'empty_name': (
+      vi: 'Vui lòng nhập họ và tên',
+      en: 'Please enter your full name',
+    ),
+    'email_in_use': (
+      vi: 'Email này đã được đăng ký tài khoản.',
+      en: 'This email is already registered.',
+    ),
+    'user_not_found': (
+      vi: 'Không tìm thấy tài khoản với email này.',
+      en: 'No account found with this email.',
+    ),
+    'wrong_password': (
+      vi: 'Mật khẩu không chính xác.',
+      en: 'Incorrect password.',
+    ),
+    'no_account': (
+      vi: 'Chưa có tài khoản? Đăng ký ngay',
+      en: "Don't have an account? Sign up",
+    ),
+    'already_have_account': (
+      vi: 'Đã có tài khoản? Đăng nhập ngay',
+      en: 'Already have an account? Sign in',
+    ),
+    'account_created': (
+      vi: 'Tạo tài khoản thành công!',
+      en: 'Account created successfully!',
+    ),
+    'login_success': (
+      vi: 'Đăng nhập thành công!',
+      en: 'Signed in successfully!',
+    ),
+    'logout_confirm': (vi: 'Xác nhận đăng xuất?', en: 'Confirm Sign Out?'),
+    'logout_body': (
+      vi: 'Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?',
+      en: 'Are you sure you want to sign out?',
+    ),
+    'welcome_user': (vi: 'Xin chào', en: 'Welcome'),
+    'guest_user': (vi: 'Khách (Chưa đăng nhập)', en: 'Guest (Not signed in)'),
     'ask_ai_tricky': (
       vi: 'Hỏi AI vì sao câu này dễ nhầm lẫn',
       en: 'Ask AI why this question is tricky',
