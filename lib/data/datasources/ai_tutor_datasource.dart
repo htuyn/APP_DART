@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/constants/ai_config.dart';
 import '../models/question_model.dart';
+import 'gemini_direct_datasource.dart';
 
 class AiTutorDataSource {
   final bool isDemoMode;
   final String? serverUrl;
 
   const AiTutorDataSource({
-    this.isDemoMode = true,
+    this.isDemoMode = false,
     this.serverUrl,
   });
 
@@ -16,34 +20,69 @@ class AiTutorDataSource {
     required String langCode,
     String action = 'explain',
   }) async {
-    // Rubric requirement: Support Demo mode when no key/server is present
-    if (isDemoMode || serverUrl == null || serverUrl!.isEmpty) {
-      return _generateDemoExplanation(
-        question: question,
-        userChoiceIndex: userChoiceIndex,
-        langCode: langCode,
-        action: action,
-      );
+    // 1. Thử gọi trực tiếp Gemini nếu đã có API Key trong máy
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = prefs.getString(AiConfig.prefsApiKey) ?? AiConfig.envApiKey;
+      if (key.trim().isNotEmpty) {
+        final gemini = GeminiDirectDataSource(apiKey: key.trim());
+        final isVi = langCode == 'vi';
+        final block = question.blockName.getText(langCode);
+        final qText = question.question.getText(langCode);
+        final correct = question.getOptions(langCode)[question.correctIndex];
+        final userChoice = userChoiceIndex != null &&
+                userChoiceIndex < question.getOptions(langCode).length
+            ? question.getOptions(langCode)[userChoiceIndex]
+            : null;
+
+        String actionPrompt = '';
+        if (action == 'why_wrong' && userChoice != null) {
+          actionPrompt = isVi
+              ? 'Học viên đã chọn nhầm đáp án "$userChoice" thay vì đáp án đúng "$correct". Hãy phân tích vì sao "$userChoice" là lựa chọn sai, bẫy nhầm lẫn thường gặp và cách phân biệt.'
+              : 'Student mistakenly chose "$userChoice" instead of "$correct". Explain why "$userChoice" is wrong, the common trap, and how to distinguish.';
+        } else if (action == 'code_example') {
+          actionPrompt = isVi
+              ? 'Hãy đưa ra ví dụ code Dart/Flutter thực tế (ngắn gọn, chuẩn Clean Code) minh họa kiến thức trong câu hỏi này.'
+              : 'Provide a clean, realistic Dart/Flutter code snippet illustrating this concept.';
+        } else if (action == 'memory_tip') {
+          actionPrompt = isVi
+              ? 'Hãy đưa ra 1 mẹo ghi nhớ nhanh hoặc quy tắc vàng khi làm bài thi trắc nghiệm về phần này.'
+              : 'Provide a quick exam tip or rule of thumb for this topic.';
+        } else {
+          actionPrompt = isVi
+              ? 'Hãy phân tích bản chất câu hỏi, giải thích vì sao "$correct" là đáp án chuẩn xác nhất.'
+              : 'Break down the question and explain why "$correct" is the exact right answer.';
+        }
+
+        final prompt = isVi
+            ? 'Bạn là Gia sư AI Flutter chuyên nghiệp. Hãy trả lời ngắn gọn (dưới 200 từ) bằng Markdown:\n\n'
+                '• Khối kiến thức: $block\n'
+                '• Câu hỏi: $qText\n'
+                '• Yêu cầu: $actionPrompt'
+            : 'You are an AI Flutter Tutor. Answer concisely (under 200 words) using Markdown:\n\n'
+                '• Topic: $block\n'
+                '• Question: $qText\n'
+                '• Request: $actionPrompt';
+
+        final result = await gemini.generateSingleResponse(
+          prompt: prompt,
+          langCode: langCode,
+        );
+        if (result.trim().isNotEmpty) {
+          return result;
+        }
+      }
+    } catch (_) {
+      // Tự động chuyển xuống fallback offline nếu có lỗi hoặc mất mạng
     }
 
-    // When serverUrl is provided, it calls the backend proxy (which holds the API Key securely)
-    try {
-      // In production, HTTP POST to serverUrl with timeout:
-      return await _generateDemoExplanation(
-        question: question,
-        userChoiceIndex: userChoiceIndex,
-        langCode: langCode,
-        action: action,
-      );
-    } catch (e) {
-      // Fallback gracefully to demo mode on network error
-      return await _generateDemoExplanation(
-        question: question,
-        userChoiceIndex: userChoiceIndex,
-        langCode: langCode,
-        action: action,
-      );
-    }
+    // 2. Fallback offline: dùng dữ liệu có sẵn của câu hỏi
+    return _generateDemoExplanation(
+      question: question,
+      userChoiceIndex: userChoiceIndex,
+      langCode: langCode,
+      action: action,
+    );
   }
 
   Future<String> _generateDemoExplanation({
@@ -52,8 +91,8 @@ class AiTutorDataSource {
     required String langCode,
     required String action,
   }) async {
-    // Simulate brief AI thinking delay (350ms)
-    await Future.delayed(const Duration(milliseconds: 350));
+    // Độ trễ nhẹ mô phỏng phản hồi (200ms)
+    await Future.delayed(const Duration(milliseconds: 200));
 
     final isVi = langCode == 'vi';
     final correctOpt = question.getOptions(langCode)[question.correctIndex];
@@ -61,16 +100,18 @@ class AiTutorDataSource {
     final explanation = question.explanation.getText(langCode);
     final blockTitle = question.blockName.getText(langCode);
 
-    if (action == 'why_wrong' && userChoiceIndex != null && userChoiceIndex != question.correctIndex) {
+    if (action == 'why_wrong' &&
+        userChoiceIndex != null &&
+        userChoiceIndex != question.correctIndex) {
       final userOpt = question.getOptions(langCode)[userChoiceIndex];
       if (isVi) {
         return '💡 **Phân tích vì sao bạn chọn nhầm:**\n\n'
             '• Bạn đã chọn: `"$userOpt"`\n'
             '• Đáp án chuẩn xác là: `"$correctOpt"`\n\n'
             '⚠️ **Điểm gây nhầm lẫn phổ biến:**\n'
-            'Lựa chọn `"$userOpt"` thường là khái niệm dễ bị nhầm lẫn trong $blockTitle. '
+            'Lựa chọn `"$userOpt"` thường là khái niệm dễ bị nhầm lẫn trong chủ đề $blockTitle. '
             'Trong Flutter/Dart, các lập trình viên thường nhầm giữa hằng số biên dịch và thời gian thực thi, '
-            'hoặc giữa việc cập nhật trạng thái tạm thời và trạng thái ứng dụng.\n\n'
+            'hoặc giữa việc cập nhật trạng thái tạm thời và vòng đời widget.\n\n'
             '📌 **Bản chất cốt lõi:**\n'
             '$explanation';
       } else {

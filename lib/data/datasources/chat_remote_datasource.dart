@@ -55,18 +55,32 @@ class ChatRemoteDataSource {
         // Parse SSE data: "data: {...}"
         if (line.startsWith('data: ')) {
           final jsonStr = line.substring(6);
+          String? serverError;
+          bool isDone = false;
+          String? chunk;
+
           try {
             final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+            final error = data['error'];
+            if (error is String && error.isNotEmpty) {
+              serverError = error;
+            }
             if (data['done'] == true) {
-              // Kết thúc stream
-              return;
+              isDone = true;
             }
-            final chunk = data['chunk'] as String?;
-            if (chunk != null && chunk.isNotEmpty) {
-              yield chunk;
-            }
+            chunk = data['chunk'] as String?;
           } catch (_) {
             // Bỏ qua dòng SSE không phân tích được
+          }
+
+          if (serverError != null) {
+            throw Exception(serverError);
+          }
+          if (isDone) {
+            return;
+          }
+          if (chunk != null && chunk.isNotEmpty) {
+            yield chunk;
           }
         }
       }

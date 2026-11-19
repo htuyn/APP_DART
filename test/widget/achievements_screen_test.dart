@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_quiz_bilingual/core/utils/clock.dart';
 import 'package:flutter_quiz_bilingual/data/models/gamification_model.dart';
 import 'package:flutter_quiz_bilingual/domain/repositories/i_gamification_repository.dart';

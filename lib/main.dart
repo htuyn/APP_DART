@@ -1,4 +1,5 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'data/datasources/blockchain_storage_datasource.dart';
@@ -13,10 +14,9 @@ import 'data/repositories/gamification_repository_impl.dart';
 import 'domain/repositories/quiz_repository.dart';
 import 'domain/repositories/i_blockchain_repository.dart';
 import 'domain/repositories/i_gamification_repository.dart';
-import 'presentation/providers/ai_tutor_provider.dart';
+import 'presentation/providers/chat_provider.dart';
 import 'presentation/providers/blockchain_provider.dart';
 import 'presentation/providers/course_progress_provider.dart';
-import 'presentation/providers/chat_provider.dart';
 import 'presentation/providers/exam_provider.dart';
 import 'presentation/providers/gamification_provider.dart';
 import 'presentation/providers/language_provider.dart';
@@ -27,13 +27,18 @@ import 'presentation/screens/ai_chat_screen.dart';
 import 'presentation/screens/blockchain_certificates_screen.dart';
 import 'presentation/screens/cau_hoi_da_luu_screen.dart';
 import 'presentation/screens/course_progress_screen.dart';
-import 'presentation/screens/home_screen.dart';
 import 'core/navigation/app_page_route.dart';
 import 'screens/trang_chu_screen.dart';
 
+/// URL backend proxy AI. Có thể override khi build:
+/// `flutter run --dart-define=AI_PROXY_URL=https://my-worker.workers.dev`
+const String _aiProxyUrl = String.fromEnvironment(
+  'AI_PROXY_URL',
+  defaultValue: 'https://flutter-quiz-ai-proxy.trolyai.workers.dev',
+);
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
   final localDataSource = QuizLocalDataSource();
   final storageDataSource = QuizStorageDataSource();
   final IQuizRepository quizRepository = QuizRepositoryImpl(
@@ -89,11 +94,8 @@ void main() {
             courseProgressProvider: context.read<CourseProgressProvider>(),
           )..initialize(),
         ),
-        ChangeNotifierProvider(create: (_) => AiTutorProvider()),
         ChangeNotifierProvider(
-          create: (_) => ChatProvider(
-            serverUrl: 'https://flutter-quiz-ai-proxy.trolyai.workers.dev',
-          ),
+          create: (_) => ChatProvider(serverUrl: _aiProxyUrl),
         ),
       ],
       child: const QuizApp(),
@@ -120,7 +122,21 @@ class QuizApp extends StatelessWidget {
         Locale('vi'),
         Locale('en'),
       ],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale != null) {
+          for (final supported in supportedLocales) {
+            if (supported.languageCode == locale.languageCode) {
+              return supported;
+            }
+          }
+        }
+        return supportedLocales.first;
+      },
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: theme.mode,
@@ -129,7 +145,7 @@ class QuizApp extends StatelessWidget {
         AppPageRoutes.certificates: (_) => const BlockchainCertificatesScreen(),
         AppPageRoutes.courseProgress: (_) => const CourseProgressScreen(),
         AppPageRoutes.bookmarkedQuestions: (_) => const CauHoiDaLuuScreen(),
-        '/ai-chat': (_) => const AiChatScreen(),
+        AppPageRoutes.aiChat: (_) => const AiChatScreen(),
       },
     );
   }

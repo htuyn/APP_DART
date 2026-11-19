@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -7,13 +7,11 @@ import '../providers/chat_provider.dart';
 import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
-import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/explanation_card.dart';
 import '../widgets/language_button.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/responsive_body.dart';
 import '../widgets/state_views.dart';
-import 'ai_chat_screen.dart';
 
 class PracticeScreen extends StatefulWidget {
   final int initialBlockId;

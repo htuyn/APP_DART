@@ -1,9 +1,11 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
 import '../providers/ai_tutor_provider.dart';
+import '../providers/chat_provider.dart';
 import '../providers/language_provider.dart';
+import 'markdown_message.dart';
 
 class AiTutorSheet extends StatefulWidget {
   final QuestionModel question;
@@ -24,9 +26,14 @@ class AiTutorSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AiTutorSheet(
-        question: question,
-        userChoiceIndex: userChoiceIndex,
+      // Provider scope riêng cho từng lần mở sheet: tránh dữ liệu cũ/race
+      // khi người dùng mở câu hỏi khác hoặc bấm chip liên tục.
+      builder: (_) => ChangeNotifierProvider(
+        create: (_) => AiTutorProvider(),
+        child: AiTutorSheet(
+          question: question,
+          userChoiceIndex: userChoiceIndex,
+        ),
       ),
     );
   }
@@ -248,7 +255,7 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
     }
 
     if (ai.state == AiTutorState.error) {
-      return Padding(
+      return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -273,26 +280,56 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
     if (ai.state == AiTutorState.done) {
       return SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white.withValues(alpha: 0.04)
-                : const Color(0xFFF8FAFC),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              ),
+              child: MarkdownMessage(
+                data: ai.response,
+                selectable: true,
+                textColor: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
-          ),
-          child: SelectableText(
-            ai.response,
-            style: TextStyle(
-              fontSize: 14.5,
-              height: 1.6,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
+            const SizedBox(height: 14),
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<ChatProvider>().askAboutQuestion(
+                  question: widget.question,
+                  userChoiceIndex: widget.userChoiceIndex,
+                  langCode: lang.code,
+                );
+                Navigator.pushNamed(context, '/ai-chat');
+              },
+              icon: const Icon(Icons.forum_rounded, size: 18),
+              label: Text(
+                lang.translate(
+                  vi: 'Mở Chat trực tiếp với AI về câu này',
+                  en: 'Open Live AI Chat for this question',
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.accentPurple,
+                side: BorderSide(
+                  color: AppColors.accentPurple.withValues(alpha: 0.5),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                minimumSize: const Size(double.infinity, 44),
+              ),
             ),
-          ),
+          ],
         ),
       );
     }

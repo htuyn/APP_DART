@@ -2,5 +2,15 @@ name = "flutter-quiz-ai-proxy"
 main = "worker.js"
 compatibility_date = "2026-01-01"
 
+# Chạy Worker gần backend Google thay vì gần người dùng,
+# tránh lỗi "User location is not supported" khi egress từ một số khu vực.
+[placement]
+mode = "smart"
+
+# Workers AI: dự phòng khi Gemini bị chặn theo khu vực / hết hạn mức.
+[ai]
+binding = "AI"
+
 [vars]
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-2.5-flash"
+WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct"

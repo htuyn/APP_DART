@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_quiz_bilingual/data/models/achievement_certificate_model.dart';
 import 'package:flutter_quiz_bilingual/data/models/gamification_model.dart';
 import 'package:flutter_quiz_bilingual/data/models/question_model.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_quiz_bilingual/presentation/providers/gamification_provi
 import 'package:flutter_quiz_bilingual/presentation/providers/language_provider.dart';
 import 'package:flutter_quiz_bilingual/presentation/providers/stats_provider.dart';
 import 'package:flutter_quiz_bilingual/presentation/screens/certificate_detail_screen.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

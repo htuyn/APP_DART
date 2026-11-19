@@ -1,4 +1,5 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quiz_bilingual/data/models/question_model.dart';
 import 'package:flutter_quiz_bilingual/data/models/quiz_result_model.dart';
 import 'package:flutter_quiz_bilingual/domain/repositories/quiz_repository.dart';

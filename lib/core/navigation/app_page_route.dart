@@ -1,9 +1,10 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 abstract final class AppPageRoutes {
   static const certificates = '/certificates';
   static const courseProgress = '/course-progress';
   static const bookmarkedQuestions = '/bookmarked-questions';
+  static const aiChat = '/ai-chat';
 }
 
 Route<T> openAppPage<T>(Widget page) {
