@@ -58,6 +58,7 @@ Communication Guidelines:
 5. Adaptive response: Be brief when asked for brevity; provide rich real-world examples when asked for details.
 6. Format responses with clean Markdown (bold, bullet points, code blocks) for effortless readability.''';
 
+    String contextText = '';
     if (activeQuestion != null) {
       final isVi = langCode == 'vi';
       final block = activeQuestion.blockName.getText(langCode);
@@ -75,29 +76,25 @@ Communication Guidelines:
           .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
           .join('\n');
 
-      final contextText = isVi
-          ? '''\n\n[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
+      contextText = isVi
+          ? '''[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
 - Khối kiến thức: $block
 - Nội dung câu hỏi: $qText
 - Các đáp án lựa chọn:
 $optionsList
 - Đáp án chính xác: $correct
-${userChoice != null ? '- Lựa chọn của người dùng: $userChoice' : ''}
-${explanation.isNotEmpty ? '- Giải thích bài học: $explanation' : ''}
-
-LƯU Ý: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Cho ví dụ", "Giải thích kỹ hơn"), hãy trả lời dựa trên câu hỏi và chủ đề ở trên.'''
-          : '''\n\n[CURRENT QUIZ QUESTION CONTEXT]:
+${userChoice != null ? '- Lựa chọn của người dùng: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Giải thích bài học: $explanation\n' : ''}
+LƯU Ý QUAN TRỌNG: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Tại sao đúng?", "Giải thích", "Cho ví dụ"), BẮT BUỘC phải trả lời dựa trên câu hỏi và đáp án ở trên, tuyệt đối không hỏi lại người dùng về nội dung câu hỏi.'''
+          : '''[CURRENT QUIZ QUESTION CONTEXT]:
 - Topic: $block
 - Question: $qText
 - Options:
 $optionsList
 - Correct Answer: $correct
-${userChoice != null ? '- User Selected: $userChoice' : ''}
-${explanation.isNotEmpty ? '- Explanation: $explanation' : ''}
+${userChoice != null ? '- User Selected: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Explanation: $explanation\n' : ''}
+IMPORTANT NOTE: The user is discussing this question. When they ask follow-up questions ("Why?", "Why is this answer correct?", "Explain", "Give an example"), you MUST answer based on the question and correct answer above. Never ask the user to repeat or provide the question again.''';
 
-NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "Explain further", "Give an example"), ground your answer in this question context.''';
-
-      systemPrompt += contextText;
+      systemPrompt += '\n\n$contextText';
     }
 
     // Giới hạn context window: giữ tối đa 20 tin nhắn gần nhất để tránh vượt token
@@ -136,7 +133,31 @@ NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "E
       contents.removeAt(0);
     }
 
+    // Bơm trực tiếp ngữ cảnh câu hỏi vào lượt người dùng đầu tiên trong contents
+    // để mô hình luôn nắm bắt câu hỏi ngay cả khi bỏ qua system instruction
+    if (activeQuestion != null && contextText.isNotEmpty && contents.isNotEmpty) {
+      final firstUserIndex = contents.indexWhere((c) => c['role'] == 'user');
+      if (firstUserIndex != -1) {
+        final parts = contents[firstUserIndex]['parts'] as List;
+        if (parts.isNotEmpty) {
+          final firstPart = parts.first as Map<String, dynamic>;
+          final currentText = firstPart['text'] as String;
+          if (!currentText.contains('[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]') &&
+              !currentText.contains('[CURRENT QUIZ QUESTION CONTEXT]')) {
+            firstPart['text'] =
+                '$contextText\n\n---\n[CÂU HỎI / YÊU CẦU CỦA NGƯỜI HỌC]:\n$currentText';
+          }
+        }
+      }
+    }
+
     final requestBody = jsonEncode({
+      // Hỗ trợ cả systemInstruction (chuẩn REST v1beta) và system_instruction (dự phòng)
+      'systemInstruction': {
+        'parts': [
+          {'text': systemPrompt}
+        ]
+      },
       'system_instruction': {
         'parts': [
           {'text': systemPrompt}

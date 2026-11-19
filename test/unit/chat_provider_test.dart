@@ -126,6 +126,16 @@ void main() {
       await provider.sendMessage(content: 'Tại sao?', langCode: 'vi');
       expect(repository.calls.length, 1);
       expect(repository.activeQuestions.single?.id, 'Q-B');
+
+      // Khi người dùng hỏi nối tiếp (follow-up), context câu B vẫn được duy trì
+      await provider.sendMessage(content: 'Giải thích kỹ hơn', langCode: 'vi');
+      expect(repository.calls.length, 2);
+      expect(repository.activeQuestions[1]?.id, 'Q-B');
+
+      // Khi người dùng bấm tạo chat mới, context được dọn dẹp sạch sẽ
+      provider.startNewChat();
+      expect(provider.hasActiveQuestion, false);
+      expect(provider.activeQuestion, isNull);
     });
 
     test('shows error when connected provider fails', () async {

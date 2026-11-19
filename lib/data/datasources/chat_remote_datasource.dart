@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/chat_message_model.dart';
+import '../models/question_model.dart';
 
 /// Kết quả stream từ remote datasource: mỗi chunk là một phần văn bản AI.
 class ChatRemoteDataSource {
@@ -20,12 +21,16 @@ class ChatRemoteDataSource {
   Stream<String> sendMessageStream({
     required List<ChatMessageModel> messages,
     required String langCode,
+    QuestionModel? activeQuestion,
+    int? userChoiceIndex,
   }) async* {
     final url = Uri.parse('$baseUrl/api/chat');
 
     final body = jsonEncode({
       'messages': messages.map((m) => m.toJson()).toList(),
       'langCode': langCode,
+      if (activeQuestion != null) 'activeQuestion': activeQuestion.toJson(),
+      'userChoiceIndex': ?userChoiceIndex,
     });
 
     try {

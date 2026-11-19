@@ -273,7 +273,6 @@ class ChatProvider extends ChangeNotifier {
   Future<void> sendMessage({
     required String content,
     required String langCode,
-    bool fromQuestionContext = false,
   }) async {
     final trimmed = content.trim();
     if (trimmed.isEmpty || _state == ChatState.streaming) return;
@@ -291,6 +290,49 @@ class ChatProvider extends ChangeNotifier {
     await _streamAnswer(langCode: langCode);
   }
 
+  /// Định dạng khối ngữ cảnh câu hỏi bài học hiện tại để đưa vào request payload.
+  String _buildQuestionContextBlock({
+    required QuestionModel question,
+    int? userChoiceIndex,
+    required String langCode,
+  }) {
+    final isVi = langCode == 'vi';
+    final block = question.blockName.getText(langCode);
+    final qText = question.question.getText(langCode);
+    final options = question.getOptions(langCode);
+    final correct = (question.correctIndex >= 0 && question.correctIndex < options.length)
+        ? options[question.correctIndex]
+        : '';
+    final explanation = question.explanation.getText(langCode);
+    final userChoice = (userChoiceIndex != null && userChoiceIndex >= 0 && userChoiceIndex < options.length)
+        ? options[userChoiceIndex]
+        : null;
+
+    final optionsList = options
+        .asMap()
+        .entries
+        .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
+        .join('\n');
+
+    return isVi
+        ? '''[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
+- Khối kiến thức: $block
+- Nội dung câu hỏi: $qText
+- Các đáp án lựa chọn:
+$optionsList
+- Đáp án chính xác: $correct
+${userChoice != null ? '- Lựa chọn của người dùng: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Giải thích bài học: $explanation\n' : ''}
+LƯU Ý QUAN TRỌNG: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Tại sao đúng?", "Giải thích", "Cho ví dụ"), BẮT BUỘC phải trả lời dựa trên câu hỏi và đáp án ở trên, tuyệt đối không hỏi lại người dùng về nội dung câu hỏi.'''
+        : '''[CURRENT QUIZ QUESTION CONTEXT]:
+- Topic: $block
+- Question: $qText
+- Options:
+$optionsList
+- Correct Answer: $correct
+${userChoice != null ? '- User Selected: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Explanation: $explanation\n' : ''}
+IMPORTANT NOTE: The user is discussing this question. When they ask follow-up questions ("Why?", "Why is this answer correct?", "Explain", "Give an example"), you MUST answer based on the question and correct answer above. Never ask the user to repeat or provide the question again.''';
+  }
+
   Future<void> _streamAnswer({required String langCode}) async {
     final requestId = ++_requestId;
 
@@ -303,15 +345,49 @@ class ChatProvider extends ChangeNotifier {
 
     // Chỉ gửi các tin nhắn tính từ tin nhắn người dùng đầu tiên (bỏ qua system và lời chào cục bộ của AI)
     final firstUserIndex = _messages.indexWhere((m) => m.role == 'user');
-    final List<ChatMessageModel> requestMessages;
+    final List<ChatMessageModel> requestMessages = [];
     if (firstUserIndex != -1) {
-      requestMessages = _messages
+      final userMessages = _messages
           .sublist(firstUserIndex)
           .where((m) => m.role != 'system' && m.content.trim().isNotEmpty)
           .toList();
-    } else {
-      requestMessages = [];
+
+      for (int i = 0; i < userMessages.length; i++) {
+        final m = userMessages[i];
+        if (i == 0 && _activeQuestion != null && m.role == 'user') {
+          final contextBlock = _buildQuestionContextBlock(
+            question: _activeQuestion!,
+            userChoiceIndex: _userChoiceIndex,
+            langCode: langCode,
+          );
+          requestMessages.add(
+            ChatMessageModel(
+              role: 'user',
+              content:
+                  '$contextBlock\n\n---\n[CÂU HỎI / YÊU CẦU CỦA NGƯỜI HỌC]:\n${m.content}',
+              timestamp: m.timestamp,
+              langCode: m.langCode,
+            ),
+          );
+        } else {
+          requestMessages.add(m);
+        }
+      }
     }
+
+    // Temporary safe debug log showing context and request message details
+    final hasCtx = _activeQuestion != null;
+    final qText = _activeQuestion?.question.getText(langCode) ?? 'N/A';
+    final optCount = _activeQuestion?.getOptions(langCode).length ?? 0;
+    final correctOpt = (_activeQuestion != null &&
+            _activeQuestion!.correctIndex >= 0 &&
+            _activeQuestion!.correctIndex < optCount)
+        ? _activeQuestion!.getOptions(langCode)[_activeQuestion!.correctIndex]
+        : 'N/A';
+
+    debugPrint(
+      'AI Context Debug: exists=$hasCtx, question="$qText", optionsCount=$optCount, correctAnswer="$correctOpt", requestMessageCount=${requestMessages.length}',
+    );
 
     try {
       // Nếu chưa có API key và chưa có server url, chuyển thẳng sang offline fallback
@@ -510,10 +586,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Khởi tạo cuộc trò chuyện chung khi mở từ Menu chính (không có câu hỏi bài học).
-  void initGeneralChat({
-    required String langCode,
-    bool force = false,
-  }) {
+  void initGeneralChat({required String langCode, bool force = false}) {
     if (!force && _currentQuestionId == null && _messages.length > 1) {
       return;
     }

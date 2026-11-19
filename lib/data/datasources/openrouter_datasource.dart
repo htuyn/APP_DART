@@ -24,6 +24,47 @@ class OpenRouterDataSource {
 
   bool get hasKey => apiKey.trim().isNotEmpty;
 
+  /// Định dạng khối ngữ cảnh câu hỏi bài học hiện tại
+  String _buildContextText({
+    required QuestionModel question,
+    int? userChoiceIndex,
+    required String langCode,
+  }) {
+    final isVi = langCode == 'vi';
+    final block = question.blockName.getText(langCode);
+    final qText = question.question.getText(langCode);
+    final options = question.getOptions(langCode);
+    final correct = options[question.correctIndex];
+    final explanation = question.explanation.getText(langCode);
+    final userChoice = (userChoiceIndex != null && userChoiceIndex < options.length)
+        ? options[userChoiceIndex]
+        : null;
+
+    final optionsList = options
+        .asMap()
+        .entries
+        .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
+        .join('\n');
+
+    return isVi
+        ? '''[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
+- Khối kiến thức: $block
+- Nội dung câu hỏi: $qText
+- Các đáp án lựa chọn:
+$optionsList
+- Đáp án chính xác: $correct
+${userChoice != null ? '- Lựa chọn của người dùng: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Giải thích bài học: $explanation\n' : ''}
+LƯU Ý QUAN TRỌNG: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Tại sao đúng?", "Giải thích", "Cho ví dụ"), BẮT BUỘC phải trả lời dựa trên câu hỏi và đáp án ở trên, tuyệt đối không hỏi lại người dùng về nội dung câu hỏi.'''
+        : '''[CURRENT QUIZ QUESTION CONTEXT]:
+- Topic: $block
+- Question: $qText
+- Options:
+$optionsList
+- Correct Answer: $correct
+${userChoice != null ? '- User Selected: $userChoice\n' : ''}${explanation.isNotEmpty ? '- Explanation: $explanation\n' : ''}
+IMPORTANT NOTE: The user is discussing this question. When they ask follow-up questions ("Why?", "Why is this answer correct?", "Explain", "Give an example"), you MUST answer based on the question and correct answer above. Never ask the user to repeat or provide the question again.''';
+  }
+
   /// System prompt song ngữ cho AI Tutor kèm ngữ cảnh câu hỏi nếu có
   String _buildSystemPrompt(
     String langCode, {
@@ -52,45 +93,13 @@ Communication Guidelines:
 
     if (activeQuestion == null) return basePrompt;
 
-    final isVi = langCode == 'vi';
-    final block = activeQuestion.blockName.getText(langCode);
-    final qText = activeQuestion.question.getText(langCode);
-    final options = activeQuestion.getOptions(langCode);
-    final correct = options[activeQuestion.correctIndex];
-    final explanation = activeQuestion.explanation.getText(langCode);
-    final userChoice = (userChoiceIndex != null && userChoiceIndex < options.length)
-        ? options[userChoiceIndex]
-        : null;
+    final contextText = _buildContextText(
+      question: activeQuestion,
+      userChoiceIndex: userChoiceIndex,
+      langCode: langCode,
+    );
 
-    final optionsList = options
-        .asMap()
-        .entries
-        .map((e) => '   ${String.fromCharCode(65 + e.key)}. ${e.value}')
-        .join('\n');
-
-    final contextText = isVi
-        ? '''\n\n[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]:
-- Khối kiến thức: $block
-- Nội dung câu hỏi: $qText
-- Các đáp án lựa chọn:
-$optionsList
-- Đáp án chính xác: $correct
-${userChoice != null ? '- Lựa chọn của người dùng: $userChoice' : ''}
-${explanation.isNotEmpty ? '- Giải thích bài học: $explanation' : ''}
-
-LƯU Ý: Người dùng đang trao đổi về câu hỏi này. Khi người dùng đặt câu hỏi ("Tại sao?", "Vì sao đáp án này đúng?", "Cho ví dụ", "Giải thích kỹ hơn"), hãy trả lời dựa trên câu hỏi và chủ đề ở trên.'''
-        : '''\n\n[CURRENT QUIZ QUESTION CONTEXT]:
-- Topic: $block
-- Question: $qText
-- Options:
-$optionsList
-- Correct Answer: $correct
-${userChoice != null ? '- User Selected: $userChoice' : ''}
-${explanation.isNotEmpty ? '- Explanation: $explanation' : ''}
-
-NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "Explain further", "Give an example"), ground your answer in this question context.''';
-
-    return basePrompt + contextText;
+    return '$basePrompt\n\n$contextText';
   }
 
   /// Gửi danh sách tin nhắn và nhận phản hồi dạng SSE stream từ OpenRouter.
@@ -147,6 +156,27 @@ NOTE: The user is discussing this question. When they ask follow-ups ("Why?", "E
             ? 'Không có nội dung tin nhắn để gửi tới AI.'
             : 'No message content to send to AI.',
       );
+    }
+
+    // Bơm trực tiếp ngữ cảnh câu hỏi vào lượt người dùng đầu tiên trong messages
+    // để mô hình luôn nắm bắt câu hỏi ngay cả khi không ưu tiên system prompt
+    if (activeQuestion != null) {
+      final contextText = _buildContextText(
+        question: activeQuestion,
+        userChoiceIndex: userChoiceIndex,
+        langCode: langCode,
+      );
+      final firstUserIndex =
+          requestMessages.indexWhere((m) => m['role'] == 'user');
+      if (firstUserIndex != -1) {
+        final currentText =
+            requestMessages[firstUserIndex]['content'] as String;
+        if (!currentText.contains('[NGỮ CẢNH CÂU HỎI BÀI HỌC HIỆN TẠI]') &&
+            !currentText.contains('[CURRENT QUIZ QUESTION CONTEXT]')) {
+          requestMessages[firstUserIndex]['content'] =
+              '$contextText\n\n---\n[CÂU HỎI / YÊU CẦU CỦA NGƯỜI HỌC]:\n$currentText';
+        }
+      }
     }
 
     final url = Uri.parse(_baseUrl);

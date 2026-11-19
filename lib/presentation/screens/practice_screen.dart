@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
-import '../providers/chat_provider.dart';
 import '../providers/gamification_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/quiz_provider.dart';
@@ -470,11 +469,6 @@ class _QuestionPage extends StatelessWidget {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
-              context.read<ChatProvider>().openWithQuestionContext(
-                question: question,
-                userChoiceIndex: selected,
-                langCode: lang.code,
-              );
               Navigator.pushNamed(
                 context,
                 '/ai-chat',

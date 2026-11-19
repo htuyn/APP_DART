@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../data/models/question_model.dart';
 import '../providers/ai_tutor_provider.dart';
-import '../providers/chat_provider.dart';
 import '../providers/language_provider.dart';
 import '../screens/ai_chat_screen.dart';
 import 'markdown_message.dart';
@@ -305,11 +304,6 @@ class _AiTutorSheetState extends State<AiTutorSheet> {
             OutlinedButton.icon(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.read<ChatProvider>().openWithQuestionContext(
-                  question: widget.question,
-                  userChoiceIndex: widget.userChoiceIndex,
-                  langCode: lang.code,
-                );
                 Navigator.pushNamed(
                   context,
                   '/ai-chat',

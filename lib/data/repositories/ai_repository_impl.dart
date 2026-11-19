@@ -85,6 +85,8 @@ class AiRepositoryImpl implements IAiRepository {
       yield* remoteDataSource!.sendMessageStream(
         messages: messages,
         langCode: langCode,
+        activeQuestion: activeQuestion,
+        userChoiceIndex: userChoiceIndex,
       );
       return;
     }
