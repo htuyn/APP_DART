@@ -60,7 +60,7 @@ void showProfileSettingsSheet(BuildContext context) {
           ChangeNotifierProvider.value(value: langProvider),
           ChangeNotifierProvider.value(value: themeProvider),
           if (authProvider != null)
-            ChangeNotifierProvider.value(value: authProvider!),
+            ChangeNotifierProvider.value(value: authProvider),
         ],
         child: Builder(
           builder: (nestedContext) {
@@ -210,7 +210,10 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
                 if (confirm == true && context.mounted) {
                   await auth?.logout();
                   if (context.mounted) {
-                    Navigator.pop(context);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      openAppPage(const LoginScreen()),
+                      (route) => false,
+                    );
                   }
                 }
               },

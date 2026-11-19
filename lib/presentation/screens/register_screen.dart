@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/navigation/app_page_route.dart';
+import '../../screens/trang_chu_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
 import '../widgets/language_button.dart';
@@ -63,9 +64,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
+      Navigator.of(context).pushAndRemoveUntil(
+        openAppPage(const TrangChuScreen()),
+        (route) => false,
+      );
     }
   }
 
