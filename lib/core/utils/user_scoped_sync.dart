@@ -8,9 +8,17 @@ import '../../presentation/providers/quiz_provider.dart';
 import '../../presentation/providers/stats_provider.dart';
 
 Future<void> reloadUserScopedProviders(BuildContext context) async {
-  await context.read<GamificationProvider>().initialize();
-  await context.read<QuizProvider>().reloadProgress();
-  await context.read<CourseProgressProvider>().initialize();
-  await context.read<StatsProvider>().loadHistory();
-  await context.read<BlockchainProvider>().initialize();
+  final gamification = context.read<GamificationProvider>();
+  final quiz = context.read<QuizProvider>();
+  final courseProgress = context.read<CourseProgressProvider>();
+  final stats = context.read<StatsProvider>();
+  final blockchain = context.read<BlockchainProvider>();
+
+  await Future.wait([
+    gamification.initialize(),
+    quiz.reloadProgress(),
+    courseProgress.initialize(),
+    stats.loadHistory(),
+    blockchain.initialize(),
+  ]);
 }
