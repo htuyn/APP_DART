@@ -35,6 +35,7 @@ class CourseProgressProvider extends ChangeNotifier {
   );
   List<QuestionModel> _questions = const [];
   List<QuizResultModel> _history = const [];
+  List<int> _cachedAllBlockIds = const [];
   bool _isLoading = false;
   String? _errorMessage;
   Future<void>? _refreshFuture;
@@ -44,9 +45,12 @@ class CourseProgressProvider extends ChangeNotifier {
   List<QuestionModel> get questions => List.unmodifiable(_questions);
   List<QuizResultModel> get quizHistory => List.unmodifiable(_history);
   List<int> get allBlockIds {
-    final ids = _questions.map((question) => question.blockId).toSet().toList()
-      ..sort();
-    return List.unmodifiable(ids);
+    if (_cachedAllBlockIds.isEmpty && _questions.isNotEmpty) {
+      final ids = _questions.map((question) => question.blockId).toSet().toList()
+        ..sort();
+      _cachedAllBlockIds = List.unmodifiable(ids);
+    }
+    return _cachedAllBlockIds;
   }
 
   bool get isLoading => _isLoading;

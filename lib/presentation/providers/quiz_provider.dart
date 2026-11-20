@@ -16,6 +16,7 @@ class QuizProvider with ChangeNotifier {
   List<QuestionModel> _allQuestions = [];
   Set<String> _wrongQuestionIds = {};
   Set<String> _bookmarkedQuestionIds = {};
+  Map<int, List<QuestionModel>> _groupedByBlockCache = {};
 
   QuizLoadingState get state => _state;
   String? get errorMessage => _errorMessage;
@@ -44,6 +45,7 @@ class QuizProvider with ChangeNotifier {
 
     try {
       _allQuestions = await repository.loadQuestions();
+      _groupedByBlockCache = {};
       final wrongList = await repository.getWrongQuestionIds();
       _wrongQuestionIds = wrongList.toSet();
       final bookmarkedList = await repository.getBookmarkedQuestionIds();
@@ -81,11 +83,14 @@ class QuizProvider with ChangeNotifier {
   }
 
   Map<int, List<QuestionModel>> get groupedByBlock {
-    final Map<int, List<QuestionModel>> map = {};
-    for (final q in _allQuestions) {
-      map.putIfAbsent(q.blockId, () => []).add(q);
+    if (_groupedByBlockCache.isEmpty && _allQuestions.isNotEmpty) {
+      final Map<int, List<QuestionModel>> map = {};
+      for (final q in _allQuestions) {
+        map.putIfAbsent(q.blockId, () => []).add(q);
+      }
+      _groupedByBlockCache = Map.unmodifiable(map);
     }
-    return map;
+    return _groupedByBlockCache;
   }
 
   Future<void> recordAnswer({

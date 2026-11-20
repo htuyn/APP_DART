@@ -6,9 +6,11 @@ class LocalizedText {
 
   factory LocalizedText.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
+      final viStr = json['vi'] as String? ?? '';
+      final enStr = json['en'] as String? ?? '';
       return LocalizedText(
-        vi: json['vi'] as String? ?? '',
-        en: json['en'] as String? ?? json['vi'] as String? ?? '',
+        vi: viStr,
+        en: enStr.isNotEmpty ? enStr : viStr,
       );
     } else if (json is String) {
       return LocalizedText(vi: json, en: json);
@@ -18,7 +20,7 @@ class LocalizedText {
 
   Map<String, dynamic> toJson() => {'vi': vi, 'en': en};
 
-  String getText(String langCode) => langCode == 'en' ? en : vi;
+  String getText(String langCode) => langCode == 'en' ? (en.isNotEmpty ? en : vi) : vi;
 }
 
 class QuestionModel {
@@ -87,6 +89,9 @@ class QuestionModel {
   }
 
   List<String> getOptions(String langCode) {
-    return langCode == 'en' ? optionsEn : optionsVi;
+    if (langCode == 'en' && optionsEn.isNotEmpty) {
+      return optionsEn;
+    }
+    return optionsVi;
   }
 }

@@ -338,7 +338,6 @@ class _FlashcardScreenState extends State<FlashcardScreen>
     required bool isDark,
   }) {
     final titleText = question.blockName.getText(lang.code);
-    final levelText = question.level;
     final options = question.getOptions(lang.code);
 
     return Card(
@@ -360,9 +359,8 @@ class _FlashcardScreenState extends State<FlashcardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top Header Tags
+            // Top Header Tag
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding:
@@ -377,38 +375,20 @@ class _FlashcardScreenState extends State<FlashcardScreen>
                       Icon(Icons.widgets_rounded,
                           size: 14, color: scheme.primary),
                       const SizedBox(width: 6),
-                      Text(
-                        titleText.isEmpty
-                            ? '${lang.t('block')} ${question.blockId}'
-                            : titleText,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: scheme.primary,
+                      Flexible(
+                        child: Text(
+                          titleText.isEmpty
+                              ? '${lang.t('block')} ${question.blockId}'
+                              : titleText,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: scheme.primary,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? scheme.surfaceContainerHighest
-                        : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: scheme.outlineVariant),
-                  ),
-                  child: Text(
-                    levelText,
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                    ),
                   ),
                 ),
               ],
