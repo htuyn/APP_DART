@@ -86,6 +86,7 @@ class TrangChuScreen extends StatelessWidget {
           wrongCount: wrong,
           blockLabel: lang.t('block').toLowerCase(),
           questionLabel: lang.t('questions'),
+          wrongLabel: lang.translate(vi: 'câu sai', en: 'wrong'),
         ),
         // Gamification summary is shown on the app's active home screen.
         const SizedBox(height: 12),
@@ -309,6 +310,7 @@ class _WelcomeCard extends StatelessWidget {
   final int wrongCount;
   final String blockLabel;
   final String questionLabel;
+  final String wrongLabel;
 
   const _WelcomeCard({
     required this.title,
@@ -318,6 +320,7 @@ class _WelcomeCard extends StatelessWidget {
     required this.wrongCount,
     required this.blockLabel,
     required this.questionLabel,
+    required this.wrongLabel,
   });
 
   @override
@@ -418,7 +421,7 @@ class _WelcomeCard extends StatelessWidget {
                 _HeaderStat(
                   icon: Icons.bookmark_border_rounded,
                   value: '$wrongCount',
-                  label: 'câu sai',
+                  label: wrongLabel,
                 ),
               ],
             ),

@@ -24,14 +24,14 @@ class LocalizedText {
 }
 
 String formatQuestionLevel(String rawLevel, String langCode) {
-  final clean = rawLevel.trim().toLowerCase();
+  final clean = rawLevel.trim().toLowerCase().replaceAll(' ', '').replaceAll('-', '');
   if (clean == 'nhớ' || clean == 'nho' || clean == 'remember') {
     return langCode == 'en' ? 'Remember' : 'Nhớ';
   }
   if (clean == 'hiểu' || clean == 'hieu' || clean == 'understand') {
     return langCode == 'en' ? 'Understand' : 'Hiểu';
   }
-  if (clean == 'vận dụng' || clean == 'van dung' || clean == 'apply') {
+  if (clean == 'vậndụng' || clean == 'vandung' || clean == 'apply') {
     return langCode == 'en' ? 'Apply' : 'Vận dụng';
   }
   return rawLevel.isNotEmpty ? rawLevel : (langCode == 'en' ? 'Remember' : 'Nhớ');

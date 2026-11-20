@@ -361,34 +361,57 @@ class _FlashcardScreenState extends State<FlashcardScreen>
           children: [
             // Top Header Tag
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Expanded(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: scheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.widgets_rounded,
+                            size: 14, color: scheme.primary),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            titleText.isEmpty
+                                ? '${lang.t('block')} ${question.blockId}'
+                                : titleText,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: scheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: scheme.primary.withValues(alpha: 0.12),
+                    color: scheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: scheme.outlineVariant.withValues(alpha: 0.6),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.widgets_rounded,
-                          size: 14, color: scheme.primary),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          titleText.isEmpty
-                              ? '${lang.t('block')} ${question.blockId}'
-                              : titleText,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: scheme.primary,
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    question.getLevelText(lang.code),
+                    style: TextStyle(
+                      color: scheme.onSurface.withValues(alpha: 0.75),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -554,6 +577,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
           children: [
             // Top Header: Correct Answer Badge
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding:
@@ -566,6 +590,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
                     ),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.check_circle_rounded,
                           size: 16, color: AppColors.success),
@@ -582,6 +607,26 @@ class _FlashcardScreenState extends State<FlashcardScreen>
                         ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: scheme.outlineVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  child: Text(
+                    question.getLevelText(lang.code),
+                    style: TextStyle(
+                      color: scheme.onSurface.withValues(alpha: 0.75),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],

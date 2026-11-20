@@ -206,7 +206,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                 ),
                               ),
                               child: Text(
-                                questions[_currentIndex].level,
+                                questions[_currentIndex].getLevelText(lang.code),
                                 style: TextStyle(
                                   color: scheme.onSurface.withValues(
                                     alpha: 0.75,
