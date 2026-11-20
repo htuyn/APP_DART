@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/navigation/app_page_route.dart';
+import '../../core/utils/user_scoped_sync.dart';
 import '../../screens/trang_chu_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
@@ -51,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      await reloadUserScopedProviders(context);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

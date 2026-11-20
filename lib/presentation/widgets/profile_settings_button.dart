@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/navigation/app_page_route.dart';
+import '../../core/utils/user_scoped_sync.dart';
 import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/theme_provider.dart';
@@ -210,10 +211,13 @@ class _ProfileSettingsSheetContent extends StatelessWidget {
                 if (confirm == true && context.mounted) {
                   await auth?.logout();
                   if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      openAppPage(const LoginScreen()),
-                      (route) => false,
-                    );
+                    await reloadUserScopedProviders(context);
+                    if (context.mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        openAppPage(const LoginScreen()),
+                        (route) => false,
+                      );
+                    }
                   }
                 }
               },
