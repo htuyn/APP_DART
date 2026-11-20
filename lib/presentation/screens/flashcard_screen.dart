@@ -351,7 +351,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
         ),
       ),
       child: Container(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           color: isDark ? AppColors.cardDark : AppColors.cardLight,
@@ -484,6 +484,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
                 ),
               ),
             ),
+            const SizedBox(height: 10),
 
             // Tap to Flip Banner
             Container(
@@ -543,7 +544,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
         ),
       ),
       child: Container(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           color: isDark ? AppColors.cardDark : AppColors.cardLight,
@@ -685,6 +686,7 @@ class _FlashcardScreenState extends State<FlashcardScreen>
                 ),
               ),
             ),
+            const SizedBox(height: 10),
 
             // Tap to Flip Back Banner
             Container(

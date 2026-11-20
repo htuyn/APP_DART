@@ -23,6 +23,20 @@ class LocalizedText {
   String getText(String langCode) => langCode == 'en' ? (en.isNotEmpty ? en : vi) : vi;
 }
 
+String formatQuestionLevel(String rawLevel, String langCode) {
+  final clean = rawLevel.trim().toLowerCase();
+  if (clean == 'nhớ' || clean == 'nho' || clean == 'remember') {
+    return langCode == 'en' ? 'Remember' : 'Nhớ';
+  }
+  if (clean == 'hiểu' || clean == 'hieu' || clean == 'understand') {
+    return langCode == 'en' ? 'Understand' : 'Hiểu';
+  }
+  if (clean == 'vận dụng' || clean == 'van dung' || clean == 'apply') {
+    return langCode == 'en' ? 'Apply' : 'Vận dụng';
+  }
+  return rawLevel.isNotEmpty ? rawLevel : (langCode == 'en' ? 'Remember' : 'Nhớ');
+}
+
 class QuestionModel {
   final String id;
   final int blockId;
@@ -93,5 +107,9 @@ class QuestionModel {
       return optionsEn;
     }
     return optionsVi;
+  }
+
+  String getLevelText(String langCode) {
+    return formatQuestionLevel(level, langCode);
   }
 }

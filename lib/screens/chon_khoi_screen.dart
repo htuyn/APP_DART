@@ -239,12 +239,13 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
         final scheme = Theme.of(sheetContext).colorScheme;
         final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
 
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 children: [
                   Container(
@@ -337,10 +338,11 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 }
 
 class _ModeOptionCard extends StatelessWidget {
