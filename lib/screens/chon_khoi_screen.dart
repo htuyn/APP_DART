@@ -164,6 +164,7 @@ class _ChonKhoiScreenState extends State<ChonKhoiScreen> {
                           wrongCount: wrong,
                           rate: rate,
                           questionLabel: lang.t('questions'),
+                          wrongLabel: lang.translate(vi: 'sai', en: 'wrong'),
                           onTap: () => _showStudyModeSelectionSheet(
                             context: context,
                             blockId: blockId,
@@ -473,6 +474,7 @@ class _BlockTile extends StatelessWidget {
   final int wrongCount;
   final double rate;
   final String questionLabel;
+  final String wrongLabel;
   final VoidCallback onTap;
 
   const _BlockTile({
@@ -482,6 +484,7 @@ class _BlockTile extends StatelessWidget {
     required this.wrongCount,
     required this.rate,
     required this.questionLabel,
+    required this.wrongLabel,
     required this.onTap,
   });
 
@@ -559,7 +562,7 @@ class _BlockTile extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              '$wrongCount sai',
+                              '$wrongCount $wrongLabel',
                               style: const TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
