@@ -11,10 +11,13 @@ class AchievementHasher {
     required int certificateType,
     required String achievementCode,
     required Map<String, dynamic> criteria,
+    String? userIdentity,
   }) {
     final payload = <String, dynamic>{
       'schema': 'app-dart-certificate-v1',
       'subject_id': subjectId.trim(),
+      if (userIdentity != null && userIdentity.trim().isNotEmpty)
+        'user_identity': userIdentity.trim().toLowerCase(),
       'certificate_type': certificateType,
       'achievement_code': achievementCode.trim(),
       'criteria': _canonicalize(criteria),

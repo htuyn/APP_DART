@@ -99,7 +99,9 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                       : (isVietnamese ? 'Hoàn thành khóa học' : 'Course completion'),
                 ),
                 trailing: TextButton(
-                  onPressed: provider.recipientAddress == null
+                  onPressed: provider.recipientAddress == null ||
+                          provider.isLoading ||
+                          provider.isSyncing
                       ? null
                       : () => provider.requestCertificate(eligibility.code),
                   child: Text(isVietnamese ? 'Yêu cầu' : 'Request'),
@@ -132,7 +134,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                 isThreeLine: true,
                 trailing: IconButton(
                   tooltip: isVietnamese ? 'Xác minh' : 'Verify',
-                  onPressed: () => provider.synchronize(),
+                  onPressed: provider.isSyncing ? null : () => provider.synchronize(),
                   icon: const Icon(Icons.verified_outlined),
                 ),
               ),
@@ -142,10 +144,10 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
     );
   }
 
-  String _certificateName(String code, bool vi) => switch (code) {
+  String _certificateName(String code, bool vi) => switch (code.trim()) {
     'perfectScore' => vi ? 'Điểm tuyệt đối' : 'Perfect score',
     'sevenDayStreak' => vi ? 'Chuỗi 7 ngày' : '7-day streak',
-    'flutterMaster' => vi ? 'Flutter Master' : 'Flutter Master',
+    'flutterMaster' => 'Flutter Master',
     'knowledgeExplorer' => vi ? 'Khám phá kiến thức' : 'Knowledge Explorer',
     'course_completion' => vi ? 'Hoàn thành khóa học' : 'Course completion',
     _ => code,

@@ -96,6 +96,24 @@ class _BlockchainRepository implements IBlockchainRepository {
   Future<void> dispose() async {}
 }
 
+AchievementCertificateModel _makeCertificate({
+  required String achievementCode,
+  CertificateStatus status = CertificateStatus.confirmed,
+  String recipientAddress = _wallet,
+  String certificateId = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+}) =>
+    AchievementCertificateModel(
+      certificateId: certificateId,
+      subjectId: recipientAddress,
+      type: CertificateType.achievement,
+      achievementCode: achievementCode,
+      recipientAddress: recipientAddress,
+      achievementHash: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+      criteriaSnapshot: const {'score': 100},
+      requestedAt: DateTime.utc(2026, 1, 1),
+      status: status,
+    );
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -134,6 +152,10 @@ void main() {
     expect(second?.certificateId, first?.certificateId);
     expect(blockchainRepository.saveCount, 1);
     expect(blockchain.certificates, hasLength(1));
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code == 'perfectScore'),
+      isFalse,
+    );
 
     blockchainRepository.relayerOffline = false;
     blockchainRepository.issueResponse = {
@@ -148,6 +170,137 @@ void main() {
     expect(blockchain.certificates.single.transactionHash, '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     expect(blockchain.certificates.single.blockNumber, 7654321);
     expect(blockchain.noticeMessage, isNull);
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code == 'perfectScore'),
+      isFalse,
+    );
+
+    blockchain.dispose();
+    course.dispose();
+    gamification.dispose();
+  });
+
+  test('pre-existing certificate in repository is excluded from eligibleCertificates even when pending', () async {
+    SharedPreferences.setMockInitialValues({});
+    final quizRepository = _QuizRepository();
+    final stats = StatsProvider(repository: quizRepository);
+    final course = CourseProgressProvider(
+      repository: quizRepository,
+      statsProvider: stats,
+    );
+    await course.initialize();
+
+    final gamification = GamificationProvider(
+      repository: _GamificationRepository(),
+    );
+    final blockchainRepository = _BlockchainRepository();
+    blockchainRepository.certificates.add(
+      _makeCertificate(
+        achievementCode: 'perfectScore',
+        status: CertificateStatus.pending,
+      ),
+    );
+
+    final blockchain = BlockchainProvider(
+      repository: blockchainRepository,
+      gamificationProvider: gamification,
+      courseProgressProvider: course,
+      connectivityChanges: const Stream.empty(),
+    );
+    await blockchain.initialize();
+
+    expect(blockchain.certificates, hasLength(1));
+    expect(blockchain.certificates.single.status, CertificateStatus.pending);
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code == 'perfectScore'),
+      isFalse,
+    );
+
+    blockchain.dispose();
+    course.dispose();
+    gamification.dispose();
+  });
+
+  test('eligibleCertificates deduplication handles case-insensitivity and whitespace', () async {
+    SharedPreferences.setMockInitialValues({});
+    final quizRepository = _QuizRepository();
+    final stats = StatsProvider(repository: quizRepository);
+    final course = CourseProgressProvider(
+      repository: quizRepository,
+      statsProvider: stats,
+    );
+    await course.initialize();
+
+    final gamification = GamificationProvider(
+      repository: _GamificationRepository(),
+    );
+    final blockchainRepository = _BlockchainRepository();
+    blockchainRepository.certificates.add(
+      _makeCertificate(
+        achievementCode: '   PERFECTSCORE   ',
+        status: CertificateStatus.confirmed,
+      ),
+    );
+
+    final blockchain = BlockchainProvider(
+      repository: blockchainRepository,
+      gamificationProvider: gamification,
+      courseProgressProvider: course,
+      connectivityChanges: const Stream.empty(),
+    );
+    await blockchain.initialize();
+
+    expect(blockchain.certificates, hasLength(1));
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code.toLowerCase() == 'perfectscore'),
+      isFalse,
+    );
+
+    blockchain.dispose();
+    course.dispose();
+    gamification.dispose();
+  });
+
+  test('concurrent certificate requests for same code only save one certificate and exclude it from eligible', () async {
+    SharedPreferences.setMockInitialValues({});
+    final quizRepository = _QuizRepository();
+    final stats = StatsProvider(repository: quizRepository);
+    final course = CourseProgressProvider(
+      repository: quizRepository,
+      statsProvider: stats,
+    );
+    await course.initialize();
+
+    final gamification = GamificationProvider(
+      repository: _GamificationRepository(),
+    );
+    final blockchainRepository = _BlockchainRepository()..relayerOffline = true;
+    final blockchain = BlockchainProvider(
+      repository: blockchainRepository,
+      gamificationProvider: gamification,
+      courseProgressProvider: course,
+      connectivityChanges: const Stream.empty(),
+    );
+    await blockchain.initialize();
+
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code == 'perfectScore'),
+      isTrue,
+    );
+
+    // Concurrently trigger requests with whitespace/different casing
+    final results = await Future.wait([
+      blockchain.requestCertificate('perfectScore'),
+      blockchain.requestCertificate('  PERFECTSCORE  '),
+    ]);
+
+    expect(results.where((c) => c != null), isNotEmpty);
+    expect(blockchainRepository.saveCount, 1);
+    expect(blockchain.certificates, hasLength(1));
+    expect(
+      blockchain.eligibleCertificates.any((item) => item.code == 'perfectScore'),
+      isFalse,
+    );
 
     blockchain.dispose();
     course.dispose();
