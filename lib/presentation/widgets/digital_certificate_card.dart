@@ -10,6 +10,8 @@ class DigitalCertificateCard extends StatelessWidget {
     required this.statusLabel,
     required this.labels,
     required this.onCopy,
+    this.studentName,
+    this.studentEmail,
   });
 
   final AchievementCertificateModel certificate;
@@ -17,6 +19,8 @@ class DigitalCertificateCard extends StatelessWidget {
   final String statusLabel;
   final Map<String, String> labels;
   final ValueChanged<String> onCopy;
+  final String? studentName;
+  final String? studentEmail;
 
   static const _gold = Color(0xFFF59E0B);
   static const _paleGold = Color(0xFFFDE68A);
@@ -165,6 +169,15 @@ class DigitalCertificateCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 23),
+                      if ((studentName != null && studentName!.isNotEmpty) ||
+                          (studentEmail != null && studentEmail!.isNotEmpty)) ...[
+                        _StudentPanel(
+                          label: labels['certified_student'] ?? 'HỌC VIÊN ĐẠT THÀNH TÍCH',
+                          name: studentName,
+                          email: studentEmail,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       _WalletPanel(
                         label: labels['recipient']!,
                         address: wallet,
@@ -363,6 +376,96 @@ class _ProofRow extends StatelessWidget {
           ),
         ],
       );
+}
+
+class _StudentPanel extends StatelessWidget {
+  const _StudentPanel({
+    required this.label,
+    this.name,
+    this.email,
+  });
+
+  final String label;
+  final String? name;
+  final String? email;
+
+  @override
+  Widget build(BuildContext context) {
+    final displayName = (name != null && name!.isNotEmpty) ? name! : (email ?? '');
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .055),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: DigitalCertificateCard._paleGold.withValues(alpha: .30)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.verified_user_rounded, color: DigitalCertificateCard._paleGold, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  style: const TextStyle(
+                    color: DigitalCertificateCard._paleGold,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  displayName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (email != null && email!.isNotEmpty && email != displayName) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    email!,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: .70),
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: DigitalCertificateCard._mint.withValues(alpha: .15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: DigitalCertificateCard._mint.withValues(alpha: .40)),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle_rounded, color: DigitalCertificateCard._mint, size: 12),
+                SizedBox(width: 4),
+                Text(
+                  'Verified',
+                  style: TextStyle(
+                    color: DigitalCertificateCard._mint,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _DiplomaGridPainter extends CustomPainter {

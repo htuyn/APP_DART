@@ -168,6 +168,23 @@ test/
 └── widget_test.dart                        # Test tổng quan giao diện khởi chạy ứng dụng
 ```
 
+### 📁 Cấu trúc cây thư mục `contracts/` (Smart Contract & Relayer)
+
+```text
+contracts/
+├── contracts/
+│   └── AchievementCertificate.sol          # Hợp đồng thông minh Solidity quản lý cấp và xác minh chứng chỉ
+├── relayer/
+│   └── server.js                           # Node.js Auto-Issuer Relayer Server (tự động ký và cấp chứng chỉ on-chain)
+├── scripts/
+│   └── deploy.js                           # Kịch bản triển khai hợp đồng thông minh lên mạng Ethereum Sepolia
+├── test/
+│   └── AchievementCertificate.test.js      # Bộ kiểm thử hợp đồng thông minh trên Hardhat
+├── .env.example                            # File cấu hình mẫu cho biến môi trường Relayer & Hardhat (không chứa bí mật)
+├── hardhat.config.js                       # Cấu hình môi trường mạng Sepolia và trình biên dịch Solidity
+└── package.json                            # Khai báo dependencies và scripts (compile, test, deploy, relayer)
+```
+
 Màn hình khởi chạy hiện tại là `screens/trang_chu_screen.dart` (`TrangChuScreen`).
 
 ---
@@ -181,33 +198,90 @@ Màn hình khởi chạy hiện tại là `screens/trang_chu_screen.dart` (`Tran
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng (Dưới 15 Phút)
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Ứng Dụng (Setup & Run)
 
 ### Yêu Cầu Môi Trường
-* Flutter SDK $\ge 3.13.0$
-* Dart SDK $\ge 3.0.0$
+* **Flutter SDK:** $\ge 3.13.0$
+* **Dart SDK:** $\ge 3.0.0$
+* **Node.js:** $\ge 18.0.0$ (kèm `npm`) cho Auto-Issuer Relayer Server
+* **Thiết bị:** Máy ảo Android (Android Emulator) hoặc thiết bị Android thật (đã bật USB Debugging)
 
-### Các Bước Thực Hiện
-1. Tải dependencies:
-   ```bash
-   flutter pub get
-   ```
-2. Kiểm tra chất lượng mã nguồn (phân tích tĩnh):
-   ```bash
-   flutter analyze
-   ```
-   *(Kết quả: `No issues found!`)*
+---
 
-3. Chạy kiểm thử tự động:
-   ```bash
-   flutter test
-   ```
-   *(Chạy toàn bộ unit test, widget test và kiểm thử trợ năng trong thư mục `test/`.)*
+### Các Bước Thực Hiện Chi Tiết
 
-4. Khởi chạy ứng dụng:
-   ```bash
-   flutter run
-   ```
+#### Bước 1: Cài đặt Dependencies cho Ứng Dụng Flutter
+Tại thư mục gốc của dự án (`APP_DART`):
+```bash
+flutter pub get
+```
+
+#### Bước 2: Cài đặt Dependencies cho Relayer Server & Smart Contract
+Di chuyển vào thư mục `contracts/` và cài đặt các gói Node.js:
+```bash
+cd contracts
+npm install
+cd ..
+```
+
+#### Bước 3: Cấu hình Biến Môi Trường cho Relayer Server (`contracts/.env`)
+Tạo file `contracts/.env` bằng cách sao chép từ file mẫu `contracts/.env.example`:
+```bash
+# Trên Linux / macOS:
+cp contracts/.env.example contracts/.env
+
+# Trên Windows PowerShell:
+copy contracts/.env.example contracts/.env
+```
+
+Mở file `contracts/.env` và thiết lập các giá trị:
+```env
+SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+ISSUER_PRIVATE_KEY=0xYOUR_ISSUER_PRIVATE_KEY_ON_SEPOLIA
+CONTRACT_ADDRESS=0x40cc19d362d52f6d7bf2a3bc5c3298b204ecfea9
+RELAYER_API_KEY=local-development-relayer-key-change-me
+```
+
+> [!WARNING] **Bảo Mật Quan Trọng:**
+> - `ISSUER_PRIVATE_KEY` là Private Key của ví sở hữu quyền Issuer trong Smart Contract để ký giao dịch cấp chứng chỉ on-chain.
+> - **Tuyệt đối không ghi Private Key thật vào README hay commit file `contracts/.env` lên Git**. File này đã được đưa vào `.gitignore` để tránh rò rỉ bí mật.
+> - Ví Issuer cần có một lượng nhỏ Sepolia ETH (nhận miễn phí tại các Sepolia Faucet như Google Cloud Web3 Faucet hoặc Sepolia PoW Faucet) để trả phí gas cho các giao dịch cấp chứng chỉ.
+> - `RELAYER_API_KEY` yêu cầu độ dài tối thiểu 24 ký tự. Khi thay đổi key này, cần truyền cùng giá trị vào Flutter qua tham số `--dart-define=ISSUER_RELAYER_API_KEY=...`.
+
+#### Bước 4: Khởi Chạy Auto-Issuer Relayer Server
+Mở một cửa sổ dòng lệnh riêng biệt và khởi chạy server Relayer:
+```bash
+cd contracts
+npm run relayer
+```
+*Server sẽ khởi động và lắng nghe tại `http://127.0.0.1:8787` (sử dụng cổng cấu hình `RELAYER_PORT` hoặc mặc định `8787`).*
+
+#### Bước 5: Chuyển Tiếp Cổng Cho Máy Ảo Android (Android Emulator)
+Nếu bạn chạy ứng dụng trên máy ảo Android (Android Emulator), máy ảo cần quyền truy cập vào server Relayer đang chạy trên máy tính host. Thực hiện lệnh sau qua ADB:
+```bash
+adb reverse tcp:8787 tcp:8787
+```
+*(Lệnh này ánh xạ cổng `8787` của máy ảo Android về cổng `8787` của máy tính host, cho phép ứng dụng Flutter kết nối mượt mà tới `http://localhost:8787`).*
+
+#### Bước 6: Kiểm Tra Chất Lượng Mã Nguồn & Chạy Kiểm Thử
+Trước khi chạy ứng dụng, hãy kiểm tra phân tích tĩnh và toàn bộ kiểm thử tự động:
+```bash
+# Phân tích tĩnh mã nguồn
+flutter analyze
+
+# Chạy toàn bộ bộ kiểm thử tự động (100% pass)
+flutter test
+```
+
+#### Bước 7: Khởi Chạy Ứng Dụng Flutter
+Khởi chạy ứng dụng lên máy ảo hoặc thiết bị thật:
+```bash
+flutter run
+```
+*Nếu bạn đã cấu hình khóa API tùy chỉnh trong `contracts/.env`, truyền cờ tương ứng khi chạy:*
+```bash
+flutter run --dart-define=ISSUER_RELAYER_API_KEY=your-custom-api-key-here
+```
 
 ---
 
@@ -325,16 +399,24 @@ Yêu cầu đạt đồng thời 4 điều kiện:
 
 ### 💼 4. Kiến Trúc Ví Hybrid (Hybrid Wallet) & Auto-Issuer Relayer
 
-* **Ví nhúng (Embedded Local Wallet):**
-  * Tự động khởi tạo cặp khóa ví Ethereum bí mật cục bộ bằng package `wallet` (lưu an toàn trong `SharedPreferences`).
-  * Người học có thể sử dụng ngay lập tức mà không cần cài đặt các phần mềm ví Web3 bên thứ ba.
-  * Hỗ trợ sao lưu khóa riêng tư (Private Key) hoặc linh hoạt chuyển đổi nhập địa chỉ ví bên ngoài (ví dụ: ví MetaMask).
-* **Cơ chế Cấp Phát Tự Động (Auto-Issuer Relayer Service):**
-  * Flutter không chứa `ISSUER_PRIVATE_KEY`; server đọc issuer key và `RELAYER_API_KEY` từ `contracts/.env`.
-  * Chạy server bằng `cd contracts && npm run relayer`. Server chỉ bind `127.0.0.1:8787`, yêu cầu header `X-API-Key`, và giới hạn 10 request/phút.
-  * Flutter gọi `POST /api/certificates/issue` qua `ISSUER_RELAYER_URL` (mặc định `http://localhost:8787`) và gửi `ISSUER_RELAYER_API_KEY` trong header. Ví dụ dev key được đặt trong `.env.example`; hãy thay bằng khóa ngẫu nhiên riêng trong `.env` và truyền cùng giá trị qua `--dart-define=ISSUER_RELAYER_API_KEY=...`.
-  * Request payload gồm `certificateId`, `certificateType` (`0` thành tích, `1` hoàn thành khóa học), `recipientAddress`, `achievementHash`; server ánh xạ sang giá trị contract `1/2`.
-  * Nếu relayer offline, yêu cầu được lưu `pending`; `synchronize()` sẽ thử gửi lại và cập nhật `confirmed` cùng transaction hash/block khi nhận xác nhận.
+Hệ thống kết hợp mô hình **Ví nhúng không giám sát (Hybrid Embedded Wallet)** cùng **Auto-Issuer Relayer Server** tạo nên trải nghiệm Web3 không rào cản (zero friction) cho người học:
+
+* **Ví nhúng (Hybrid Embedded Local Wallet):**
+  * Tự động khởi tạo cặp khóa ví Ethereum bí mật 256-bit chuẩn mật mã học bằng CSPRNG (`EthPrivateKey.createRandom(Random.secure())`), lưu trữ an toàn trong `SharedPreferences` theo phạm vi người dùng (`user-scoped`).
+  * Người học có thể tham gia học, thi thử và nhận chứng chỉ blockchain ngay lập tức mà không cần cài đặt tiện ích mở rộng ví hoặc mua crypto.
+  * Hỗ trợ sao lưu khóa riêng tư (Private Key) an toàn với dialog cảnh báo và nút sao chép tiện lợi.
+  * Cho phép người học linh hoạt chuyển đổi giữa ví nhúng và ví cá nhân bên ngoài (như ví MetaMask) với cơ chế kiểm tra regex địa chỉ Ethereum `^0x[0-9a-fA-F]{40}$`.
+* **Cơ chế Cấp Phát Tự Động (Auto-Issuer Relayer Server - `contracts/relayer/server.js`):**
+  * Server Node.js lightweight chạy độc lập trên `127.0.0.1:8787` (hoặc cổng cấu hình qua `RELAYER_PORT`).
+  * Ứng dụng Flutter client **không chứa bất kỳ Private Key nào** của ví cấp bằng (Issuer). Toàn bộ thao tác ký on-chain được thực hiện an toàn trên server Relayer thông qua `ISSUER_PRIVATE_KEY` đọc từ `contracts/.env`.
+  * **Xác thực bảo mật:** Kiểm tra header `X-API-Key` với `RELAYER_API_KEY` (tối thiểu 24 ký tự) bằng hàm so sánh an toàn thời gian (`crypto.timingSafeEqual`) chống tấn công timing attack.
+  * **Kiểm soát tần suất (Rate Limiting):** Giới hạn tối đa 10 requests/phút/IP để bảo vệ ví Issuer trước các hành vi spam làm cạn kiệt gas.
+  * **Xử lý giao dịch On-Chain:** Kiểm tra sự tồn tại của `certificateId` trên Smart Contract trước khi gửi; tự động gọi `contract.issueCertificate(...)`, chờ receipt xác nhận (`transaction.wait(1)`), bóc tách sự kiện `CertificateIssued` và phản hồi đầy đủ `status: confirmed`, `transactionHash`, `blockNumber`, `issuedAt`.
+  * **Khả năng chịu lỗi ngoại tuyến (Offline Resilience):** Nếu Relayer tạm thời offline hoặc kết nối mạng bị gián đoạn, yêu cầu được lưu trữ cục bộ dưới trạng thái `pending`. Hàm `synchronize()` trong `BlockchainProvider` sẽ tự động phát hiện kết nối mạng phục hồi hoặc khi ứng dụng resume để gửi lại các yêu cầu pending và cập nhật trạng thái `confirmed`.
+* **Cơ chế Lọc Trùng Tuyệt Đối (Deduplication Logic):**
+  * `BlockchainProvider.eligibleCertificates` chuẩn hóa so sánh không phân biệt chữ hoa/chữ thường và loại bỏ khoảng trắng thừa (`trim().toLowerCase()`) giữa `cert.achievementCode` và `item.code`.
+  * Bất kỳ chứng chỉ nào đã có trong danh sách **Chứng chỉ của bạn** (ở bất kỳ trạng thái nào: `pending`, `requested`, `confirmed`, `unverified`, `revoked`, `failed`) sẽ **không bao giờ** xuất hiện lại ở mục **Đủ điều kiện yêu cầu**.
+  * Bổ sung cơ chế khóa `_inFlightRequests` để loại trừ chứng chỉ ngay trong tích tắc người dùng nhấn "Yêu cầu", ngăn chặn hoàn toàn race-condition và tình trạng click đúp gửi trùng giao dịch.
 
 ---
 
@@ -418,6 +500,14 @@ Lớp hiển thị giao diện `DigitalCertificateCard` trong `lib/presentation/
 * **Chân Bằng (On-Chain Proof Footer):**
   * Hộp thông tin xác thực bán trong suốt (`Colors.black26`) trình bày gọn gàng: **Mã chứng chỉ** (`certificateId`), **Mã băm thành tích** (`achievementHash`), **Mã giao dịch** (`transactionHash` kèm nút Copy), **Block Number** (`#...`) và **Ngày cấp** (`issuedAt`).
   * Con dấu xác thực **ETHEREUM SEPOLIA** chính thức với biểu tượng xác thực ở góc dưới bên phải.
+* **Xác Minh On-Chain Độc Lập Trực Tiếp Qua RPC:**
+  * Ứng dụng tích hợp thư viện `web3dart` để kết nối trực tiếp đến nút mạng Ethereum Sepolia RPC (`https://ethereum-sepolia-rpc.publicnode.com`) độc lập mà không cần thông qua bất kỳ server trung gian nào.
+  * Lời gọi hàm `verifyCertificate(certificateId)` đối chiếu tức thì trạng thái hợp đồng, kiểm tra cờ thu hồi `revoked` và tính toán lại digest để bảo đảm bằng chứng nhận chưa bao giờ bị can thiệp.
+* **Tra Cứu Khám Phá Khối Sepolia Etherscan (Public Block Explorer):**
+  * Tích hợp liên kết mở nhanh tới trình khám phá khối chính thức của Ethereum Sepolia:
+    * Tra cứu giao dịch phát hành: `https://sepolia.etherscan.io/tx/{transactionHash}`
+    * Tra cứu địa chỉ ví chủ sở hữu: `https://sepolia.etherscan.io/address/{recipientAddress}`
+  * Cho phép người học, nhà tuyển dụng hoặc bên thứ ba xác thực tính xác thực của tấm bằng công khai trên sổ cái phân tán toàn cầu.
 * **Tương Tác & Phản Hồi (SnackBar Feedback):**
   * Bấm nút Copy địa chỉ ví hoặc mã giao dịch sẽ ngay lập tức kích hoạt thanh thông báo SnackBar nổi trên màn hình (`Đã sao chép địa chỉ ví` / `Đã sao chép mã giao dịch`).
   * Đảm bảo hỗ trợ song ngữ Việt / Anh qua `app_strings.dart` và tự động điều chỉnh co giãn bố cục, không tràn chữ (overflow) trên mọi kích thước màn hình thiết bị di động.

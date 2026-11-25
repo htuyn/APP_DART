@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../core/utils/certificate_hasher.dart';
+import '../../data/datasources/auth_storage_datasource.dart';
 import '../../data/models/achievement_certificate_model.dart';
 import '../../domain/blockchain/certificate_eligibility_engine.dart';
 import '../../domain/repositories/i_blockchain_repository.dart';
@@ -42,6 +43,7 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
   final Connectivity _connectivity;
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  final Set<String> _inFlightRequests = {};
   List<CertificateEligibility> _eligibleCertificates = const [];
   List<AchievementCertificateModel> _certificates = const [];
   String? _recipientAddress;
@@ -53,8 +55,20 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
   bool _isSyncing = false;
   bool _disposed = false;
 
-  List<CertificateEligibility> get eligibleCertificates =>
-      List.unmodifiable(_eligibleCertificates);
+  List<CertificateEligibility> get eligibleCertificates {
+    final issuedCodes = _certificates
+        .map((cert) => cert.achievementCode.trim().toLowerCase())
+        .toSet();
+
+    return List.unmodifiable(
+      _eligibleCertificates.where(
+        (item) {
+          final code = item.code.trim().toLowerCase();
+          return !issuedCodes.contains(code) && !_inFlightRequests.contains(code);
+        },
+      ),
+    );
+  }
   List<AchievementCertificateModel> get certificates =>
       List.unmodifiable(_certificates);
   String? get recipientAddress => _recipientAddress;
@@ -81,7 +95,11 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
       _recipientAddress = await repository.loadRecipientAddress();
       _embeddedAddress = await repository.loadEmbeddedAddress();
       _embeddedPrivateKey = await repository.loadEmbeddedPrivateKey();
-      _certificates = await repository.loadLocalCertificates();
+      final activeAddress = _recipientAddress?.trim().toLowerCase();
+      final local = await repository.loadLocalCertificates();
+      _certificates = List.unmodifiable(local.where((certificate) =>
+        activeAddress == null || certificate.recipientAddress.trim().toLowerCase() == activeAddress,
+      ));
       _recomputeEligibility();
       await synchronize();
     } catch (error) {
@@ -132,14 +150,15 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
     String eligibilityCode,
   ) async {
     final address = _recipientAddress;
-    if (address == null || address.isEmpty) {
+    if (address == null || address.trim().isEmpty) {
       _errorMessage = 'Save a recipient wallet address first.';
       _notifyIfActive();
       return null;
     }
 
+    final normalizedCode = eligibilityCode.trim().toLowerCase();
     final matchingEligibility = _eligibleCertificates.where(
-      (item) => item.code == eligibilityCode && item.eligible,
+      (item) => item.code.trim().toLowerCase() == normalizedCode && item.eligible,
     );
     final eligibility = matchingEligibility.isEmpty
         ? null
@@ -150,26 +169,40 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
       return null;
     }
 
+    final normalizedAddress = address.trim().toLowerCase();
     final existing = _certificates.where(
       (certificate) =>
-          certificate.achievementCode == eligibility.code &&
+          certificate.achievementCode.trim().toLowerCase() == normalizedCode &&
           certificate.type == eligibility.type &&
-          certificate.recipientAddress.toLowerCase() == address.toLowerCase(),
+          certificate.recipientAddress.trim().toLowerCase() == normalizedAddress,
     );
     if (existing.isNotEmpty) return existing.first;
 
+    if (_inFlightRequests.contains(normalizedCode)) {
+      return null;
+    }
+    _inFlightRequests.add(normalizedCode);
+    _notifyIfActive();
+
     try {
+      final user = await AuthStorageDataSource().getCurrentUser();
+      final userIdentity = user?.email.isNotEmpty == true
+          ? user!.email.trim().toLowerCase()
+          : user?.id;
+
       final hash = hasher.hashCertificate(
         subjectId: address.toLowerCase(),
         certificateType: eligibility.type.chainValue,
         achievementCode: eligibility.code,
         criteriaSnapshot: eligibility.criteria,
+        userIdentity: userIdentity,
       );
       final certificateId = hasher.createCertificateId(
         subjectId: address.toLowerCase(),
         certificateType: eligibility.type.chainValue,
         achievementCode: eligibility.code,
         criteriaSnapshot: eligibility.criteria,
+        userIdentity: userIdentity,
       );
       final certificate = AchievementCertificateModel(
         certificateId: certificateId,
@@ -204,13 +237,19 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
         // Keep the saved request pending when the relayer is offline.
       }
       _notifyIfActive();
-      final result = _certificates.firstWhere((item) => item.certificateId == certificate.certificateId);
+      final result = _certificates.firstWhere(
+        (item) => item.certificateId.trim().toLowerCase() == certificate.certificateId.trim().toLowerCase(),
+        orElse: () => certificate,
+      );
       if (result.status == CertificateStatus.confirmed) unawaited(synchronize());
       return result;
     } catch (error) {
       _errorMessage = error.toString();
       _notifyIfActive();
       return null;
+    } finally {
+      _inFlightRequests.remove(normalizedCode);
+      _notifyIfActive();
     }
   }
 
@@ -275,9 +314,9 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
 
     try {
       final local = await repository.loadLocalCertificates();
-      final activeAddress = _recipientAddress?.toLowerCase();
+      final activeAddress = _recipientAddress?.trim().toLowerCase();
       _certificates = List.unmodifiable(local.where((certificate) =>
-        activeAddress == null || certificate.recipientAddress.toLowerCase() == activeAddress,
+        activeAddress == null || certificate.recipientAddress.trim().toLowerCase() == activeAddress,
       ));
       await _retryPendingRelayerRequests();
       final refreshed = await repository.loadCertificates(
@@ -378,10 +417,9 @@ class BlockchainProvider extends ChangeNotifier with WidgetsBindingObserver {
 
   void _upsertCertificate(AchievementCertificateModel certificate) {
     final updated = List<AchievementCertificateModel>.of(_certificates);
+    final targetId = certificate.certificateId.trim().toLowerCase();
     final index = updated.indexWhere(
-      (item) =>
-          item.certificateId.toLowerCase() ==
-          certificate.certificateId.toLowerCase(),
+      (item) => item.certificateId.trim().toLowerCase() == targetId,
     );
     if (index < 0) {
       updated.add(certificate);

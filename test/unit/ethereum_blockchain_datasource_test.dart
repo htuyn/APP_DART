@@ -49,7 +49,7 @@ void main() {
     final abiJson = await rootBundle.loadString(BlockchainConfig.abiAssetPath);
     final contract = DeployedContract(
       ContractAbi.fromJson(abiJson, 'AchievementCertificate'),
-      EthereumAddress.fromHex(_testContractAddress.substring(2)),
+      EthereumAddress.fromHex(_testContractAddress),
     );
     final issueEvent = contract.event('CertificateIssued');
     const certificateId =

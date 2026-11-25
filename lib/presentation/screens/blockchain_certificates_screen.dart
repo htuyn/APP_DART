@@ -141,7 +141,9 @@ class _BlockchainCertificatesScreenState
                 title: Text(_certificateName(item.code, language.code)),
                 subtitle: CertificateTypeBadge(type: item.type),
                 trailing: TextButton(
-                  onPressed: provider.recipientAddress == null
+                  onPressed: provider.recipientAddress == null ||
+                          provider.isLoading ||
+                          provider.isSyncing
                       ? null
                       : () => provider.requestCertificate(item.code),
                   child: Text(language.t('request_certificate')),
@@ -196,7 +198,7 @@ class _BlockchainCertificatesScreenState
     ));
   }
 
-  String _certificateName(String code, String language) => switch (code) {
+  String _certificateName(String code, String language) => switch (code.trim()) {
         'perfectScore' => language == 'vi' ? 'Điểm tuyệt đối' : 'Perfect score',
         'sevenDayStreak' => language == 'vi' ? 'Chuỗi 7 ngày' : '7-day streak',
         'flutterMaster' => 'Flutter Master',

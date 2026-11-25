@@ -455,6 +455,8 @@ class AppStrings {
       en: 'Transaction hash copied',
     ),
     'sepolia_seal': (vi: 'ETHEREUM SEPOLIA', en: 'ETHEREUM SEPOLIA'),
+    'certified_student': (vi: 'HỌC VIÊN ĐẠT THÀNH TÍCH', en: 'CERTIFIED STUDENT'),
+    'verified_account': (vi: 'Tài khoản đã xác thực', en: 'Verified Account'),
     'course_progress_title': (vi: 'Tiến độ khóa học', en: 'Course progress'),
     'completed_blocks_progress': (vi: 'Khối kiến thức hoàn thành', en: 'Knowledge blocks completed'),
     'practice_questions_progress': (vi: 'Câu luyện tập đã trả lời', en: 'Practice questions answered'),

@@ -65,51 +65,59 @@ class EthereumBlockchainDataSource {
     required String recipientAddress,
     required String achievementHash,
   }) async {
-    final response = await _httpClient.post(
-      Uri.parse('$_relayerUrl/api/certificates/issue'),
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': BlockchainConfig.issuerRelayerApiKey,
-      },
-      body: jsonEncode({
-        'certificateId': certificateId,
-        'certificateType': certificateType - 1,
-        'recipientAddress': recipientAddress,
-        'achievementHash': achievementHash,
-      }),
-    ).timeout(const Duration(seconds: 15));
-    if (response.statusCode < 200 || response.statusCode >= 300) return null;
-    final decoded = jsonDecode(response.body);
-    if (decoded is! Map<String, dynamic> || decoded['status'] != 'confirmed') return null;
-    return decoded;
+    try {
+      final response = await _httpClient.post(
+        Uri.parse('$_relayerUrl/api/certificates/issue'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': BlockchainConfig.issuerRelayerApiKey,
+        },
+        body: jsonEncode({
+          'certificateId': certificateId,
+          'certificateType': certificateType - 1,
+          'recipientAddress': recipientAddress,
+          'achievementHash': achievementHash,
+        }),
+      ).timeout(const Duration(seconds: 15));
+      if (response.statusCode < 200 || response.statusCode >= 300) return null;
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map<String, dynamic> || decoded['status'] != 'confirmed') return null;
+      return decoded;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Reads the contract's current record. This datasource never signs
   /// transactions and never creates or loads issuer credentials.
   Future<OnChainCertificate?> verifyCertificate(String certificateId) async {
-    final contract = await _loadContract();
-    final result = await _client.call(
-      contract: contract,
-      function: contract.function('verifyCertificate'),
-      params: [_decodeBytes32(certificateId)],
-    );
-    final rawRecord = result[0] as List<dynamic>;
-    final id = _encodeBytes32(rawRecord[0] as Uint8List);
-    if (_isZeroBytes32(id)) return null;
+    try {
+      final contract = await _loadContract();
+      final result = await _client.call(
+        contract: contract,
+        function: contract.function('verifyCertificate'),
+        params: [_decodeBytes32(certificateId)],
+      );
+      final rawRecord = result[0] as List<dynamic>;
+      final id = _encodeBytes32(rawRecord[0] as Uint8List);
+      if (_isZeroBytes32(id)) return null;
 
-    final issuedAtSeconds = (rawRecord[4] as BigInt).toInt();
-    return OnChainCertificate(
-      certificateId: id,
-      certificateType: (rawRecord[1] as BigInt).toInt(),
-      recipientAddress: _addressToHex(rawRecord[2] as EthereumAddress),
-      achievementHash: _encodeBytes32(rawRecord[3] as Uint8List),
-      issuedAt: DateTime.fromMillisecondsSinceEpoch(
-        issuedAtSeconds * 1000,
-        isUtc: true,
-      ),
-      revoked: rawRecord[5] as bool,
-      valid: result[1] as bool,
-    );
+      final issuedAtSeconds = (rawRecord[4] as BigInt).toInt();
+      return OnChainCertificate(
+        certificateId: id,
+        certificateType: (rawRecord[1] as BigInt).toInt(),
+        recipientAddress: _addressToHex(rawRecord[2] as EthereumAddress),
+        achievementHash: _encodeBytes32(rawRecord[3] as Uint8List),
+        issuedAt: DateTime.fromMillisecondsSinceEpoch(
+          issuedAtSeconds * 1000,
+          isUtc: true,
+        ),
+        revoked: rawRecord[5] as bool,
+        valid: result[1] as bool,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Finds the issue event for one certificate ID in a bounded block window.
@@ -118,44 +126,48 @@ class EthereumBlockchainDataSource {
   Future<IssuedCertificateEvent?> findCertificateIssuedEvent(
     String certificateId,
   ) async {
-    final contract = await _loadContract();
-    final event = contract.event('CertificateIssued');
-    final latestBlock = await _client.getBlockNumber();
-    final configuredStart = BlockchainConfig.contractDeploymentBlock;
-    final fromBlock = configuredStart > 0
-        ? (configuredStart < latestBlock ? configuredStart : latestBlock)
-        : (latestBlock > BlockchainConfig.eventScanWindow
-              ? latestBlock - BlockchainConfig.eventScanWindow
-              : 0);
-    final id = _encodeBytes32(_decodeBytes32(certificateId));
-    final logs = await _client.getLogs(
-      FilterOptions(
-        address: _contractAddress,
-        fromBlock: BlockNum.exact(fromBlock),
-        toBlock: BlockNum.exact(latestBlock),
-        topics: [
-          [bytesToHex(event.signature, include0x: true)],
-          [id],
-        ],
-      ),
-    );
+    try {
+      final contract = await _loadContract();
+      final event = contract.event('CertificateIssued');
+      final latestBlock = await _client.getBlockNumber();
+      final configuredStart = BlockchainConfig.contractDeploymentBlock;
+      final fromBlock = configuredStart > 0
+          ? (configuredStart < latestBlock ? configuredStart : latestBlock)
+          : (latestBlock > BlockchainConfig.eventScanWindow
+                ? latestBlock - BlockchainConfig.eventScanWindow
+                : 0);
+      final id = _encodeBytes32(_decodeBytes32(certificateId));
+      final logs = await _client.getLogs(
+        FilterOptions(
+          address: _contractAddress,
+          fromBlock: BlockNum.exact(fromBlock),
+          toBlock: BlockNum.exact(latestBlock),
+          topics: [
+            [bytesToHex(event.signature, include0x: true)],
+            [id],
+          ],
+        ),
+      );
 
-    for (final log in logs) {
-      final decoded = event.decodeResults(
-        log.topics ?? const [],
-        log.data ?? '0x',
-      );
-      if (_encodeBytes32(decoded[0] as Uint8List).toLowerCase() !=
-          id.toLowerCase()) {
-        continue;
+      for (final log in logs) {
+        final decoded = event.decodeResults(
+          log.topics ?? const [],
+          log.data ?? '0x',
+        );
+        if (_encodeBytes32(decoded[0] as Uint8List).toLowerCase() !=
+            id.toLowerCase()) {
+          continue;
+        }
+        return IssuedCertificateEvent(
+          certificateId: id,
+          transactionHash: log.transactionHash,
+          blockNumber: log.blockNum,
+        );
       }
-      return IssuedCertificateEvent(
-        certificateId: id,
-        transactionHash: log.transactionHash,
-        blockNumber: log.blockNum,
-      );
+      return null;
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
   /// Finds certificate IDs from CertificateIssued events for a wallet.
@@ -169,30 +181,34 @@ class EthereumBlockchainDataSource {
       throw ArgumentError('Invalid event block range.');
     }
 
-    final contract = await _loadContract();
-    final event = contract.event('CertificateIssued');
-    final logs = await _client.getLogs(
-      FilterOptions.events(
-        contract: contract,
-        event: event,
-        fromBlock: BlockNum.exact(fromBlock),
-        toBlock: BlockNum.exact(toBlock),
-      ),
-    );
-    final recipient = EthereumAddress.fromHex(recipientAddress.replaceFirst(RegExp(r'^0x'), '').toLowerCase());
-    final certificateIds = <String>{};
-
-    for (final log in logs) {
-      final decoded = event.decodeResults(
-        log.topics ?? const [],
-        log.data ?? '0x',
+    try {
+      final contract = await _loadContract();
+      final event = contract.event('CertificateIssued');
+      final logs = await _client.getLogs(
+        FilterOptions.events(
+          contract: contract,
+          event: event,
+          fromBlock: BlockNum.exact(fromBlock),
+          toBlock: BlockNum.exact(toBlock),
+        ),
       );
-      if (_addressToHex(decoded[2] as EthereumAddress).toLowerCase() ==
-          _addressToHex(recipient).toLowerCase()) {
-        certificateIds.add(_encodeBytes32(decoded[0] as Uint8List));
+      final recipient = EthereumAddress.fromHex(recipientAddress.replaceFirst(RegExp(r'^0x'), '').toLowerCase());
+      final certificateIds = <String>{};
+
+      for (final log in logs) {
+        final decoded = event.decodeResults(
+          log.topics ?? const [],
+          log.data ?? '0x',
+        );
+        if (_addressToHex(decoded[2] as EthereumAddress).toLowerCase() ==
+            _addressToHex(recipient).toLowerCase()) {
+          certificateIds.add(_encodeBytes32(decoded[0] as Uint8List));
+        }
       }
+      return certificateIds.toList(growable: false);
+    } catch (_) {
+      return const [];
     }
-    return certificateIds.toList(growable: false);
   }
 
   Future<void> dispose() async {

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/blockchain_config.dart';
 import '../../data/models/achievement_certificate_model.dart';
+import '../providers/auth_provider.dart';
 import '../providers/blockchain_provider.dart';
 import '../providers/language_provider.dart';
 import '../widgets/digital_certificate_card.dart';
@@ -72,6 +73,11 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final language = context.watch<LanguageProvider>();
+    final auth = context.watch<AuthProvider?>();
+    final user = auth?.currentUser;
+    final studentName = user?.name.isNotEmpty == true ? user!.name : user?.email;
+    final studentEmail = user?.email;
+
     final certificate = context.watch<BlockchainProvider>().certificates
         .where((item) =>
             item.certificateId.toLowerCase() ==
@@ -100,6 +106,7 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
       'issued_at': language.t('issued_at'),
       'not_available': language.t('not_available'),
       'sepolia_seal': language.t('sepolia_seal'),
+      'certified_student': language.t('certified_student'),
     };
 
     return Scaffold(
@@ -112,6 +119,8 @@ class _CertificateDetailScreenState extends State<CertificateDetailScreen> {
             title: title,
             statusLabel: statusLabel,
             labels: labels,
+            studentName: studentName,
+            studentEmail: studentEmail,
             onCopy: (value) {
               final isWallet = value == certificate.recipientAddress;
               final msg = isWallet
