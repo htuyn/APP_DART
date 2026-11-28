@@ -25,6 +25,24 @@ Dự án cuối kỳ học phần **INT1449 - Lập trình di động**.
 
 ---
 
+## 🎯 Luồng Nghiệp Vụ Cốt Lõi & Tính Năng Mở Rộng
+
+* **Hệ thống Xác thực & Phân tách Dữ liệu Theo Tài khoản (`LoginScreen`, `RegisterScreen`, `AuthScopedGate`):**
+  * Xây dựng luồng Đăng ký / Đăng nhập cục bộ hoàn toàn ngoại tuyến (`SharedPreferences`) kết hợp băm mật khẩu SHA-256 (`AuthStorageDataSource`).
+  * Thiết lập cổng kiểm soát truy cập bắt buộc đăng nhập trước khi vào ứng dụng (`AuthScopedGate`) và cơ chế khóa lưu trữ động theo từng người dùng (`user_scoped_sync.dart`), giúp tách biệt độc lập chuỗi ngày học (Streak), sổ tay câu sai, câu hỏi đã lưu và lịch sử thi giữa các tài khoản (ví dụ: tài khoản `diep` học 2 ngày, tài khoản `mai` học 4 ngày không bị lẫn lộn).
+* **Luồng Thi thử & Luyện tập Tức thì (`ExamScreen`, `PracticeScreen`, `ExamResultScreen`):**
+  * Thiết kế giao diện phòng thi thử với 4 lựa chọn đáp án (`OptionTile`), bảng điều hướng danh sách câu hỏi, đồng hồ đếm ngược thời gian thực (`CountdownTimerWidget`) tự động nộp bài khi hết giờ và hộp thoại xác nhận nộp bài.
+  * Xây dựng chế độ Luyện tập phản hồi đúng/sai ngay lập tức kèm khung giải thích chi tiết (`ExplanationCard`).
+  * Phát triển màn hình Kết quả thi (`ExamResultScreen`) thống kê điểm số, thời gian hoàn thành và tích hợp chức năng **"Làm lại câu sai"** (tự động lọc và truyền danh sách câu làm sai vào phiên ôn tập mới).
+* **Tính năng Đánh dấu & Ôn tập Câu hỏi Khó (`CauHoiDaLuuScreen`):**
+  * Tích hợp nút ghim/bookmark đồng bộ xuyên suốt tại phòng thi thử, chế độ luyện tập, sổ tay câu sai và hiển thị số lượng câu đã lưu ngay tại Trang chủ.
+  * Xây dựng không gian ôn tập chuyên biệt `CauHoiDaLuuScreen` cho phép làm thử lại từng câu, chuyển đổi nhanh song ngữ Việt – Anh tại chỗ, gỡ ghim và kết nối hỏi Gia sư AI.
+* **Kiểm thử Tự động & Tài liệu Kỹ thuật:**
+  * Viết Unit Test và Widget Test kiểm chứng luồng xác thực, tách dữ liệu theo tài khoản và màn hình câu hỏi đã lưu (`auth_provider_test.dart`, `auth_screens_test.dart`, `cau_hoi_da_luu_screen_test.dart`).
+  * Thiết kế sơ đồ kiến trúc 3 tầng (Clean Architecture) và biên soạn báo cáo kỹ thuật tổng kết dự án.
+
+---
+
 ## 🏗️ Kiến Trúc và Cấu Trúc Mã Nguồn
 
 Ứng dụng tổ chức theo các lớp `core`, `data`, `domain` và `presentation`, kết hợp Repository Pattern với package `provider` cho các luồng giao diện hiện tại. `lib/viewmodels/` chứa các ViewModel và logic bài thi riêng của dự án.
